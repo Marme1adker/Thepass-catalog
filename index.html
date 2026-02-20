@@ -34,7 +34,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 .sidebar::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 
 /* Сайдбар — мобиль (скрыт, появляется как drawer) */
-.sidebar-overlay{display:none;position:fixed;inset:0;background:#00000070;z-index:100;backdrop-filter:blur(2px)}
+.sidebar-overlay{display:none;position:fixed;inset:0;background:#00000070;z-index:100}
 .sidebar-overlay.open{display:block}
 
 @media(max-width:700px){
@@ -197,6 +197,7 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
 /* ══════════ ТОСТ ══════════ */
 .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--surface2);border:1px solid var(--purple3);border-radius:12px;padding:10px 18px;font-size:13px;color:var(--accent);z-index:999;transition:transform .3s cubic-bezier(.34,1.56,.64,1);white-space:nowrap;box-shadow:0 8px 32px #00000060}
 .toast.show{transform:translateX(-50%) translateY(0)}
+#tagSearch:focus{border-color:var(--purple)!important;box-shadow:0 0 0 2px #8b5cf618}
 ::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:4px}
@@ -257,8 +258,13 @@ body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellips
         <span>Теги</span>
         <span class="sb-chevron">▾</span>
       </div>
-      <div class="sb-body" id="tag-list">
-        <!-- генерируется JS -->
+      <div class="sb-body">
+        <div style="position:relative;margin-bottom:4px">
+          <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:12px;pointer-events:none">🔍</span>
+          <input id="tagSearch" type="text" placeholder="Поиск тегов..." autocomplete="off" spellcheck="false"
+            style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 7px 7px 28px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;outline:none;transition:border-color .2s">
+        </div>
+        <div id="tag-list"></div>
       </div>
     </div>
 
@@ -369,14 +375,14 @@ const GAMES = [
   {title:"Assassin's Creed Chronicles: China",             short:"ACC China",       group:"Ubisoft",            img:S(354380),                tags:["Платформер","Стелс"],                    opts:[] },
   {title:"Assassin's Creed Chronicles: India",             short:"ACC India",       group:"Ubisoft",            img:S(359610),                tags:["Платформер","Стелс"],                    opts:[] },
   {title:"Assassin's Creed Chronicles: Russia",            short:"ACC Russia",      group:"Ubisoft",            img:S(359600),                tags:["Платформер","Стелс"],                    opts:[] },
-  {title:"Far Cry 6",                                      short:"Far Cry 6",       group:"Ubisoft",            img:S(1339820), hasDlc:true,  tags:["Открытый мир","Шутер","Экшн"],           opts:["dlc"] },
+  {title:"Far Cry 6",                                      short:"Far Cry 6",       group:"Ubisoft",            img:S(2369390), hasDlc:true,  tags:["Открытый мир","Шутер","Экшн"],           opts:["dlc"] },
   {title:"Far Cry 5",                                      short:"Far Cry 5",       group:"Ubisoft",            img:S(552520),  hasDlc:true,  tags:["Открытый мир","Шутер","Кооп"],           opts:["dlc","online"] },
   {title:"Far Cry 4",                                      short:"Far Cry 4",       group:"Ubisoft",            img:S(298110),  hasDlc:true,  tags:["Открытый мир","Шутер"],                  opts:["dlc"] },
   {title:"Far Cry 3",                                      short:"Far Cry 3",       group:"Ubisoft",            img:S(220240),  hasDlc:true,  tags:["Открытый мир","Шутер"],                  opts:["dlc"] },
-  {title:"Far Cry New Dawn",                               short:"FC New Dawn",     group:"Ubisoft",            img:S(901690),                tags:["Открытый мир","Шутер"],                  opts:[] },
+  {title:"Far Cry New Dawn",                               short:"FC New Dawn",     group:"Ubisoft",            img:S(939960),                tags:["Открытый мир","Шутер"],                  opts:[] },
   {title:"Far Cry Primal",                                 short:"FC Primal",       group:"Ubisoft",            img:S(371660),  hasDlc:true,  tags:["Открытый мир","Экшн"],                   opts:["dlc"] },
   {title:"Watch Dogs 2",                                   short:"Watch Dogs 2",    group:"Ubisoft",            img:S(447040),  hasDlc:true,  tags:["Открытый мир","Хакинг","Экшн"],          opts:["dlc"] },
-  {title:"Watch Dogs: Legion",                             short:"Watch Dogs Legion",group:"Ubisoft",           img:S(2241780), hasDlc:true,  tags:["Открытый мир","Хакинг","Кооп"],          opts:["dlc","online"] },
+  {title:"Watch Dogs: Legion",                             short:"Watch Dogs Legion",group:"Ubisoft",           img:S(2239550), hasDlc:true,  tags:["Открытый мир","Хакинг","Кооп"],          opts:["dlc","online"] },
   {title:"Tom Clancy's The Division 2",                    short:"The Division 2",  group:"Ubisoft",            img:S(2221490), hasDlc:true,  tags:["Открытый мир","Шутер","Кооп"],           opts:["dlc","online"] },
   {title:"For Honor",                                      short:"For Honor",       group:"Ubisoft",            img:S(304390),  hasDlc:true,  tags:["Файтинг","Кооп"],                        opts:["dlc","online"] },
 
@@ -386,34 +392,34 @@ const GAMES = [
   {title:"Dark Souls II: Scholar of the First Sin",        short:"DS2",             group:"FromSoftware",       img:S(335300),  hasDlc:true,  tags:["Souls-like","Хардкор"],                  opts:["dlc"] },
   {title:"DARK SOULS: REMASTERED",                         short:"DS1",             group:"FromSoftware",       img:S(570940),                tags:["Souls-like","Хардкор"],                  opts:[] },
   {title:"Sekiro: Shadows Die Twice",                      short:"Sekiro",          group:"FromSoftware",       img:S(814380),                tags:["Souls-like","Хардкор","Стелс"],          opts:[] },
-  {title:"Armored Core VI: Fires of Rubicon",              short:"AC6",             group:"FromSoftware",       img:S(1700340), hasDlc:true,  tags:["Роботы","Хардкор","Экшн"],               opts:["dlc"] },
+  {title:"Armored Core VI: Fires of Rubicon",              short:"AC6",             group:"FromSoftware",       img:S(1888160), hasDlc:true,  tags:["Роботы","Хардкор","Экшн"],               opts:["dlc"] },
 
   // ─── PlayStation Studios ──────────────────────────────────────
-  {title:"Lost Soul Aside",                                short:"Lost Soul Aside", group:"PlayStation",        img:S(1154400),               tags:["Экшн","RPG","Фэнтези"],                  opts:[] },
-  {title:"Midnight Murder Club",                           short:"MMC",             group:"PlayStation",        img:S(2669000),               tags:["Хоррор","Кооп","Мультиплеер"],           opts:["online"] },
-  {title:"Stellar Blade",                                  short:"Stellar Blade",   group:"PlayStation",        img:S(3001020), hasDlc:true,  tags:["Экшн","Souls-like","Сюжет"],             opts:["dlc"] },
-  {title:"Marvel's Spider-Man 2",                          short:"Spider-Man 2",    group:"PlayStation",        img:S(2649120), hasDlc:true,  tags:["Открытый мир","Экшн","Супергерой"],      opts:["dlc"] },
-  {title:"LEGO Horizon Adventures",                        short:"LEGO Horizon",    group:"PlayStation",        img:S(2508200),               tags:["Кооп","Для всех","Экшн"],                opts:["online"] },
+  {title:"Lost Soul Aside",                                short:"Lost Soul Aside", group:"PlayStation",        img:S(3378960),               tags:["Экшн","RPG","Фэнтези"],                  opts:[] },
+  {title:"Midnight Murder Club",                           short:"MMC",             group:"PlayStation",        img:S(2698870),               tags:["Хоррор","Кооп","Мультиплеер"],           opts:["online"] },
+  {title:"Stellar Blade",                                  short:"Stellar Blade",   group:"PlayStation",        img:S(3489700), hasDlc:true,  tags:["Экшн","Souls-like","Сюжет"],             opts:["dlc"] },
+  {title:"Marvel's Spider-Man 2",                          short:"Spider-Man 2",    group:"PlayStation",        img:S(2651280), hasDlc:true,  tags:["Открытый мир","Экшн","Супергерой"],      opts:["dlc"] },
+  {title:"LEGO Horizon Adventures",                        short:"LEGO Horizon",    group:"PlayStation",        img:S(2428810),               tags:["Кооп","Для всех","Экшн"],                opts:["online"] },
   {title:"Horizon Zero Dawn Remastered",                   short:"Horizon ZD",      group:"PlayStation",        img:S(2561580), hasDlc:true,  tags:["Открытый мир","RPG","Экшн"],             opts:["dlc"] },
   {title:"Until Dawn",                                     short:"Until Dawn",      group:"PlayStation",        img:S(2172010),               tags:["Хоррор","Сюжет","Интерактивное кино"],   opts:[] },
   {title:"God of War Ragnarök",                            short:"GoW Ragnarök",    group:"PlayStation",        img:S(2322010), hasDlc:true,  tags:["Экшн","Сюжет","Мифология"],             opts:["dlc"] },
-  {title:"Ghost of Tsushima DIRECTOR'S CUT",               short:"Ghost of Tsushima",group:"PlayStation",      img:S(2079920), hasDlc:true,  tags:["Открытый мир","Самурай","Стелс"],        opts:["dlc"] },
+  {title:"Ghost of Tsushima DIRECTOR'S CUT",               short:"Ghost of Tsushima",group:"PlayStation",      img:S(2215430), hasDlc:true,  tags:["Открытый мир","Самурай","Стелс"],        opts:["dlc"] },
   {title:"Horizon Forbidden West: Complete Edition",       short:"Horizon FW",      group:"PlayStation",        img:S(2420110), hasDlc:true,  tags:["Открытый мир","RPG","Экшн"],             opts:["dlc"] },
   {title:"Helldivers 2",                                   short:"Helldivers 2",    group:"PlayStation",        img:S(553850),  hasDlc:true,  tags:["Кооп","Шутер","Мультиплеер"],            opts:["dlc","online"] },
-  {title:"Ratchet & Clank: Rift Apart",                    short:"Ratchet & Clank", group:"PlayStation",        img:S(1895840),               tags:["Платформер","Для всех","Экшн"],          opts:[] },
+  {title:"Ratchet & Clank: Rift Apart",                    short:"Ratchet & Clank", group:"PlayStation",        img:S(1895880),               tags:["Платформер","Для всех","Экшн"],          opts:[] },
   {title:"The Last of Us Part I",                          short:"TLOU 1",          group:"PlayStation",        img:S(1888930),               tags:["Хоррор","Сюжет","Выживание"],            opts:[] },
   {title:"The Last of Us Part II Remastered",              short:"TLOU 2",          group:"PlayStation",        img:S(2531310), hasDlc:true,  tags:["Хоррор","Сюжет","Выживание"],            opts:["dlc"] },
   {title:"Returnal",                                       short:"Returnal",        group:"PlayStation",        img:S(1649240),               tags:["Roguelike","Хардкор","Шутер"],           opts:[] },
   {title:"Marvel's Spider-Man: Miles Morales",             short:"Spider-Man MM",   group:"PlayStation",        img:S(1817190),               tags:["Открытый мир","Экшн","Супергерой"],      opts:[] },
-  {title:"Sackboy: A Big Adventure",                       short:"Sackboy",         group:"PlayStation",        img:S(1456160),               tags:["Платформер","Кооп","Для всех"],          opts:["online"] },
+  {title:"Sackboy: A Big Adventure",                       short:"Sackboy",         group:"PlayStation",        img:S(1599660),               tags:["Платформер","Кооп","Для всех"],          opts:["online"] },
   {title:"Uncharted: Legacy of Thieves Collection",        short:"Uncharted",       group:"PlayStation",        img:S(1659420),               tags:["Приключение","Сюжет","Экшн"],            opts:[] },
   {title:"Marvel's Spider-Man Remastered",                 short:"Spider-Man",      group:"PlayStation",        img:S(1817070), hasDlc:true,  tags:["Открытый мир","Экшн","Супергерой"],      opts:["dlc"] },
   {title:"God of War",                                     short:"God of War 2018", group:"PlayStation",        img:S(1593500),               tags:["Экшн","Сюжет","Мифология"],             opts:[] },
-  {title:"Days Gone",                                      short:"Days Gone",       group:"PlayStation",        img:S(1235140),               tags:["Открытый мир","Зомби","Выживание"],      opts:[] },
+  {title:"Days Gone",                                      short:"Days Gone",       group:"PlayStation",        img:S(1259420),               tags:["Открытый мир","Зомби","Выживание"],      opts:[] },
   {title:"Horizon Zero Dawn Complete Edition",             short:"Horizon ZD CE",   group:"PlayStation",        img:S(1151640), hasDlc:true,  tags:["Открытый мир","RPG","Экшн"],             opts:["dlc"] },
   {title:"Detroit: Become Human",                          short:"Detroit",         group:"PlayStation",        img:S(1222140),               tags:["Сюжет","Интерактивное кино","Фантастика"],opts:[] },
   {title:"Beyond: Two Souls",                              short:"Beyond",          group:"PlayStation",        img:S(960990),                tags:["Сюжет","Интерактивное кино"],            opts:[] },
-  {title:"Everybody's Gone to the Rapture",                short:"Rapture",         group:"PlayStation",        img:S(336560),                tags:["Прогулочный симулятор","Сюжет"],         opts:[] },
+  {title:"Everybody's Gone to the Rapture",                short:"Rapture",         group:"PlayStation",        img:S(417880),                tags:["Прогулочный симулятор","Сюжет"],         opts:[] },
   {title:"Death Stranding Director's Cut",                 short:"Death Stranding", group:"PlayStation",        img:S(1850570), hasDlc:true,  tags:["Открытый мир","Сюжет","Необычное"],      opts:["dlc"] },
 
   // ─── Gearbox ──────────────────────────────────────────────────
@@ -422,7 +428,7 @@ const GAMES = [
   {title:"Borderlands 2",                                  short:"BL2",             group:"Gearbox",            img:S(49520),   hasDlc:true,  tags:["Шутер","RPG","Кооп","Юмор"],             opts:["dlc","online"] },
   {title:"Borderlands: The Pre-Sequel",                    short:"BL Pre-Sequel",   group:"Gearbox",            img:S(261640),  hasDlc:true,  tags:["Шутер","RPG","Кооп"],                    opts:["dlc","online"] },
   {title:"Borderlands Game of the Year Enhanced",          short:"BL1",             group:"Gearbox",            img:S(729040),  hasDlc:true,  tags:["Шутер","RPG","Кооп"],                    opts:["dlc","online"] },
-  {title:"New Tales from the Borderlands",                 short:"New Tales BL",    group:"Gearbox",            img:S(1737780),               tags:["Сюжет","Интерактивное кино","Юмор"],     opts:[] },
+  {title:"New Tales from the Borderlands",                 short:"New Tales BL",    group:"Gearbox",            img:S(1454970),               tags:["Сюжет","Интерактивное кино","Юмор"],     opts:[] },
   {title:"Tales from the Borderlands",                     short:"Tales BL",        group:"Gearbox",            img:S(330830),                tags:["Сюжет","Интерактивное кино","Юмор"],     opts:[] },
 
   // ─── Bethesda — Fallout ───────────────────────────────────────
@@ -437,7 +443,7 @@ const GAMES = [
 
   // ─── Инди • Roguelike ─────────────────────────────────────────
   {title:"Hades",                                          short:"Hades",           group:"Инди • Roguelike",   img:S(1145360),               tags:["Roguelike","Экшн","Сюжет"],              opts:[] },
-  {title:"Hades II",                                       short:"Hades II",        group:"Инди • Roguelike",   img:S(1541780),               tags:["Roguelike","Экшн"],                      opts:[] },
+  {title:"Hades II",                                       short:"Hades II",        group:"Инди • Roguelike",   img:S(1145350),               tags:["Roguelike","Экшн"],                      opts:[] },
   {title:"Dead Cells",                                     short:"Dead Cells",      group:"Инди • Roguelike",   img:S(588650),  hasDlc:true,  tags:["Roguelike","Метроидвания","Хардкор"],     opts:["dlc"] },
   {title:"Risk of Rain 2",                                 short:"RoR2",            group:"Инди • Roguelike",   img:S(632360),  hasDlc:true,  tags:["Roguelike","Шутер","Кооп"],              opts:["dlc","online"] },
   {title:"Risk of Rain Returns",                           short:"RoR Returns",     group:"Инди • Roguelike",   img:S(1337520),               tags:["Roguelike","Платформер"],                opts:[] },
@@ -458,7 +464,8 @@ const GAMES = [
   {title:"A Hat in Time",                                  short:"A Hat in Time",   group:"Инди • Платформер",  img:S(253230),  hasDlc:true,  tags:["Платформер","Для всех","Кооп"],          opts:["dlc","online"] },
   {title:"Pizza Tower",                                    short:"Pizza Tower",     group:"Инди • Платформер",  img:S(2231450),               tags:["Платформер","Юмор"],                     opts:[] },
   {title:"Shovel Knight: Treasure Trove",                  short:"Shovel Knight",   group:"Инди • Платформер",  img:S(311690),                tags:["Платформер","Ретро","Кооп"],             opts:["online"] },
-  {title:"Mewgenics",                                      short:"Mewgenics",       group:"Инди • Платформер",  img:S(804450),                tags:["Рогалик","Стратегия"],                   opts:[] },
+  {title:"Mewgenics",                                      short:"Mewgenics",       group:"Инди • Платформер",  img:S(686060),                tags:["Рогалик","Стратегия"],                   opts:[] },
+  {title:"DELTARUNE",                                       short:"Deltarune",        group:"Инди • Платформер",  img:S(1671210),               tags:["RPG","Сюжет"],                           opts:[] },
   {title:"Katana ZERO",                                    short:"Katana Zero",     group:"Инди • Платформер",  img:S(460950),                tags:["Платформер","Сюжет","Нуар"],             opts:[] },
 
   // ─── Инди • RPG ───────────────────────────────────────────────
@@ -525,6 +532,7 @@ const studioList   = document.getElementById('studio-list');
 const genreList    = document.getElementById('genre-list');
 const tagListEl    = document.getElementById('tag-list');
 const activeFilters= document.getElementById('activeFilters');
+const tagSearchEl  = document.getElementById('tagSearch');
 const filterToggle = document.getElementById('filterToggleBtn');
 const filterBadge  = document.getElementById('filterBadge');
 const sidebar      = document.getElementById('sidebar');
@@ -692,6 +700,17 @@ resetBtn.addEventListener('click', ()=>{
 // ── Мобильный дровер ──────────────────────────────────────────
 filterToggle.addEventListener('click', ()=>{ sidebar.classList.add('open'); overlay.classList.add('open'); });
 overlay.addEventListener('click', ()=>{ sidebar.classList.remove('open'); overlay.classList.remove('open'); });
+sidebar.addEventListener('click', e=>{ e.stopPropagation(); });
+
+// ── Поиск по тегам ───────────────────────────────────────────
+tagSearchEl.addEventListener('input', ()=>{
+  const q = tagSearchEl.value.trim().toLowerCase();
+  tagListEl.querySelectorAll('.tag-btn[data-type="tag"]').forEach(btn=>{
+    btn.style.display = btn.dataset.val.toLowerCase().includes(q) ? '' : 'none';
+  });
+});
+// Остановить закрытие секции при клике на инпут
+tagSearchEl.addEventListener('click', e => e.stopPropagation());
 
 // ── Поиск ────────────────────────────────────────────────────
 searchEl.addEventListener('input', ()=>{
