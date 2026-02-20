@@ -549,14 +549,7 @@ const filterToggle = document.getElementById('filterToggleBtn');
 const filterBadge  = document.getElementById('filterBadge');
 const sidebar      = document.getElementById('sidebar');
 const overlay      = document.getElementById('sidebarOverlay');
-filterToggle.addEventListener('click', () => { 
-  sidebar.classList.add('open'); 
-  overlay.classList.add('open');
-});
-overlay.addEventListener('click', () => {
-  sidebar.classList.remove('open');
-  overlay.classList.remove('open');
-});
+
 
 let view = 'list', toastT = null;
 
