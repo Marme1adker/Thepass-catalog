@@ -13,6 +13,23 @@
   --text:#e2dff0; --muted:#7c6fa0; --dim:#4a4268;
   --dlc:#f59e0b; --dlc-bg:#f59e0b18;
   --sidebar:260px;
+  /* Слой размытия для контента */
+}
+.main.blurred {
+  filter: blur(5px); /* Степень размытия */
+  pointer-events: none; /* Чтобы нельзя было кликать по кнопкам под блюром */
+  transition: filter 0.3s ease;
+}
+
+/* Убедись, что сайдбар всегда выше всех */
+.sidebar {
+  z-index: 1001; /* Выше оверлея и контента */
+}
+
+.sidebar-overlay {
+  z-index: 1000;
+  backdrop-filter: blur(4px); /* Можно добавить блюр прямо на оверлей вместо контента */
+  background: rgba(0, 0, 0, 0.4); /* Полупрозрачный черный */
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;min-height:100vh;overflow-x:hidden}
@@ -697,10 +714,29 @@ resetBtn.addEventListener('click', ()=>{
   syncAndRender();
 });
 
+// ... (предыдущий код скрипта)
+
 // ── Мобильный дровер ──────────────────────────────────────────
-filterToggle.addEventListener('click', ()=>{ sidebar.classList.add('open'); overlay.classList.add('open'); });
-overlay.addEventListener('click', ()=>{ sidebar.classList.remove('open'); overlay.classList.remove('open'); });
-sidebar.addEventListener('click', e=>{ e.stopPropagation(); });
+// 1. Сначала находим наш основной контент, который будем блюрить
+const mainContent = document.querySelector('.main'); 
+
+filterToggle.addEventListener('click', () => { 
+  sidebar.classList.add('open'); 
+  overlay.classList.add('open');
+  // 2. При открытии добавляем класс блюра
+  mainContent.classList.add('blurred'); 
+});
+
+overlay.addEventListener('click', () => { 
+  sidebar.classList.remove('open'); 
+  overlay.classList.remove('open');
+  // 3. При закрытии убираем блюр
+  mainContent.classList.remove('blurred'); 
+});
+
+sidebar.addEventListener('click', e => { e.stopPropagation(); });
+
+// ... (остальной код скрипта)
 
 // ── Поиск по тегам ───────────────────────────────────────────
 tagSearchEl.addEventListener('input', ()=>{
