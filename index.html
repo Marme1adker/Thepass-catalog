@@ -32,267 +32,207 @@
     overflow-x: hidden;
   }
 
-  /* ── Фоновая текстура ── */
   body::before {
     content: '';
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background:
       radial-gradient(ellipse 80% 50% at 50% -10%, #3b1f6e22 0%, transparent 70%),
       radial-gradient(ellipse 40% 30% at 90% 80%, #5b21b611 0%, transparent 60%);
-    pointer-events: none;
-    z-index: 0;
+    pointer-events: none; z-index: 0;
   }
 
   .wrap { position: relative; z-index: 1; padding: 0 12px 80px; }
 
   /* ── Шапка ── */
-  .header {
-    padding: 20px 0 16px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
+  .header { padding: 20px 0 16px; display: flex; align-items: center; gap: 10px; }
   .header-logo {
     width: 36px; height: 36px;
     background: linear-gradient(135deg, var(--purple3), var(--purple2));
-    border-radius: 10px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    box-shadow: 0 0 16px #8b5cf640;
-    flex-shrink: 0;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    font-size: 18px; box-shadow: 0 0 16px #8b5cf640; flex-shrink: 0;
   }
   .header-text h1 {
-    font-family: 'Syne', sans-serif;
-    font-size: 18px;
-    font-weight: 800;
-    letter-spacing: -0.3px;
-    color: var(--text);
+    font-family: 'Syne', sans-serif; font-size: 18px;
+    font-weight: 800; letter-spacing: -0.3px; color: var(--text);
   }
-  .header-text p {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 1px;
-  }
+  .header-text p { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
   /* ── Поиск ── */
-  .search-wrap {
-    position: relative;
-    margin-bottom: 16px;
-  }
+  .search-wrap { position: relative; margin-bottom: 12px; }
   .search-icon {
-    position: absolute;
-    left: 12px; top: 50%;
-    transform: translateY(-50%);
-    color: var(--dim);
-    font-size: 15px;
-    pointer-events: none;
+    position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+    color: var(--dim); font-size: 15px; pointer-events: none;
   }
   .search-input {
-    width: 100%;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 11px 12px 11px 36px;
-    color: var(--text);
-    font-family: 'Inter', sans-serif;
-    font-size: 14px;
-    outline: none;
+    width: 100%; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 11px 12px 11px 36px; color: var(--text);
+    font-family: 'Inter', sans-serif; font-size: 14px; outline: none;
     transition: border-color .2s, box-shadow .2s;
   }
   .search-input::placeholder { color: var(--dim); }
-  .search-input:focus {
-    border-color: var(--purple);
-    box-shadow: 0 0 0 3px #8b5cf618;
-  }
+  .search-input:focus { border-color: var(--purple); box-shadow: 0 0 0 3px #8b5cf618; }
   .search-clear {
-    position: absolute;
-    right: 10px; top: 50%;
-    transform: translateY(-50%);
-    background: var(--border);
-    border: none; border-radius: 50%;
-    width: 22px; height: 22px;
-    color: var(--muted);
-    font-size: 12px;
-    cursor: pointer;
-    display: none;
-    align-items: center; justify-content: center;
-    transition: background .15s;
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: var(--border); border: none; border-radius: 50%;
+    width: 22px; height: 22px; color: var(--muted); font-size: 12px;
+    cursor: pointer; display: none; align-items: center; justify-content: center;
   }
   .search-clear.visible { display: flex; }
-  .search-clear:hover { background: var(--dim); }
 
-  /* ── Счётчик ── */
-  .stats-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-    padding: 0 2px;
+  /* ── Тулбар ── */
+  .toolbar {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 12px; padding: 0 2px;
   }
-  .stats-count {
-    font-size: 12px;
-    color: var(--muted);
-  }
-  .stats-count span {
-    color: var(--purple2);
-    font-weight: 600;
-  }
+  .stats-count { font-size: 12px; color: var(--muted); }
+  .stats-count span { color: var(--purple2); font-weight: 600; }
 
-  /* ── Разделитель паблишера ── */
-  .publisher-group { margin-bottom: 6px; }
+  .view-toggle {
+    display: flex; background: var(--surface);
+    border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  }
+  .view-btn {
+    background: none; border: none; padding: 6px 10px;
+    cursor: pointer; color: var(--dim); font-size: 15px;
+    transition: background .15s, color .15s;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .view-btn.active { background: var(--purple3); color: #fff; }
+
+  /* ══════════ СПИСОК ══════════ */
   .publisher-header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 10px 0 6px;
+    display: flex; align-items: center; gap: 8px; padding: 10px 0 6px;
   }
   .publisher-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--purple);
-    box-shadow: 0 0 6px var(--purple);
-    flex-shrink: 0;
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--purple); box-shadow: 0 0 6px var(--purple); flex-shrink: 0;
   }
   .publisher-name {
-    font-family: 'Syne', sans-serif;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    color: var(--muted);
+    font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted);
   }
-  .publisher-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(to right, var(--border), transparent);
-  }
+  .publisher-line { flex: 1; height: 1px; background: linear-gradient(to right, var(--border), transparent); }
 
-  /* ── Карточки игр ── */
-  .game-card {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 11px 12px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    margin-bottom: 6px;
-    cursor: pointer;
+  .list-card {
+    display: flex; align-items: center; gap: 12px;
+    padding: 11px 12px; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; margin-bottom: 6px; cursor: pointer;
     transition: background .15s, border-color .15s, transform .1s;
-    -webkit-user-select: none;
-    user-select: none;
-    position: relative;
-    overflow: hidden;
+    -webkit-user-select: none; user-select: none;
+    position: relative; overflow: hidden;
   }
-  .game-card::before {
-    content: '';
-    position: absolute;
-    left: 0; top: 0; bottom: 0;
-    width: 3px;
+  .list-card::before {
+    content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px;
     background: linear-gradient(to bottom, var(--purple3), var(--purple2));
-    opacity: 0;
-    transition: opacity .15s;
-    border-radius: 3px 0 0 3px;
+    opacity: 0; transition: opacity .15s; border-radius: 3px 0 0 3px;
   }
-  .game-card:active {
-    transform: scale(0.985);
-    background: var(--surface2);
-  }
-  .game-card:hover {
-    border-color: var(--purple3);
-    background: var(--surface2);
-  }
-  .game-card:hover::before { opacity: 1; }
+  .list-card:active { transform: scale(0.985); background: var(--surface2); }
+  .list-card:hover { border-color: var(--purple3); background: var(--surface2); }
+  .list-card:hover::before { opacity: 1; }
 
-  .game-icon {
-    width: 38px; height: 38px;
-    border-radius: 9px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
+  .list-icon {
+    width: 38px; height: 38px; border-radius: 9px;
+    background: var(--surface2); border: 1px solid var(--border);
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px;
-    flex-shrink: 0;
-    position: relative;
-    overflow: hidden;
+    font-size: 18px; flex-shrink: 0; overflow: hidden;
   }
-  .game-icon-inner {
-    width: 100%; height: 100%;
-    display: flex; align-items: center; justify-content: center;
-  }
+  .list-icon img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
 
-  .game-info { flex: 1; min-width: 0; }
-  .game-title {
-    font-family: 'Syne', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.3;
+  .list-info { flex: 1; min-width: 0; }
+  .list-title {
+    font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+    color: var(--text); white-space: nowrap; overflow: hidden;
+    text-overflow: ellipsis; line-height: 1.3;
   }
-  .game-title mark {
-    background: #8b5cf640;
-    color: var(--accent);
-    border-radius: 3px;
-    padding: 0 1px;
-  }
-  .game-sub {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 2px;
-  }
+  .list-title mark { background: #8b5cf640; color: var(--accent); border-radius: 3px; padding: 0 1px; }
+  .list-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
 
-  .game-arrow {
-    color: var(--dim);
-    font-size: 14px;
-    flex-shrink: 0;
+  .list-arrow {
+    color: var(--dim); font-size: 14px; flex-shrink: 0;
     transition: color .15s, transform .15s;
   }
-  .game-card:hover .game-arrow {
-    color: var(--purple2);
-    transform: translateX(2px);
+  .list-card:hover .list-arrow { color: var(--purple2); transform: translateX(2px); }
+
+  /* ══════════ СЕТКА ══════════ */
+  .grid-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-bottom: 4px;
   }
 
-  /* ── Пустой результат ── */
-  .empty {
-    text-align: center;
-    padding: 50px 20px;
-    display: none;
+  .grid-publisher {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; gap: 8px;
+    padding: 8px 0 2px;
   }
+
+  .grid-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden; cursor: pointer;
+    transition: transform .15s, border-color .15s;
+    -webkit-user-select: none; user-select: none;
+  }
+  .grid-card:active { transform: scale(0.96); }
+  .grid-card:hover { border-color: var(--purple3); }
+
+  .grid-img {
+    width: 100%; aspect-ratio: 16/9;
+    background: var(--surface2); position: relative; overflow: hidden;
+  }
+  .grid-img img {
+    width: 100%; height: 100%; object-fit: cover; display: block;
+    transition: transform .3s;
+  }
+  .grid-card:hover .grid-img img { transform: scale(1.04); }
+
+  .grid-placeholder {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 30px;
+    background: linear-gradient(135deg, var(--surface2), var(--border));
+  }
+
+  .grid-badge {
+    position: absolute; bottom: 5px; left: 6px;
+    background: #00000085; backdrop-filter: blur(4px);
+    border-radius: 5px; padding: 2px 6px;
+    font-size: 9px; color: var(--accent);
+    font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase;
+    border: 1px solid #ffffff0f;
+    max-width: calc(100% - 12px);
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+
+  .grid-info { padding: 8px 10px 10px; }
+  .grid-title {
+    font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 700;
+    color: var(--text); line-height: 1.35;
+    display: -webkit-box; -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .grid-title mark { background: #8b5cf640; color: var(--accent); border-radius: 3px; padding: 0 1px; }
+  .grid-pub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+  /* ── Пусто ── */
+  .empty { text-align: center; padding: 50px 20px; display: none; }
   .empty.visible { display: block; }
   .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .5; }
-  .empty-text {
-    font-family: 'Syne', sans-serif;
-    font-size: 15px;
-    color: var(--muted);
-  }
-  .empty-sub {
-    font-size: 12px;
-    color: var(--dim);
-    margin-top: 6px;
-  }
+  .empty-text { font-family: 'Syne', sans-serif; font-size: 15px; color: var(--muted); }
+  .empty-sub { font-size: 12px; color: var(--dim); margin-top: 6px; }
 
   /* ── Тост ── */
   .toast {
-    position: fixed;
-    bottom: 20px; left: 50%;
+    position: fixed; bottom: 20px; left: 50%;
     transform: translateX(-50%) translateY(80px);
-    background: var(--surface2);
-    border: 1px solid var(--purple3);
-    border-radius: 12px;
-    padding: 10px 18px;
-    font-size: 13px;
-    color: var(--accent);
-    z-index: 999;
+    background: var(--surface2); border: 1px solid var(--purple3);
+    border-radius: 12px; padding: 10px 18px;
+    font-size: 13px; color: var(--accent); z-index: 999;
     transition: transform .3s cubic-bezier(.34,1.56,.64,1);
-    white-space: nowrap;
-    box-shadow: 0 8px 32px #00000060, 0 0 0 1px #8b5cf620;
+    white-space: nowrap; box-shadow: 0 8px 32px #00000060;
   }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  /* ── Скролл ── */
   ::-webkit-scrollbar { width: 4px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
@@ -315,8 +255,25 @@
     <button class="search-clear" id="clearBtn">✕</button>
   </div>
 
-  <div class="stats-bar">
+  <div class="toolbar">
     <div class="stats-count">Найдено: <span id="countNum">0</span></div>
+    <div class="view-toggle">
+      <button class="view-btn active" id="btnList" title="Список">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <rect x="0" y="1.5" width="16" height="2.8" rx="1.2"/>
+          <rect x="0" y="6.5" width="16" height="2.8" rx="1.2"/>
+          <rect x="0" y="11.5" width="16" height="2.8" rx="1.2"/>
+        </svg>
+      </button>
+      <button class="view-btn" id="btnGrid" title="Карточки">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+          <rect x="0" y="0" width="7" height="7" rx="1.5"/>
+          <rect x="9" y="0" width="7" height="7" rx="1.5"/>
+          <rect x="0" y="9" width="7" height="7" rx="1.5"/>
+          <rect x="9" y="9" width="7" height="7" rx="1.5"/>
+        </svg>
+      </button>
+    </div>
   </div>
 
   <div id="list"></div>
@@ -331,69 +288,73 @@
 <div class="toast" id="toast"></div>
 
 <script>
-// ── Данные ──────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+// ДАННЫЕ
+// img: "" — вставь сюда ссылку на скриншот игры (16:9 желательно)
+// Если img пустой — будет показан emoji как заглушка
+// ══════════════════════════════════════════════════════════════════
 const GAMES = [
   // Rockstar
-  { title: "Grand Theft Auto V",                              short: "GTA V",               publisher: "Rockstar",      emoji: "🏙️" },
-  { title: "Red Dead Redemption 2",                           short: "RDR2",                publisher: "Rockstar",      emoji: "🤠" },
-  { title: "Red Dead Redemption",                             short: "RDR1",                publisher: "Rockstar",      emoji: "🤠" },
-  { title: "Grand Theft Auto: San Andreas",                   short: "GTA SA",              publisher: "Rockstar",      emoji: "🏙️" },
-  { title: "Grand Theft Auto: Vice City",                     short: "Vice City",           publisher: "Rockstar",      emoji: "🏙️" },
-  { title: "Grand Theft Auto III – The Definitive Edition",   short: "GTA III",             publisher: "Rockstar",      emoji: "🏙️" },
-  { title: "Grand Theft Auto 2",                              short: "GTA 2",               publisher: "Rockstar",      emoji: "🏙️" },
+  { title: "Grand Theft Auto V",                             short: "GTA V",                publisher: "Rockstar",       emoji: "🏙️", img: "" },
+  { title: "Red Dead Redemption 2",                          short: "RDR2",                 publisher: "Rockstar",       emoji: "🤠", img: "" },
+  { title: "Red Dead Redemption",                            short: "RDR1",                 publisher: "Rockstar",       emoji: "🤠", img: "" },
+  { title: "Grand Theft Auto: San Andreas",                  short: "GTA SA",               publisher: "Rockstar",       emoji: "🏙️", img: "" },
+  { title: "Grand Theft Auto: Vice City",                    short: "Vice City",            publisher: "Rockstar",       emoji: "🏙️", img: "" },
+  { title: "Grand Theft Auto III – The Definitive Edition",  short: "GTA III",              publisher: "Rockstar",       emoji: "🏙️", img: "" },
+  { title: "Grand Theft Auto 2",                             short: "GTA 2",                publisher: "Rockstar",       emoji: "🏙️", img: "" },
 
   // CD Projekt Red
-  { title: "Cyberpunk 2077",                                  short: "Cyberpunk",           publisher: "CD Projekt Red", emoji: "🤖" },
-  { title: "The Witcher 3: Wild Hunt",                        short: "Witcher 3",           publisher: "CD Projekt Red", emoji: "⚔️" },
+  { title: "Cyberpunk 2077",                                 short: "Cyberpunk",            publisher: "CD Projekt Red", emoji: "🤖", img: "" },
+  { title: "The Witcher 3: Wild Hunt",                       short: "Witcher 3",            publisher: "CD Projekt Red", emoji: "⚔️", img: "" },
 
   // Ubisoft
-  { title: "Assassin's Creed Shadows",                        short: "AC Shadows",          publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Mirage",                         short: "AC Mirage",           publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Valhalla",                       short: "AC Valhalla",         publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Odyssey",                        short: "AC Odyssey",          publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Origins",                        short: "AC Origins",          publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Syndicate",                      short: "AC Syndicate",        publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Unity",                          short: "AC Unity",            publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Black Flag",                     short: "AC Black Flag",       publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed III Remastered",                 short: "AC III",              publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Rogue",                          short: "AC Rogue",            publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Revelations",                    short: "AC Revelations",      publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Brotherhood",                    short: "AC Brotherhood",      publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed 2",                              short: "AC 2",                publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Director's Cut",                 short: "AC 1",                publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Liberation",                     short: "AC Liberation",       publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Freedom Cry",                    short: "AC Freedom Cry",      publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Chronicles: China",              short: "AC Chronicles China", publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Chronicles: India",              short: "AC Chronicles India", publisher: "Ubisoft",       emoji: "🥷" },
-  { title: "Assassin's Creed Chronicles: Russia",             short: "AC Chronicles Russia",publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Shadows",                       short: "AC Shadows",           publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Mirage",                        short: "AC Mirage",            publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Valhalla",                      short: "AC Valhalla",          publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Odyssey",                       short: "AC Odyssey",           publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Origins",                       short: "AC Origins",           publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Syndicate",                     short: "AC Syndicate",         publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Unity",                         short: "AC Unity",             publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Black Flag",                    short: "AC Black Flag",        publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed III Remastered",                short: "AC III",               publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Rogue",                         short: "AC Rogue",             publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Revelations",                   short: "AC Revelations",       publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Brotherhood",                   short: "AC Brotherhood",       publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed 2",                             short: "AC 2",                 publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Director's Cut",                short: "AC 1",                 publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Liberation",                    short: "AC Liberation",        publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Freedom Cry",                   short: "AC Freedom Cry",       publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Chronicles: China",             short: "AC Chronicles China",  publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Chronicles: India",             short: "AC Chronicles India",  publisher: "Ubisoft",        emoji: "🥷", img: "" },
+  { title: "Assassin's Creed Chronicles: Russia",            short: "AC Chronicles Russia", publisher: "Ubisoft",        emoji: "🥷", img: "" },
 ];
 
-// ── Telegram WebApp ──────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+// Telegram WebApp
+// ══════════════════════════════════════════════════════════════════
 const tg = window.Telegram?.WebApp;
-if (tg) {
-  tg.ready();
-  tg.expand();
-  tg.setHeaderColor('#0f0d17');
-  tg.setBackgroundColor('#0f0d17');
-}
+if (tg) { tg.ready(); tg.expand(); tg.setHeaderColor('#0f0d17'); tg.setBackgroundColor('#0f0d17'); }
 
 function sendToBot(gameName) {
-  if (tg) {
-    tg.sendData(gameName);
-  } else {
-    showToast('✅ ' + gameName);
-  }
+  if (tg) { tg.sendData(gameName); }
+  else     { showToast('🎮 ' + gameName); }
 }
 
-// ── Рендер ───────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════
+// DOM
+// ══════════════════════════════════════════════════════════════════
 const listEl   = document.getElementById('list');
 const emptyEl  = document.getElementById('empty');
 const countEl  = document.getElementById('countNum');
 const searchEl = document.getElementById('search');
 const clearBtn = document.getElementById('clearBtn');
 const toastEl  = document.getElementById('toast');
+const btnList  = document.getElementById('btnList');
+const btnGrid  = document.getElementById('btnGrid');
 
-let toastTimer = null;
+let currentView = 'list';
+let toastTimer  = null;
+
 function showToast(msg) {
   toastEl.textContent = msg;
   toastEl.classList.add('show');
@@ -407,6 +368,83 @@ function highlight(text, query) {
   return text.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
 }
 
+function groupByPublisher(games) {
+  const groups = {};
+  games.forEach(g => {
+    if (!groups[g.publisher]) groups[g.publisher] = [];
+    groups[g.publisher].push(g);
+  });
+  return groups;
+}
+
+// ── Список ──────────────────────────────────────────────────────
+function renderList(filtered, q) {
+  const groups = groupByPublisher(filtered);
+  Object.entries(groups).forEach(([pub, games]) => {
+    const hdr = document.createElement('div');
+    hdr.className = 'publisher-header';
+    hdr.innerHTML = `<div class="publisher-dot"></div><div class="publisher-name">${pub}</div><div class="publisher-line"></div>`;
+    listEl.appendChild(hdr);
+
+    games.forEach(g => {
+      const card = document.createElement('div');
+      card.className = 'list-card';
+      const iconHtml = g.img
+        ? `<img src="${g.img}" alt="" loading="lazy">`
+        : g.emoji;
+      card.innerHTML = `
+        <div class="list-icon">${iconHtml}</div>
+        <div class="list-info">
+          <div class="list-title">${highlight(g.title, q)}</div>
+          <div class="list-sub">${g.short}</div>
+        </div>
+        <div class="list-arrow">›</div>
+      `;
+      card.addEventListener('click', () => sendToBot(g.title));
+      listEl.appendChild(card);
+    });
+  });
+}
+
+// ── Сетка ───────────────────────────────────────────────────────
+function renderGrid(filtered, q) {
+  const groups = groupByPublisher(filtered);
+  Object.entries(groups).forEach(([pub, games]) => {
+    // Заголовок паблишера
+    const hdr = document.createElement('div');
+    hdr.className = 'publisher-header grid-publisher';
+    hdr.innerHTML = `<div class="publisher-dot"></div><div class="publisher-name">${pub}</div><div class="publisher-line"></div>`;
+    listEl.appendChild(hdr);
+
+    // Сетка 2 колонки
+    const grid = document.createElement('div');
+    grid.className = 'grid-wrap';
+
+    games.forEach(g => {
+      const card = document.createElement('div');
+      card.className = 'grid-card';
+      const imgContent = g.img
+        ? `<img src="${g.img}" alt="${g.title}" loading="lazy">`
+        : `<div class="grid-placeholder">${g.emoji}</div>`;
+      card.innerHTML = `
+        <div class="grid-img">
+          ${imgContent}
+          <div class="grid-badge">${g.short}</div>
+        </div>
+        <div class="grid-info">
+          <div class="grid-title">${highlight(g.title, q)}</div>
+          <div class="grid-pub">${pub}</div>
+        </div>
+      `;
+      card.addEventListener('click', () => sendToBot(g.title));
+      grid.appendChild(card);
+    });
+
+    listEl.appendChild(grid);
+  });
+}
+
+// ── Главный рендер ───────────────────────────────────────────────
 function render(query = '') {
   const q = query.trim().toLowerCase();
   const filtered = q
@@ -420,57 +458,31 @@ function render(query = '') {
   countEl.textContent = filtered.length;
   listEl.innerHTML = '';
 
-  if (filtered.length === 0) {
-    emptyEl.classList.add('visible');
-    return;
-  }
+  if (filtered.length === 0) { emptyEl.classList.add('visible'); return; }
   emptyEl.classList.remove('visible');
 
-  // Группируем по паблишеру
-  const groups = {};
-  filtered.forEach(g => {
-    if (!groups[g.publisher]) groups[g.publisher] = [];
-    groups[g.publisher].push(g);
-  });
-
-  Object.entries(groups).forEach(([pub, games]) => {
-    // Заголовок группы
-    const hdr = document.createElement('div');
-    hdr.className = 'publisher-header';
-    hdr.innerHTML = `
-      <div class="publisher-dot"></div>
-      <div class="publisher-name">${pub}</div>
-      <div class="publisher-line"></div>
-    `;
-    listEl.appendChild(hdr);
-
-    // Карточки
-    games.forEach(g => {
-      const card = document.createElement('div');
-      card.className = 'game-card';
-      card.innerHTML = `
-        <div class="game-icon">
-          <div class="game-icon-inner">${g.emoji}</div>
-        </div>
-        <div class="game-info">
-          <div class="game-title">${highlight(g.title, q)}</div>
-          <div class="game-sub">${g.short}</div>
-        </div>
-        <div class="game-arrow">›</div>
-      `;
-      card.addEventListener('click', () => {
-        if (tg) {
-          sendToBot(g.title);
-        } else {
-          showToast('🎮 ' + g.short);
-        }
-      });
-      listEl.appendChild(card);
-    });
-  });
+  if (currentView === 'list') renderList(filtered, q);
+  else                        renderGrid(filtered, q);
 }
 
-// ── Поиск ───────────────────────────────────────────────────────────────
+// ── Переключатель ────────────────────────────────────────────────
+btnList.addEventListener('click', () => {
+  if (currentView === 'list') return;
+  currentView = 'list';
+  btnList.classList.add('active');
+  btnGrid.classList.remove('active');
+  render(searchEl.value);
+});
+
+btnGrid.addEventListener('click', () => {
+  if (currentView === 'grid') return;
+  currentView = 'grid';
+  btnGrid.classList.add('active');
+  btnList.classList.remove('active');
+  render(searchEl.value);
+});
+
+// ── Поиск ────────────────────────────────────────────────────────
 searchEl.addEventListener('input', () => {
   const val = searchEl.value;
   clearBtn.classList.toggle('visible', val.length > 0);
@@ -484,9 +496,7 @@ clearBtn.addEventListener('click', () => {
   render('');
 });
 
-// ── Инит ────────────────────────────────────────────────────────────────
 render();
 </script>
 </body>
 </html>
-EOF
