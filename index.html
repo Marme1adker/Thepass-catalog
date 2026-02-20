@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>The Pass — Каталог</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:        #0f0d17;
+    --surface:   #1a1628;
+    --surface2:  #231d36;
+    --border:    #2e2648;
+    --purple:    #8b5cf6;
+    --purple2:   #a78bfa;
+    --purple3:   #6d28d9;
+    --accent:    #c4b5fd;
+    --text:      #e2dff0;
+    --muted:     #7c6fa0;
+    --dim:       #4a4268;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color: transparent; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── Фоновая текстура ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 50% -10%, #3b1f6e22 0%, transparent 70%),
+      radial-gradient(ellipse 40% 30% at 90% 80%, #5b21b611 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap { position: relative; z-index: 1; padding: 0 12px 80px; }
+
+  /* ── Шапка ── */
+  .header {
+    padding: 20px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .header-logo {
+    width: 36px; height: 36px;
+    background: linear-gradient(135deg, var(--purple3), var(--purple2));
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    box-shadow: 0 0 16px #8b5cf640;
+    flex-shrink: 0;
+  }
+  .header-text h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: -0.3px;
+    color: var(--text);
+  }
+  .header-text p {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  /* ── Поиск ── */
+  .search-wrap {
+    position: relative;
+    margin-bottom: 16px;
+  }
+  .search-icon {
+    position: absolute;
+    left: 12px; top: 50%;
+    transform: translateY(-50%);
+    color: var(--dim);
+    font-size: 15px;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 11px 12px 11px 36px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+  }
+  .search-input::placeholder { color: var(--dim); }
+  .search-input:focus {
+    border-color: var(--purple);
+    box-shadow: 0 0 0 3px #8b5cf618;
+  }
+  .search-clear {
+    position: absolute;
+    right: 10px; top: 50%;
+    transform: translateY(-50%);
+    background: var(--border);
+    border: none; border-radius: 50%;
+    width: 22px; height: 22px;
+    color: var(--muted);
+    font-size: 12px;
+    cursor: pointer;
+    display: none;
+    align-items: center; justify-content: center;
+    transition: background .15s;
+  }
+  .search-clear.visible { display: flex; }
+  .search-clear:hover { background: var(--dim); }
+
+  /* ── Счётчик ── */
+  .stats-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    padding: 0 2px;
+  }
+  .stats-count {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .stats-count span {
+    color: var(--purple2);
+    font-weight: 600;
+  }
+
+  /* ── Разделитель паблишера ── */
+  .publisher-group { margin-bottom: 6px; }
+  .publisher-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 0 6px;
+  }
+  .publisher-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--purple);
+    box-shadow: 0 0 6px var(--purple);
+    flex-shrink: 0;
+  }
+  .publisher-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .publisher-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  /* ── Карточки игр ── */
+  .game-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: background .15s, border-color .15s, transform .1s;
+    -webkit-user-select: none;
+    user-select: none;
+    position: relative;
+    overflow: hidden;
+  }
+  .game-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: linear-gradient(to bottom, var(--purple3), var(--purple2));
+    opacity: 0;
+    transition: opacity .15s;
+    border-radius: 3px 0 0 3px;
+  }
+  .game-card:active {
+    transform: scale(0.985);
+    background: var(--surface2);
+  }
+  .game-card:hover {
+    border-color: var(--purple3);
+    background: var(--surface2);
+  }
+  .game-card:hover::before { opacity: 1; }
+
+  .game-icon {
+    width: 38px; height: 38px;
+    border-radius: 9px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .game-icon-inner {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .game-info { flex: 1; min-width: 0; }
+  .game-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+  }
+  .game-title mark {
+    background: #8b5cf640;
+    color: var(--accent);
+    border-radius: 3px;
+    padding: 0 1px;
+  }
+  .game-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  .game-arrow {
+    color: var(--dim);
+    font-size: 14px;
+    flex-shrink: 0;
+    transition: color .15s, transform .15s;
+  }
+  .game-card:hover .game-arrow {
+    color: var(--purple2);
+    transform: translateX(2px);
+  }
+
+  /* ── Пустой результат ── */
+  .empty {
+    text-align: center;
+    padding: 50px 20px;
+    display: none;
+  }
+  .empty.visible { display: block; }
+  .empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .5; }
+  .empty-text {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    color: var(--muted);
+  }
+  .empty-sub {
+    font-size: 12px;
+    color: var(--dim);
+    margin-top: 6px;
+  }
+
+  /* ── Тост ── */
+  .toast {
+    position: fixed;
+    bottom: 20px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--surface2);
+    border: 1px solid var(--purple3);
+    border-radius: 12px;
+    padding: 10px 18px;
+    font-size: 13px;
+    color: var(--accent);
+    z-index: 999;
+    transition: transform .3s cubic-bezier(.34,1.56,.64,1);
+    white-space: nowrap;
+    box-shadow: 0 8px 32px #00000060, 0 0 0 1px #8b5cf620;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── Скролл ── */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="header">
+    <div class="header-logo">🎮</div>
+    <div class="header-text">
+      <h1>The Pass</h1>
+      <p>Каталог игр</p>
+    </div>
+  </div>
+
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input class="search-input" id="search" type="text" placeholder="Поиск по названию..." autocomplete="off" autocorrect="off" spellcheck="false">
+    <button class="search-clear" id="clearBtn">✕</button>
+  </div>
+
+  <div class="stats-bar">
+    <div class="stats-count">Найдено: <span id="countNum">0</span></div>
+  </div>
+
+  <div id="list"></div>
+  <div class="empty" id="empty">
+    <div class="empty-icon">🔍</div>
+    <div class="empty-text">Игра не найдена</div>
+    <div class="empty-sub">Попробуйте другой запрос</div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Данные ──────────────────────────────────────────────────────────────
+const GAMES = [
+  // Rockstar
+  { title: "Grand Theft Auto V",                              short: "GTA V",               publisher: "Rockstar",      emoji: "🏙️" },
+  { title: "Red Dead Redemption 2",                           short: "RDR2",                publisher: "Rockstar",      emoji: "🤠" },
+  { title: "Red Dead Redemption",                             short: "RDR1",                publisher: "Rockstar",      emoji: "🤠" },
+  { title: "Grand Theft Auto: San Andreas",                   short: "GTA SA",              publisher: "Rockstar",      emoji: "🏙️" },
+  { title: "Grand Theft Auto: Vice City",                     short: "Vice City",           publisher: "Rockstar",      emoji: "🏙️" },
+  { title: "Grand Theft Auto III – The Definitive Edition",   short: "GTA III",             publisher: "Rockstar",      emoji: "🏙️" },
+  { title: "Grand Theft Auto 2",                              short: "GTA 2",               publisher: "Rockstar",      emoji: "🏙️" },
+
+  // CD Projekt Red
+  { title: "Cyberpunk 2077",                                  short: "Cyberpunk",           publisher: "CD Projekt Red", emoji: "🤖" },
+  { title: "The Witcher 3: Wild Hunt",                        short: "Witcher 3",           publisher: "CD Projekt Red", emoji: "⚔️" },
+
+  // Ubisoft
+  { title: "Assassin's Creed Shadows",                        short: "AC Shadows",          publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Mirage",                         short: "AC Mirage",           publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Valhalla",                       short: "AC Valhalla",         publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Odyssey",                        short: "AC Odyssey",          publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Origins",                        short: "AC Origins",          publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Syndicate",                      short: "AC Syndicate",        publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Unity",                          short: "AC Unity",            publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Black Flag",                     short: "AC Black Flag",       publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed III Remastered",                 short: "AC III",              publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Rogue",                          short: "AC Rogue",            publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Revelations",                    short: "AC Revelations",      publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Brotherhood",                    short: "AC Brotherhood",      publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed 2",                              short: "AC 2",                publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Director's Cut",                 short: "AC 1",                publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Liberation",                     short: "AC Liberation",       publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Freedom Cry",                    short: "AC Freedom Cry",      publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Chronicles: China",              short: "AC Chronicles China", publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Chronicles: India",              short: "AC Chronicles India", publisher: "Ubisoft",       emoji: "🥷" },
+  { title: "Assassin's Creed Chronicles: Russia",             short: "AC Chronicles Russia",publisher: "Ubisoft",       emoji: "🥷" },
+];
+
+// ── Telegram WebApp ──────────────────────────────────────────────────────
+const tg = window.Telegram?.WebApp;
+if (tg) {
+  tg.ready();
+  tg.expand();
+  tg.setHeaderColor('#0f0d17');
+  tg.setBackgroundColor('#0f0d17');
+}
+
+function sendToBot(gameName) {
+  if (tg) {
+    tg.sendData(gameName);
+  } else {
+    showToast('✅ ' + gameName);
+  }
+}
+
+// ── Рендер ───────────────────────────────────────────────────────────────
+const listEl   = document.getElementById('list');
+const emptyEl  = document.getElementById('empty');
+const countEl  = document.getElementById('countNum');
+const searchEl = document.getElementById('search');
+const clearBtn = document.getElementById('clearBtn');
+const toastEl  = document.getElementById('toast');
+
+let toastTimer = null;
+function showToast(msg) {
+  toastEl.textContent = msg;
+  toastEl.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
+}
+
+function highlight(text, query) {
+  if (!query) return text;
+  const esc = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`(${esc})`, 'gi'), '<mark>$1</mark>');
+}
+
+function render(query = '') {
+  const q = query.trim().toLowerCase();
+  const filtered = q
+    ? GAMES.filter(g =>
+        g.title.toLowerCase().includes(q) ||
+        g.short.toLowerCase().includes(q) ||
+        g.publisher.toLowerCase().includes(q)
+      )
+    : GAMES;
+
+  countEl.textContent = filtered.length;
+  listEl.innerHTML = '';
+
+  if (filtered.length === 0) {
+    emptyEl.classList.add('visible');
+    return;
+  }
+  emptyEl.classList.remove('visible');
+
+  // Группируем по паблишеру
+  const groups = {};
+  filtered.forEach(g => {
+    if (!groups[g.publisher]) groups[g.publisher] = [];
+    groups[g.publisher].push(g);
+  });
+
+  Object.entries(groups).forEach(([pub, games]) => {
+    // Заголовок группы
+    const hdr = document.createElement('div');
+    hdr.className = 'publisher-header';
+    hdr.innerHTML = `
+      <div class="publisher-dot"></div>
+      <div class="publisher-name">${pub}</div>
+      <div class="publisher-line"></div>
+    `;
+    listEl.appendChild(hdr);
+
+    // Карточки
+    games.forEach(g => {
+      const card = document.createElement('div');
+      card.className = 'game-card';
+      card.innerHTML = `
+        <div class="game-icon">
+          <div class="game-icon-inner">${g.emoji}</div>
+        </div>
+        <div class="game-info">
+          <div class="game-title">${highlight(g.title, q)}</div>
+          <div class="game-sub">${g.short}</div>
+        </div>
+        <div class="game-arrow">›</div>
+      `;
+      card.addEventListener('click', () => {
+        if (tg) {
+          sendToBot(g.title);
+        } else {
+          showToast('🎮 ' + g.short);
+        }
+      });
+      listEl.appendChild(card);
+    });
+  });
+}
+
+// ── Поиск ───────────────────────────────────────────────────────────────
+searchEl.addEventListener('input', () => {
+  const val = searchEl.value;
+  clearBtn.classList.toggle('visible', val.length > 0);
+  render(val);
+});
+
+clearBtn.addEventListener('click', () => {
+  searchEl.value = '';
+  clearBtn.classList.remove('visible');
+  searchEl.focus();
+  render('');
+});
+
+// ── Инит ────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
+EOF
