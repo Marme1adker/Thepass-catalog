@@ -4,63 +4,81 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>The Pass — Каталог</title>
-
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
+  <!-- ══════════ ЖИВОЙ ФОН ══════════ -->
+  <canvas id="bg-canvas"></canvas>
+
   <!-- Затемнение для мобильного дровера -->
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
 
-  <!-- ══════════ МОДАЛЬНОЕ ОКНО ══════════ -->
-  <div class="modal-overlay" id="modalOverlay">
-    <div class="modal" id="modal">
-      <div class="modal-img">
-        <img id="modalImg" src="" alt="">
-        <div class="modal-img-overlay"></div>
-        <div class="modal-img-placeholder" style="display:none">🎮</div>
+  <!-- ══════════ FULL-PAGE СТРАНИЦА ИГРЫ ══════════ -->
+  <div class="game-page" id="gamePage">
+    <canvas class="game-page-canvas" id="gamePageCanvas"></canvas>
+    <div class="game-page-header">
+      <button class="game-back-btn" id="gameBackBtn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 12H5M12 5l-7 7 7 7"/>
+        </svg>
+        Назад
+      </button>
+      <button class="game-page-fav-btn" id="gamePageFavBtn">🤍</button>
+    </div>
+    <div class="game-page-hero">
+      <div class="game-page-img-wrap">
+        <img id="gamePageImg" src="" alt="" style="display:none">
+        <div class="game-page-img-gradient"></div>
+        <div class="game-page-placeholder" id="gamePagePlaceholder">🎮</div>
       </div>
-      <div class="modal-body">
-        <div class="modal-top-row">
-          <div class="modal-label">Начать поиск игры?</div>
-          <button class="modal-fav-btn" id="modalFavBtn" title="В избранное">🤍</button>
+    </div>
+    <div class="game-page-body">
+      <div class="game-page-badges">
+        <span class="game-page-source" id="gamePageSource"></span>
+        <span class="game-page-new-badge" id="gamePageNewBadge" style="display:none">✨ Новинка</span>
+      </div>
+      <h1 class="game-page-title" id="gamePageTitle"></h1>
+      <div class="game-page-meta" id="gamePageMeta"></div>
+
+      <!-- Steam рейтинг -->
+      <div class="game-page-rating" id="gamePageRating" style="display:none">
+        <div class="gpr-icon">⭐</div>
+        <div class="gpr-info">
+          <div class="gpr-label">Обзоры Steam (рус.)</div>
+          <div class="gpr-value" id="gamePageRatingValue"></div>
+          <div class="gpr-count" id="gamePageRatingCount"></div>
         </div>
-        <div class="modal-title" id="modalTitle"></div>
-        <div class="modal-meta"  id="modalMeta"></div>
-        <!-- Бейдж источника -->
-        <div class="modal-source" id="modalSource"></div>
-        <div class="modal-tags"  id="modalTags"></div>
-        <div class="modal-actions">
-          <button class="modal-btn modal-btn-cancel"  id="modalCancel">Отмена</button>
-          <button class="modal-btn modal-btn-confirm" id="modalConfirm">🔍 Найти</button>
-        </div>
+      </div>
+
+      <!-- Теги -->
+      <div class="game-page-tags" id="gamePageTags"></div>
+
+      <!-- Кнопки -->
+      <div class="game-page-actions">
+        <button class="gp-btn gp-btn-find" id="gamePageFind">🔍 Найти игру</button>
+        <button class="gp-btn gp-btn-share" id="gamePageShare">🔗 Поделиться</button>
       </div>
     </div>
   </div>
 
-  <!-- ══════════ СТРАНИЦА ══════════ -->
-  <div class="page">
+  <!-- ══════════ ОСНОВНАЯ СТРАНИЦА ══════════ -->
+  <div class="page" id="mainPage">
 
-    <!-- ══════ САЙДБАР ФИЛЬТРОВ ══════ -->
+    <!-- ══════ САЙДБАР ══════ -->
     <aside class="sidebar" id="sidebar">
 
-      <!-- Поиск по названию -->
       <div class="sb-section" id="sec-name">
-        <div class="sb-section-hdr">
-          <span>Название</span>
-          <span class="sb-chevron">▾</span>
-        </div>
+        <div class="sb-section-hdr"><span>Название</span><span class="sb-chevron">▾</span></div>
         <div class="sb-body">
           <div class="search-wrap" style="margin-bottom:0">
             <span class="search-icon">🔍</span>
-            <input
-              class="search-input" id="search" type="text"
+            <input class="search-input" id="search" type="text"
               placeholder="Поиск по названию, тегу..."
               autocomplete="off" autocorrect="off" spellcheck="false"
-              style="font-size:12px;padding:8px 8px 8px 30px"
-            >
+              style="font-size:12px;padding:8px 8px 8px 30px">
             <button class="search-clear" id="clearBtn" style="width:18px;height:18px;font-size:10px">✕</button>
           </div>
         </div>
@@ -68,43 +86,28 @@
 
       <div class="sb-sep"></div>
 
-      <!-- Студии — свёрнуты по умолчанию -->
       <div class="sb-section collapsed" id="sec-studio">
-        <div class="sb-section-hdr">
-          <span>Студия</span>
-          <span class="sb-chevron">▾</span>
-        </div>
+        <div class="sb-section-hdr"><span>Студия</span><span class="sb-chevron">▾</span></div>
         <div class="sb-body" id="studio-list"></div>
       </div>
 
       <div class="sb-sep"></div>
 
-      <!-- Жанры — свёрнуты по умолчанию -->
       <div class="sb-section collapsed" id="sec-genre">
-        <div class="sb-section-hdr">
-          <span>Жанр</span>
-          <span class="sb-chevron">▾</span>
-        </div>
+        <div class="sb-section-hdr"><span>Жанр</span><span class="sb-chevron">▾</span></div>
         <div class="sb-body" id="genre-list"></div>
       </div>
 
       <div class="sb-sep"></div>
 
-      <!-- Теги — свёрнуты по умолчанию -->
       <div class="sb-section collapsed" id="sec-tags">
-        <div class="sb-section-hdr">
-          <span>Теги</span>
-          <span class="sb-chevron">▾</span>
-        </div>
+        <div class="sb-section-hdr"><span>Теги</span><span class="sb-chevron">▾</span></div>
         <div class="sb-body">
           <div style="position:relative;margin-bottom:4px">
             <span style="position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--dim);font-size:12px;pointer-events:none">🔍</span>
-            <input
-              id="tagSearch" type="text"
-              placeholder="Поиск тегов..."
+            <input id="tagSearch" type="text" placeholder="Поиск тегов..."
               autocomplete="off" spellcheck="false"
-              style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 7px 7px 28px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;outline:none;transition:border-color .2s"
-            >
+              style="width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:7px 7px 7px 28px;color:var(--text);font-family:'Inter',sans-serif;font-size:11px;outline:none;transition:border-color .2s">
           </div>
           <div id="tag-list"></div>
         </div>
@@ -112,54 +115,49 @@
 
       <div class="sb-sep"></div>
 
-      <!-- Источник -->
       <div class="sb-section" id="sec-source">
-        <div class="sb-section-hdr">
-          <span>Источник</span>
-          <span class="sb-chevron">▾</span>
-        </div>
+        <div class="sb-section-hdr"><span>Источник</span><span class="sb-chevron">▾</span></div>
         <div class="sb-body">
           <button class="tag-btn" id="sourceLocal" data-source="local">
-            <span class="tag-ico">⚡</span>Локальные
-            <span class="source-hint">мгновенно</span>
+            <span class="tag-ico">⚡</span>Локальные<span class="source-hint">мгновенно</span>
           </button>
           <button class="tag-btn" id="sourceSteam" data-source="steam">
-            <span class="tag-ico">🔵</span>База данных
-            <span class="source-hint">через сайт</span>
+            <span class="tag-ico">🔵</span>База данных<span class="source-hint">через сайт</span>
           </button>
           <button class="tag-btn" id="sourceMarme" data-source="marme1adker">
-            <span class="tag-ico">➕</span>Plus
-            <span class="source-hint">+</span>
+            <span class="tag-ico">➕</span>Plus<span class="source-hint">+</span>
           </button>
         </div>
       </div>
 
       <div class="sb-sep"></div>
 
-      <!-- Параметры -->
       <div class="sb-section" id="sec-opts">
-        <div class="sb-section-hdr">
-          <span>Параметры</span>
-          <span class="sb-chevron">▾</span>
-        </div>
+        <div class="sb-section-hdr"><span>Параметры</span><span class="sb-chevron">▾</span></div>
         <div class="sb-body">
-          <button class="tag-btn" data-opt="dlc">
-            <span class="tag-ico">🔖</span>С DLC
-          </button>
-          <button class="tag-btn" data-opt="ru">
-            <span class="tag-ico">🇷🇺</span>Русский язык
-          </button>
-          <button class="tag-btn" data-opt="online">
-            <span class="tag-ico">🌐</span>Доступен онлайн
-          </button>
+          <button class="tag-btn" data-opt="dlc"><span class="tag-ico">🔖</span>С DLC</button>
+          <button class="tag-btn" data-opt="ru"><span class="tag-ico">🇷🇺</span>Русский язык</button>
+          <button class="tag-btn" data-opt="online"><span class="tag-ico">🌐</span>Доступен онлайн</button>
+          <button class="tag-btn" data-opt="new"><span class="tag-ico">✨</span>Новинки</button>
         </div>
       </div>
 
       <button class="sb-reset" id="resetBtn">✕ Сбросить фильтры</button>
 
-      <!-- Sticky-кнопка "Готово" (только мобиль) -->
       <div class="sb-footer">
         <button class="sb-done-btn" id="doneBtn">Готово</button>
+      </div>
+
+      <!-- ══ ФУТЕР САЙДБАРА ══ -->
+      <div class="sb-nav-footer">
+        <nav class="sb-nav-links">
+          <a href="contacts.html" class="sb-nav-link">📬 Контакты</a>
+          <a href="privacy.html"  class="sb-nav-link">🔒 Конфиденциальность</a>
+          <a href="offer.html"    class="sb-nav-link">📄 Публичная оферта</a>
+          <a href="faq.html"      class="sb-nav-link">❓ FAQ</a>
+          <a href="reviews.html"  class="sb-nav-link">💬 Отзывы</a>
+        </nav>
+        <div class="sb-nav-copy">© 2026 The Pass</div>
       </div>
 
     </aside>
@@ -167,7 +165,6 @@
     <!-- ══════ ОСНОВНОЙ КОНТЕНТ ══════ -->
     <div class="main">
 
-      <!-- Шапка -->
       <div class="header">
         <div class="header-logo">🎮</div>
         <div class="header-text">
@@ -175,8 +172,9 @@
           <p>Каталог игр</p>
         </div>
         <div class="header-spacer"></div>
-        <!-- Кнопка статистики -->
-        <button class="stats-toggle-btn" id="statsBtn" title="Статистика (?)">📊</button>
+        <button class="theme-toggle-btn" id="themeBtn" title="Тема">🌙</button>
+        <button class="random-btn"       id="randomBtn" title="Случайная игра">🎲</button>
+        <button class="stats-toggle-btn" id="statsBtn"  title="Статистика">📊</button>
         <button class="filter-toggle-btn" id="filterToggleBtn">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
             <path d="M1 3h14v1.5L9 10v5l-2-1V10L1 4.5V3z"/>
@@ -186,13 +184,9 @@
         </button>
       </div>
 
-      <!-- Панель статистики (скрыта по умолчанию) -->
       <div class="stats-panel" id="statsPanel"></div>
-
-      <!-- Активные фильтры-чипы -->
       <div class="active-filters" id="activeFilters"></div>
 
-      <!-- Избранное -->
       <div class="fav-panel" id="favPanel">
         <div class="fav-hdr">
           <div class="fav-title">❤️ Избранное <span class="fav-count" id="favCount"></span></div>
@@ -201,7 +195,6 @@
         <div class="fav-list" id="favList"></div>
       </div>
 
-      <!-- История просмотров -->
       <div class="history-panel" id="historyPanel">
         <div class="history-hdr">
           <div class="history-title">🕐 Недавно искали</div>
@@ -210,7 +203,6 @@
         <div class="history-list" id="historyList"></div>
       </div>
 
-      <!-- Тулбар: счётчик + сортировка + вид -->
       <div class="toolbar">
         <div class="stats-count">Найдено: <span id="countNum">0</span></div>
         <div class="toolbar-right">
@@ -219,12 +211,13 @@
             <option value="az">А → Я</option>
             <option value="za">Я → А</option>
             <option value="recent">Недавние</option>
+            <option value="rating">По рейтингу ⭐</option>
           </select>
           <div class="view-toggle">
             <button class="view-btn active" id="btnList" title="Список">
               <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor">
-                <rect x="0" y="1.5"  width="16" height="2.8" rx="1.2"/>
-                <rect x="0" y="6.5"  width="16" height="2.8" rx="1.2"/>
+                <rect x="0" y="1.5" width="16" height="2.8" rx="1.2"/>
+                <rect x="0" y="6.5" width="16" height="2.8" rx="1.2"/>
                 <rect x="0" y="11.5" width="16" height="2.8" rx="1.2"/>
               </svg>
             </button>
@@ -240,13 +233,9 @@
         </div>
       </div>
 
-      <!-- Счётчик источников -->
       <div class="source-stats" id="sourceStats"></div>
-
-      <!-- Список / сетка игр -->
       <div id="list"></div>
 
-      <!-- Заглушка "ничего не найдено" -->
       <div class="empty" id="empty">
         <div class="empty-icon">🔍</div>
         <div class="empty-text">Игра не найдена</div>
@@ -256,24 +245,380 @@
     </div>
   </div>
 
-  <!-- Тост-уведомление -->
+  <!-- Тост -->
   <div class="toast" id="toast"></div>
 
   <!-- Подсказка горячих клавиш -->
   <div class="hotkey-hint" id="hotkeyHint">
-    <kbd>/</kbd> поиск · <kbd>?</kbd> статистика · <kbd>Esc</kbd> закрыть
+    <kbd>/</kbd> поиск · <kbd>?</kbd> стат · <kbd>R</kbd> случайная · <kbd>Esc</kbd> закрыть
   </div>
 
-  <!-- ══════════ СКРИПТЫ ══════════ -->
+  <!-- ══════════ СКРИПТЫ ПРОЕКТА ══════════ -->
   <script src="data.js"></script>
   <script src="state.js"></script>
   <script src="history.js"></script>
   <script src="favorites.js"></script>
   <script src="stats.js"></script>
-  <script src="modal.js"></script>
   <script src="sidebar.js"></script>
   <script src="render.js"></script>
   <script src="app.js"></script>
+
+  <!-- ══════════ GAME PAGE ══════════ -->
+  <script>
+  // Показывает тост
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 2200);
+  }
+
+  // Открыть страницу игры
+  window.openGamePage = function(game) {
+    const page = document.getElementById('gamePage');
+    const main = document.getElementById('mainPage');
+
+    // Изображение
+    const img = document.getElementById('gamePageImg');
+    const ph  = document.getElementById('gamePagePlaceholder');
+    const imgSrc = game.img || game.image || '';
+    if (imgSrc) {
+      img.src = imgSrc; img.style.display = '';
+      ph.style.display = 'none';
+      img.onerror = () => { img.style.display = 'none'; ph.style.display = ''; };
+    } else {
+      img.style.display = 'none'; ph.style.display = '';
+    }
+
+    // Заголовок и мета
+    document.getElementById('gamePageTitle').textContent = game.name || game.title || '';
+    document.getElementById('gamePageMeta').textContent =
+      [game.studio || game.publisher, game.genre, game.year].filter(Boolean).join(' · ');
+
+    // Источник
+    const srcEl = document.getElementById('gamePageSource');
+    const src = game.source || 'local';
+    const srcLabels = { local:'⚡ Локальная', steam:'🔵 База данных', marme1adker:'➕ Plus' };
+    srcEl.textContent = srcLabels[src] || srcLabels.local;
+    srcEl.className = 'game-page-source ' + src;
+
+    // Новинка
+    document.getElementById('gamePageNewBadge').style.display = game.isNew ? '' : 'none';
+
+    // Steam рейтинг
+    const rBlock = document.getElementById('gamePageRating');
+    if (game.steamRating) {
+      rBlock.style.display = '';
+      const rv = document.getElementById('gamePageRatingValue');
+      rv.textContent = game.steamRating.label || '';
+      document.getElementById('gamePageRatingCount').textContent =
+        game.steamRating.count ? `${(+game.steamRating.count).toLocaleString('ru')} обзоров` : '';
+      const score = game.steamRating.score || 0;
+      rv.style.color = score >= 80 ? '#34d399' : score >= 60 ? '#f59e0b' : '#f87171';
+    } else {
+      rBlock.style.display = 'none';
+    }
+
+    // Теги
+    const tagsEl = document.getElementById('gamePageTags');
+    tagsEl.innerHTML =
+      (game.tags||[]).map(t => `<span class="gp-tag">${t}</span>`).join('') +
+      (game.hasDlc   ? `<span class="gp-tag dlc">🔖 DLC</span>` : '') +
+      (game.hasRu    ? `<span class="gp-tag ru">🇷🇺 RU</span>`  : '') +
+      (game.online   ? `<span class="gp-tag online">🌐 Online</span>` : '');
+
+    // Избранное
+    const favBtn = document.getElementById('gamePageFavBtn');
+    const updateFav = () => favBtn.textContent = (window.isFav&&window.isFav(game)) ? '❤️' : '🤍';
+    updateFav();
+    favBtn.onclick = () => {
+      if (window.toggleFav) window.toggleFav(game);
+      updateFav(); spawnHeartBurst(favBtn);
+    };
+
+    // Найти
+    document.getElementById('gamePageFind').onclick = () => {
+      if (window.openGameSearch) window.openGameSearch(game);
+      else if (game.searchUrl)   window.open(game.searchUrl, '_blank');
+      else {
+        const q = encodeURIComponent(game.name || game.title || '');
+        window.open('https://www.google.com/search?q=' + q, '_blank');
+      }
+    };
+
+    // Поделиться
+    document.getElementById('gamePageShare').onclick = () => {
+      const name = game.name || game.title || '';
+      const url  = game.steamUrl || (game.appid
+        ? `https://store.steampowered.com/app/${game.appid}` : '');
+      const text = url ? `${name}\n${url}` : name;
+      const copy = t => {
+        if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => showToast('📋 Скопировано!'));
+        else {
+          const ta = document.createElement('textarea');
+          ta.value = t; document.body.appendChild(ta);
+          ta.select(); document.execCommand('copy'); ta.remove();
+          showToast('📋 Скопировано!');
+        }
+      };
+      copy(text);
+    };
+
+    // Кнопка назад
+    document.getElementById('gameBackBtn').onclick = closeGamePage;
+
+    // Свайп вниз на мобиле
+    let startY = 0;
+    page.ontouchstart = e => { startY = e.touches[0].clientY; };
+    page.ontouchend   = e => { if (e.changedTouches[0].clientY - startY > 90) closeGamePage(); };
+
+    // Открываем
+    main.classList.add('page-hidden');
+    page.classList.add('open');
+    page.scrollTop = 0;
+    startGameParticles();
+    if (window.addHistory) window.addHistory(game);
+  };
+
+  window.closeGamePage = function() {
+    document.getElementById('gamePage').classList.remove('open');
+    document.getElementById('mainPage').classList.remove('page-hidden');
+    stopGameParticles();
+  };
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && document.getElementById('gamePage').classList.contains('open'))
+      closeGamePage();
+    if ((e.key === 'r' || e.key === 'R') && !e.ctrlKey && !e.metaKey &&
+        document.activeElement.tagName !== 'INPUT')
+      document.getElementById('randomBtn').click();
+  });
+  </script>
+
+  <!-- ══════════ ТЕМА ══════════ -->
+  <script>
+  (function(){
+    const btn  = document.getElementById('themeBtn');
+    let light  = localStorage.getItem('pass-theme') === 'light';
+    function apply() {
+      document.documentElement.classList.toggle('light-theme', light);
+      btn.textContent = light ? '☀️' : '🌙';
+    }
+    apply();
+    btn.addEventListener('click', () => { light = !light; localStorage.setItem('pass-theme', light?'light':'dark'); apply(); });
+  })();
+  </script>
+
+  <!-- ══════════ СЛУЧАЙНАЯ ИГРА ══════════ -->
+  <script>
+  document.getElementById('randomBtn').addEventListener('click', () => {
+    const cards = [...document.querySelectorAll('.list-card, .grid-card')];
+    if (!cards.length) { showToast('😅 Нет игр для выбора'); return; }
+    const card = cards[Math.floor(Math.random() * cards.length)];
+    card.scrollIntoView({ behavior:'smooth', block:'center' });
+    card.classList.add('random-highlight');
+    setTimeout(() => card.classList.remove('random-highlight'), 1400);
+    setTimeout(() => card.click(), 400);
+  });
+  </script>
+
+  <!-- ══════════ АНИМАЦИЯ СЕРДЕЧКА ══════════ -->
+  <script>
+  function spawnHeartBurst(btn) {
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width/2, cy = rect.top + rect.height/2;
+    const emojis = ['❤️','💜','✨','💖','⭐'];
+    for (let i = 0; i < 12; i++) {
+      const el = document.createElement('div');
+      const angle = (Math.PI*2/12)*i + Math.random()*0.3;
+      const dist  = 30 + Math.random()*40;
+      el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+      el.style.cssText = `position:fixed;left:${cx}px;top:${cy}px;pointer-events:none;z-index:99999;`+
+        `font-size:${10+Math.random()*10}px;transform:translate(-50%,-50%);`+
+        `--dx:${Math.cos(angle)*dist}px;--dy:${Math.sin(angle)*dist}px;`+
+        `animation:heartFly .85s ease forwards;`;
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 950);
+    }
+  }
+  </script>
+
+  <!-- ══════════ ГЛАВНЫЙ PARTICLE SYSTEM ══════════ -->
+  <script>
+  (function(){
+    const canvas = document.getElementById('bg-canvas');
+    const ctx    = canvas.getContext('2d');
+    let W, H;
+    function resize(){ W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; }
+    resize(); window.addEventListener('resize', resize);
+
+    const PL = 'rgba(192,132,252,', PM = 'rgba(139,92,246,', WH = 'rgba(255,255,255,';
+    const rnd  = (a,b) => Math.random()*(b-a)+a;
+    const rndI = (a,b) => Math.floor(rnd(a,b));
+
+    // Мышь/тач для интерактивности
+    let mx = -999, my = -999;
+    window.addEventListener('mousemove', e=>{ mx=e.clientX; my=e.clientY; });
+    window.addEventListener('touchmove', e=>{ mx=e.touches[0].clientX; my=e.touches[0].clientY; },{passive:true});
+
+    // Волна при скролле
+    let scrollAmp = 0;
+    window.addEventListener('scroll', ()=>{ scrollAmp = Math.min(scrollAmp+0.8, 1); },{passive:true});
+
+    // 1. Точки (больше)
+    const DOTS = 200;
+    const dots = Array.from({length:DOTS}, ()=>({
+      x:rnd(0,1), y:rnd(0,1), r:rnd(0.4,2.2),
+      a:rnd(0.15,0.75), sp:rnd(0.00008,0.00025), ph:rnd(0,Math.PI*2),
+      col: Math.random()<0.6 ? WH : (Math.random()<0.5 ? PL : PM),
+    }));
+
+    function drawDots(t){
+      dots.forEach(d=>{
+        const base = d.a*(0.55+0.45*Math.sin(t*d.sp*1000+d.ph));
+        const dx = d.x*W - mx, dy = d.y*H - my;
+        const dist2 = dx*dx+dy*dy;
+        const boost = dist2<80000 ? 1+(1-Math.sqrt(dist2)/283)*1.2 : 1;
+        ctx.beginPath(); ctx.arc(d.x*W, d.y*H, d.r*boost, 0, Math.PI*2);
+        ctx.fillStyle = d.col+Math.min(base*boost,1)+')'; ctx.fill();
+      });
+    }
+
+    // 2. Большие звёзды (больше)
+    const GLOWS = 32;
+    const glows = Array.from({length:GLOWS}, ()=>({
+      x:rnd(0,1), y:rnd(0,1), r:rnd(1,3.8),
+      a:rnd(0.4,0.95), sp:rnd(0.00005,0.00015), ph:rnd(0,Math.PI*2),
+      vx:rnd(-0.000025,0.000025), vy:rnd(-0.000015,0.000015),
+      col: Math.random()<0.55 ? WH : PL,
+    }));
+
+    function drawGlows(t){
+      glows.forEach(g=>{
+        g.x=(g.x+g.vx+1)%1; g.y=(g.y+g.vy+1)%1;
+        const a=g.a*(0.5+0.5*Math.sin(t*g.sp*1000+g.ph));
+        const cx=g.x*W, cy=g.y*H;
+        const grad=ctx.createRadialGradient(cx,cy,0,cx,cy,g.r*5);
+        grad.addColorStop(0, g.col+(a*0.6)+')');
+        grad.addColorStop(0.4, g.col+(a*0.2)+')');
+        grad.addColorStop(1, g.col+'0)');
+        ctx.beginPath(); ctx.arc(cx,cy,g.r*5,0,Math.PI*2); ctx.fillStyle=grad; ctx.fill();
+        ctx.beginPath(); ctx.arc(cx,cy,g.r,0,Math.PI*2); ctx.fillStyle=g.col+a+')'; ctx.fill();
+      });
+    }
+
+    // 3. Символы (больше + новые символы)
+    const SYMS = ['♥','✦','✧','★','◆','✦','♥','✧','◇','✶'];
+    const SPCOUNT = 18;
+    const specials = Array.from({length:SPCOUNT}, ()=>mkSp());
+
+    function mkSp(fromBottom=false){
+      return {
+        sym:SYMS[rndI(0,SYMS.length)], x:rnd(0.05,0.95),
+        y:fromBottom?1.05:rnd(0.05,0.95),
+        size:rnd(8,20), alpha:0, maxA:rnd(0.1,0.35),
+        vx:rnd(-0.00005,0.00005), vy:rnd(-0.00015,-.00005),
+        life:0, total:rnd(260,560),
+        col: Math.random()<0.5 ? PL : (Math.random()<0.5 ? WH : PM),
+      };
+    }
+
+    function drawSpecials(){
+      specials.forEach((s,i)=>{
+        s.life++; s.x=(s.x+s.vx+1)%1; s.y+=s.vy;
+        const p=s.life/s.total;
+        if(p<0.18) s.alpha=s.maxA*(p/0.18);
+        else if(p<0.75) s.alpha=s.maxA;
+        else s.alpha=s.maxA*(1-(p-0.75)/0.25);
+        if(s.life>=s.total||s.y<-0.05){specials[i]=mkSp(true);return;}
+        ctx.save(); ctx.globalAlpha=Math.max(0,s.alpha);
+        ctx.font=s.size+'px serif'; ctx.fillStyle=s.col+s.alpha+')';
+        ctx.textAlign='center'; ctx.textBaseline='middle';
+        ctx.shadowBlur=12; ctx.shadowColor=s.col+'0.5)';
+        ctx.fillText(s.sym, s.x*W, s.y*H);
+        ctx.shadowBlur=0; ctx.restore();
+      });
+    }
+
+    // 4. Цветовая пульсация фона
+    function drawPulse(t){
+      const intensity = 0.055 + 0.04*Math.sin(t*0.25);
+      const hue = 268 + 22*Math.sin(t*0.12);
+      const gr = ctx.createRadialGradient(W/2,-H*0.1,0, W/2,-H*0.1, H*0.85);
+      gr.addColorStop(0, `hsla(${hue},65%,48%,${intensity})`);
+      gr.addColorStop(1, 'transparent');
+      ctx.fillStyle=gr; ctx.fillRect(0,0,W,H);
+    }
+
+    // 5. Волна при скролле
+    function drawScrollWave(t){
+      if(scrollAmp<=0.01){scrollAmp=0;return;}
+      scrollAmp*=0.96;
+      for(let layer=0;layer<2;layer++){
+        const yBase = H*(0.35+layer*0.2);
+        const amp   = 35*scrollAmp*(1-layer*0.4);
+        const spd   = 2+layer;
+        ctx.beginPath(); ctx.moveTo(0,yBase);
+        for(let x=0;x<=W;x+=3)
+          ctx.lineTo(x, yBase+Math.sin(x/70+t*spd+layer)*amp);
+        ctx.strokeStyle=`rgba(139,92,246,${0.1*scrollAmp*(1-layer*0.5)})`;
+        ctx.lineWidth=1+layer*0.5; ctx.stroke();
+      }
+    }
+
+    let spawnT=0;
+    function maybeSpawn(){
+      if(++spawnT>55&&Math.random()<0.022){
+        spawnT=0; specials[rndI(0,specials.length)]=mkSp(true);
+      }
+    }
+
+    let st=null;
+    function frame(ts){
+      if(!st)st=ts; const t=(ts-st)/1000;
+      ctx.clearRect(0,0,W,H);
+      drawPulse(t); drawDots(t); drawGlows(t);
+      drawSpecials(); drawScrollWave(t); maybeSpawn();
+      requestAnimationFrame(frame);
+    }
+    requestAnimationFrame(frame);
+  })();
+  </script>
+
+  <!-- ══════════ ЧАСТИЦЫ НА СТРАНИЦЕ ИГРЫ ══════════ -->
+  <script>
+  let _gpAnimId = null;
+  function startGameParticles(){
+    const c = document.getElementById('gamePageCanvas');
+    if(!c) return;
+    const ctx = c.getContext('2d');
+    c.width = c.offsetWidth||window.innerWidth;
+    c.height = c.offsetHeight||300;
+    const W=c.width, H=c.height;
+    const P='rgba(192,132,252,';
+    const rnd=(a,b)=>Math.random()*(b-a)+a;
+    const pts=Array.from({length:50},()=>({
+      x:rnd(0,W),y:rnd(0,H),r:rnd(0.5,2.5),
+      a:rnd(0.1,0.5),vx:rnd(-0.4,0.4),vy:rnd(-0.4,0.4),ph:rnd(0,Math.PI*2)
+    }));
+    let t=0;
+    function loop(){
+      t+=0.016; ctx.clearRect(0,0,W,H);
+      pts.forEach(p=>{
+        p.x=(p.x+p.vx+W)%W; p.y=(p.y+p.vy+H)%H;
+        const a=p.a*(0.5+0.5*Math.sin(t*2+p.ph));
+        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+        ctx.fillStyle=P+a+')'; ctx.fill();
+      });
+      _gpAnimId=requestAnimationFrame(loop);
+    }
+    if(_gpAnimId) cancelAnimationFrame(_gpAnimId);
+    loop();
+  }
+  function stopGameParticles(){
+    if(_gpAnimId){cancelAnimationFrame(_gpAnimId);_gpAnimId=null;}
+  }
+  </script>
 
 </body>
 </html>

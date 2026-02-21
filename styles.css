@@ -43,19 +43,62 @@ body {
   overflow-x: hidden;
 }
 
-/* ══════════ ФОН — БЛИК СОЛНЦА ══════════ */
+/* ══════════ ФОН — ЖИВОЙ ФИОЛЕТОВЫЙ БЛИК ══════════ */
 body::before {
   content: '';
   position: fixed;
   inset: 0;
   background:
-    radial-gradient(ellipse 70% 55% at 50% -5%,  #7c3aed55 0%, #4c1d9530 35%, transparent 70%),
-    radial-gradient(ellipse 100% 40% at 50% 0%,   #6d28d922 0%, transparent 60%),
-    radial-gradient(ellipse 35% 50% at 5%  30%,   #5b21b618 0%, transparent 55%),
-    radial-gradient(ellipse 30% 40% at 95% 25%,   #7c3aed14 0%, transparent 50%),
-    radial-gradient(ellipse 50% 40% at 50% 100%,  #4c1d9528 0%, #7c3aed15 50%, transparent 75%);
+    /* Яркое ядро блика — как солнце сверху */
+    radial-gradient(ellipse 40% 25% at 50% -3%,  #c084fc55 0%, #9333ea38 35%, transparent 65%),
+    /* Основное свечение блика */
+    radial-gradient(ellipse 75% 50% at 50% -5%,  #7c3aed50 0%, #4c1d9528 40%, transparent 72%),
+    /* Широкий рассеянный ореол */
+    radial-gradient(ellipse 110% 45% at 50% 0%,  #6d28d918 0%, transparent 65%),
+    /* Левый боковой отблеск */
+    radial-gradient(ellipse 40% 60% at -2% 25%,  #7c3aed20 0%, #5b21b612 55%, transparent 78%),
+    /* Правый боковой отблеск */
+    radial-gradient(ellipse 35% 55% at 102% 20%, #8b5cf61e 0%, #7c3aed10 55%, transparent 75%),
+    /* Нижнее мягкое свечение */
+    radial-gradient(ellipse 90% 40% at 50% 108%, #4c1d9525 0%, transparent 75%);
   pointer-events: none;
   z-index: 0;
+  animation: bgBreathe 9s ease-in-out infinite alternate;
+}
+
+/* Второй слой — плавающие пятна свечения */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 30% 35% at 15% 45%, #a855f710 0%, transparent 65%),
+    radial-gradient(ellipse 25% 30% at 85% 55%, #7c3aed0e 0%, transparent 60%),
+    radial-gradient(ellipse 20% 25% at 55% 85%, #9333ea0c 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+  animation: bgFloat 14s ease-in-out infinite alternate;
+}
+
+@keyframes bgBreathe {
+  0%   { opacity: 1;    transform: scale(1)    translateY(0px); }
+  50%  { opacity: 0.80; transform: scale(1.03) translateY(-3px); }
+  100% { opacity: 0.95; transform: scale(1.01) translateY(-1px); }
+}
+
+@keyframes bgFloat {
+  0%   { opacity: 0.5; transform: translate(0px,   0px); }
+  100% { opacity: 1;   transform: translate(-10px, 12px); }
+}
+
+/* ══════════ CANVAS ЧАСТИЦ ══════════ */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
 }
 
 /* ══════════ ЛЕЙАУТ ══════════ */
@@ -992,3 +1035,309 @@ kbd {
 ::-webkit-scrollbar       { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+/* ════════════════════════════════════════════════════════════
+   НОВЫЕ СТИЛИ — The Pass v2
+   ════════════════════════════════════════════════════════════ */
+
+/* ══════════ СВЕТЛАЯ ТЕМА ══════════ */
+.light-theme {
+  --bg:       #f0edf8;
+  --surface:  #ffffff;
+  --surface2: #f5f2ff;
+  --border:   #ddd6fe;
+  --purple:   #7c3aed;
+  --purple2:  #8b5cf6;
+  --purple3:  #6d28d9;
+  --accent:   #6d28d9;
+  --text:     #1e1a2e;
+  --muted:    #6b5fa8;
+  --dim:      #9d88cc;
+  --local:    #059669;
+  --steam:    #2563eb;
+}
+.light-theme body { background: var(--bg); }
+.light-theme .sidebar { background: rgba(255,255,255,0.85); }
+.light-theme .list-card,
+.light-theme .grid-card { box-shadow: 0 1px 8px #7c3aed12; }
+
+/* ══════════ ТЕМА-КНОПКИ В ШАПКЕ ══════════ */
+.theme-toggle-btn,
+.random-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 6px 10px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: border-color .15s, background .15s;
+  flex-shrink: 0;
+}
+.theme-toggle-btn:hover,
+.random-btn:hover { border-color: var(--purple); background: var(--surface2); }
+
+/* ══════════ БЕЙДЖ "НОВИНКА" НА КАРТОЧКАХ ══════════ */
+.new-badge {
+  display: inline-flex; align-items: center;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: #fff;
+  font-size: 8px; font-weight: 800;
+  letter-spacing: .6px; text-transform: uppercase;
+  border-radius: 4px; padding: 1px 5px;
+  margin-left: 5px; flex-shrink: 0;
+  box-shadow: 0 0 8px #10b98150;
+  animation: newPulse 2s ease-in-out infinite;
+}
+@keyframes newPulse {
+  0%, 100% { box-shadow: 0 0 6px #10b98150; }
+  50%       { box-shadow: 0 0 14px #10b98180; }
+}
+
+/* ══════════ РЕЙТИНГ В КАРТОЧКЕ СПИСКА ══════════ */
+.list-rating {
+  display: inline-flex; align-items: center; gap: 3px;
+  font-size: 9px; font-weight: 700;
+  margin-left: 5px; padding: 1px 5px;
+  border-radius: 4px; flex-shrink: 0;
+}
+.list-rating.positive { background:#34d39918; border:1px solid #34d39940; color:#34d399; }
+.list-rating.mixed    { background:#f59e0b18; border:1px solid #f59e0b40; color:#f59e0b; }
+.list-rating.negative { background:#f8717118; border:1px solid #f8717140; color:#f87171; }
+
+/* Рейтинг на grid-карточке */
+.grid-rating-badge {
+  position: absolute; bottom: 5px; right: 5px;
+  background: #00000085; backdrop-filter: blur(4px);
+  border-radius: 4px; padding: 2px 6px;
+  font-size: 9px; font-weight: 700;
+  border: 1px solid #ffffff12;
+}
+.grid-rating-badge.positive { color: #34d399; }
+.grid-rating-badge.mixed    { color: #f59e0b; }
+.grid-rating-badge.negative { color: #f87171; }
+
+/* ══════════ СЛУЧАЙНАЯ ИГРА — ПОДСВЕТКА ══════════ */
+@keyframes randomGlow {
+  0%   { box-shadow: 0 0 0 0 #8b5cf680, 0 0 0 0 #c084fc60; }
+  50%  { box-shadow: 0 0 20px 6px #8b5cf660, 0 0 40px 12px #c084fc30; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+.random-highlight {
+  animation: randomGlow 1.4s ease forwards !important;
+  border-color: var(--purple2) !important;
+}
+
+/* ══════════ АНИМАЦИЯ СЕРДЕЧКА ══════════ */
+@keyframes heartFly {
+  0%   { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(0); opacity: 0; }
+}
+
+/* ══════════ ФУТЕР САЙДБАРА ══════════ */
+.sb-nav-footer {
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+.sb-nav-links {
+  display: flex; flex-direction: column; gap: 2px;
+}
+.sb-nav-link {
+  display: flex; align-items: center; gap: 7px;
+  padding: 7px 8px; border-radius: 8px;
+  color: var(--muted); font-size: 11px;
+  text-decoration: none;
+  transition: background .15s, color .15s;
+}
+.sb-nav-link:hover { background: var(--surface2); color: var(--text); }
+.sb-nav-copy {
+  margin-top: 10px; padding: 0 8px;
+  font-size: 9px; color: var(--dim);
+  letter-spacing: .5px;
+}
+
+/* ══════════ FULL-PAGE ИГРА ══════════ */
+.game-page {
+  position: fixed; inset: 0;
+  background: var(--bg);
+  z-index: 3000;
+  overflow-y: auto;
+  transform: translateX(100%);
+  transition: transform .38s cubic-bezier(.25, 1, .5, 1);
+  -webkit-overflow-scrolling: touch;
+}
+.game-page.open { transform: translateX(0); }
+
+.page-hidden { display: none !important; }
+
+/* Canvas фона страницы игры */
+.game-page-canvas {
+  position: fixed; inset: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+  opacity: 0.5;
+}
+
+.game-page-header {
+  position: sticky; top: 0; z-index: 10;
+  display: flex; align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: linear-gradient(to bottom, var(--bg) 60%, transparent);
+}
+
+.game-back-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px; padding: 8px 14px;
+  color: var(--text);
+  font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all .15s;
+}
+.game-back-btn:hover { border-color: var(--purple); background: var(--surface2); }
+.game-back-btn:active { transform: scale(0.96); }
+
+.game-page-fav-btn {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 12px; padding: 8px 12px;
+  font-size: 18px; cursor: pointer;
+  transition: all .15s;
+}
+.game-page-fav-btn:hover { border-color: #f59e0b; transform: scale(1.1); }
+
+.game-page-hero {
+  position: relative; z-index: 1;
+  margin-top: -60px; /* перекрываем часть шапки */
+}
+.game-page-img-wrap {
+  position: relative; width: 100%;
+  aspect-ratio: 16/7;
+  background: var(--surface2); overflow: hidden;
+}
+.game-page-img-wrap img {
+  width: 100%; height: 100%; object-fit: cover; display: block;
+}
+.game-page-img-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, var(--bg) 100%);
+}
+.game-page-placeholder {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 64px;
+  background: linear-gradient(135deg, var(--surface2), var(--border));
+}
+
+.game-page-body {
+  position: relative; z-index: 2;
+  padding: 8px 20px 40px;
+  max-width: 600px; margin: 0 auto;
+}
+
+.game-page-badges {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 10px;
+}
+.game-page-source {
+  display: inline-flex; align-items: center;
+  border-radius: 6px; padding: 3px 10px;
+  font-size: 11px; font-weight: 700; letter-spacing: .3px;
+}
+.game-page-source.local   { background:#34d39915; border:1px solid #34d39940; color:var(--local); }
+.game-page-source.steam   { background:#60a5fa15; border:1px solid #60a5fa40; color:var(--steam); }
+.game-page-source.marme1adker { background:#a855f715; border:1px solid #a855f740; color:#c084fc; }
+
+.game-page-new-badge {
+  display: inline-flex; align-items: center;
+  background: linear-gradient(135deg, #10b981, #34d399);
+  color: #fff; font-size: 10px; font-weight: 800;
+  letter-spacing: .5px; border-radius: 6px; padding: 3px 10px;
+  animation: newPulse 2s ease-in-out infinite;
+}
+
+.game-page-title {
+  font-family: 'Syne', sans-serif;
+  font-size: clamp(20px, 5vw, 32px);
+  font-weight: 800; color: var(--text);
+  line-height: 1.15; margin-bottom: 8px;
+}
+
+.game-page-meta {
+  font-size: 12px; color: var(--muted);
+  margin-bottom: 16px;
+}
+
+/* Steam рейтинг */
+.game-page-rating {
+  display: flex; align-items: flex-start; gap: 12px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px; padding: 12px 16px;
+  margin-bottom: 16px;
+}
+.gpr-icon { font-size: 24px; flex-shrink: 0; margin-top: 2px; }
+.gpr-label { font-size: 10px; color: var(--muted); margin-bottom: 2px; letter-spacing: .3px; }
+.gpr-value {
+  font-family: 'Syne', sans-serif;
+  font-size: 15px; font-weight: 800; margin-bottom: 2px;
+}
+.gpr-count { font-size: 10px; color: var(--dim); }
+
+/* Теги */
+.game-page-tags {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-bottom: 24px;
+}
+.gp-tag {
+  display: inline-flex; align-items: center;
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; padding: 4px 10px;
+  font-size: 11px; color: var(--muted);
+}
+.gp-tag.dlc    { background: var(--dlc-bg); border-color: var(--dlc); color: var(--dlc); }
+.gp-tag.ru     { background: #3b82f615; border-color: #3b82f640; color: #60a5fa; }
+.gp-tag.online { background: #34d39915; border-color: #34d39940; color: var(--local); }
+
+/* Кнопки действий */
+.game-page-actions {
+  display: flex; gap: 10px; flex-wrap: wrap;
+}
+.gp-btn {
+  flex: 1; min-width: 130px;
+  border: none; border-radius: 14px; padding: 14px 20px;
+  font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+  cursor: pointer; transition: transform .1s, box-shadow .15s;
+}
+.gp-btn:active { transform: scale(0.97); }
+.gp-btn-find {
+  background: linear-gradient(135deg, var(--purple3), var(--purple2));
+  color: #fff; box-shadow: 0 4px 18px #8b5cf650;
+}
+.gp-btn-find:hover { box-shadow: 0 6px 28px #8b5cf670; }
+.gp-btn-share {
+  background: var(--surface2); color: var(--text);
+  border: 1px solid var(--border);
+}
+.gp-btn-share:hover { border-color: var(--purple); background: var(--border); }
+
+/* Адаптив для страницы игры */
+@media (max-width: 500px) {
+  .game-page-body { padding: 8px 14px 32px; }
+  .game-page-title { font-size: 22px; }
+  .game-page-img-wrap { aspect-ratio: 16/9; }
+}
+
+/* ══════════ SOURCE BADGE — marme1adker (Plus) ══════════ */
+#sourceMarme .source-hint { color: #c084fc; border-color: #a855f730; background: #a855f710; }
+#sourceMarme.active { background: #a855f718; color: #c084fc; border: 1px solid #a855f740; }
+#sourceMarme.active .source-hint { background: #a855f730; border-color: #a855f760; color: #d8b4fe; }
+.source-badge.marme { background: #a855f712; border: 1px solid #a855f740; color: #c084fc; }
+.grid-source-badge.marme { background: #a855f725; border-color: #a855f750; color: #c084fc; }
+.modal-source.marme { background: #a855f715; border: 1px solid #a855f740; color: #c084fc; }
+
+/* ══════════ СОРТИРОВКА ПО РЕЙТИНГУ — подпись ══════════ */
+.sort-select option[value="rating"]::after { content: " ⭐"; }
+
+/* ══════════ СКРОЛЛБАР ══════════ */
+.game-page::-webkit-scrollbar { width: 3px; }
+.game-page::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }

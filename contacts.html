@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Контакты — The Pass</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .info-page{max-width:620px;margin:0 auto;padding:0 18px 60px;position:relative;z-index:1}
+    .info-header{padding:18px 0 22px;display:flex;align-items:center;gap:14px}
+    .info-back{display:inline-flex;align-items:center;gap:7px;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:8px 14px;color:var(--text);font-family:'Syne',sans-serif;font-size:13px;font-weight:700;cursor:pointer;text-decoration:none;transition:all .15s}
+    .info-back:hover{border-color:var(--purple);background:var(--surface2)}
+    .info-emoji{font-size:36px}
+    .info-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;color:var(--text);line-height:1.2}
+    .info-body{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:22px 24px}
+    .info-body h2{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);margin:18px 0 8px;text-transform:uppercase;letter-spacing:.5px}
+    .info-body h2:first-child{margin-top:0}
+    .info-body p{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:10px}
+    .info-body a{color:var(--purple2);text-decoration:none}
+    .info-body a:hover{text-decoration:underline}
+    .contact-card{display:flex;align-items:center;gap:12px;background:var(--surface2);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:8px;text-decoration:none;color:var(--text);transition:border-color .15s,background .15s}
+    .contact-card:hover{border-color:var(--purple);background:var(--border)}
+    .contact-ico{font-size:22px;flex-shrink:0}
+    .contact-label{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--text)}
+    .contact-val{font-size:11px;color:var(--muted);margin-top:1px}
+  </style>
+</head>
+<body>
+<canvas id="bg-canvas"></canvas>
+<div class="info-page">
+  <div class="info-header">
+    <a href="index.html" class="info-back">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Назад
+    </a>
+    <div>
+      <div class="info-emoji">📬</div>
+      <div class="info-title">Контакты</div>
+    </div>
+  </div>
+  <div class="info-body">
+    <h2>Связаться с нами</h2>
+    <p>Мы всегда рады помочь и выслушать твои предложения. Пиши — ответим быстро.</p>
+
+    <a href="https://t.me/thepass_support" class="contact-card" target="_blank">
+      <div class="contact-ico">✈️</div>
+      <div>
+        <div class="contact-label">Telegram</div>
+        <div class="contact-val">@thepass_support</div>
+      </div>
+    </a>
+
+    <a href="mailto:support@thepass.app" class="contact-card">
+      <div class="contact-ico">📧</div>
+      <div>
+        <div class="contact-label">Email</div>
+        <div class="contact-val">support@thepass.app</div>
+      </div>
+    </a>
+
+    <h2>Время ответа</h2>
+    <p>Обычно отвечаем в течение 24 часов в рабочие дни. В выходные — немного дольше.</p>
+
+    <h2>По вопросам каталога</h2>
+    <p>Если хочешь предложить игру для добавления или сообщить об ошибке в данных — пиши в Telegram, это самый быстрый способ.</p>
+  </div>
+</div>
+<script>
+(function(){const c=document.getElementById('bg-canvas');const ctx=c.getContext('2d');let W,H;function r(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}r();window.addEventListener('resize',r);const PL='rgba(192,132,252,',WH='rgba(255,255,255,';const rnd=(a,b)=>Math.random()*(b-a)+a;const dots=Array.from({length:80},()=>({x:rnd(0,1),y:rnd(0,1),r:rnd(0.4,1.8),a:rnd(0.1,0.5),sp:rnd(0.0001,0.0003),ph:rnd(0,Math.PI*2),col:Math.random()<0.6?WH:PL}));let st=null;function frame(ts){if(!st)st=ts;const t=(ts-st)/1000;ctx.clearRect(0,0,W,H);const gr=ctx.createRadialGradient(W/2,-H*0.1,0,W/2,-H*0.1,H*0.8);gr.addColorStop(0,'hsla(268,65%,48%,0.06)');gr.addColorStop(1,'transparent');ctx.fillStyle=gr;ctx.fillRect(0,0,W,H);dots.forEach(d=>{const a=d.a*(0.5+0.5*Math.sin(t*d.sp*1000+d.ph));ctx.beginPath();ctx.arc(d.x*W,d.y*H,d.r,0,Math.PI*2);ctx.fillStyle=d.col+a+')';ctx.fill();});requestAnimationFrame(frame);}requestAnimationFrame(frame);})();
+</script>
+</body>
+</html>
