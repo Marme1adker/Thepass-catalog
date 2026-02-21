@@ -1,5 +1,8 @@
 /**
  * history.js — история просмотров (localStorage)
+ *
+ * Исправления:
+ *  - ФИХ #1: historyClear?.addEventListener — защита от null
  */
 
 const HISTORY_KEY = 'thepass_history';
@@ -25,8 +28,8 @@ function addToHistory(game) {
 
 function formatTime(ts) {
   const diff = Date.now() - ts;
-  if (diff < 60_000)    return 'только что';
-  if (diff < 3_600_000) return `${Math.floor(diff / 60_000)} мин`;
+  if (diff < 60_000)     return 'только что';
+  if (diff < 3_600_000)  return `${Math.floor(diff / 60_000)} мин`;
   if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)} ч`;
   return `${Math.floor(diff / 86_400_000)} д`;
 }
@@ -55,7 +58,8 @@ function renderHistory() {
   });
 }
 
-document.getElementById('historyClear').addEventListener('click', () => {
+// ФИХ #1: используем ?. чтобы не падать если элемент не найден
+document.getElementById('historyClear')?.addEventListener('click', () => {
   saveHistory([]);
   renderHistory();
 });

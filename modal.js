@@ -2,9 +2,9 @@
  * modal.js — модальное окно подтверждения поиска
  *
  * Изменения:
- *  - бейдж источника (⚡ Локальная / 🔵 База данных)
- *  - кнопка избранного ❤️
- *  - addToHistory вызывается ДО tg.sendData() чтобы успело записаться
+ *  - анимация закрытия (.closing класс)
+ *  - кнопка «Поделиться» (копирует название в буфер)
+ *  - addToHistory вызывается ДО tg.sendData()
  */
 
 let pendingGame = null;
@@ -22,12 +22,14 @@ const modalFavBtn  = document.getElementById('modalFavBtn');
 function openModal(game) {
   pendingGame = game;
 
+  // Убираем класс закрытия если остался
+  modalOverlay.classList.remove('closing');
+
   // Обложка
   modalImg.style.display = 'block';
   modalImg.src = game.img || '';
   modalImg.alt = escapeHtml(game.title);
 
-  // Сбрасываем placeholder
   const ph = modalImg.parentNode.querySelector('.modal-img-placeholder');
   if (ph) ph.style.display = 'none';
 
@@ -67,14 +69,54 @@ function openModal(game) {
     modalFavBtn.title = fav ? 'Убрать из избранного' : 'В избранное';
   }
 
+  // Добавляем кнопку «Поделиться» если её ещё нет
+  const actionsEl = document.querySelector('.modal-actions');
+  if (actionsEl && !actionsEl.querySelector('.modal-btn-share')) {
+    const shareBtn = document.createElement('button');
+    shareBtn.className = 'modal-btn modal-btn-share';
+    shareBtn.title = 'Скопировать название';
+    shareBtn.textContent = '📋';
+    shareBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      navigator.clipboard?.writeText(game.title).then(() => {
+        showToast('📋 Название скопировано');
+        shareBtn.textContent = '✅';
+        setTimeout(() => { shareBtn.textContent = '📋'; }, 1500);
+      }).catch(() => showToast('❌ Ошибка копирования'));
+    });
+    // Вставляем перед кнопкой Отмена
+    actionsEl.insertBefore(shareBtn, modalCancel);
+  } else if (actionsEl) {
+    // Обновляем обработчик для новой игры
+    const existing = actionsEl.querySelector('.modal-btn-share');
+    if (existing) {
+      existing.onclick = e => {
+        e.stopPropagation();
+        navigator.clipboard?.writeText(game.title).then(() => {
+          showToast('📋 Название скопировано');
+          existing.textContent = '✅';
+          setTimeout(() => { existing.textContent = '📋'; }, 1500);
+        }).catch(() => showToast('❌ Ошибка копирования'));
+      };
+    }
+  }
+
   modalOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
 function closeModal() {
-  modalOverlay.classList.remove('open');
-  document.body.style.overflow = '';
-  pendingGame = null;
+  if (!modalOverlay.classList.contains('open')) return;
+
+  // Запускаем анимацию закрытия
+  modalOverlay.classList.add('closing');
+
+  setTimeout(() => {
+    modalOverlay.classList.remove('open');
+    modalOverlay.classList.remove('closing');
+    document.body.style.overflow = '';
+    pendingGame = null;
+  }, 200);
 }
 
 // Избранное в модалке
@@ -97,11 +139,10 @@ document.addEventListener('keydown', e => {
   else if (typeof closeDrawer === 'function') closeDrawer();
 });
 
-// ФИХ: addToHistory ДО sendData — чтобы localStorage успел записаться
-// перед закрытием WebApp
+// ФИХ: addToHistory ДО sendData
 modalConfirm.addEventListener('click', () => {
   if (!pendingGame) return;
-  addToHistory(pendingGame);   // сначала история
+  addToHistory(pendingGame);
   sendToBot(pendingGame.title, pendingGame);
   closeModal();
 });

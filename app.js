@@ -2,6 +2,7 @@
  * app.js — точка входа приложения
  *
  * Изменения:
+ *  - скелетон-загрузка при старте (вместо спиннера)
  *  - addToHistory вызывается в modal.js до tg.sendData()
  *  - горячие клавиши: / и Ctrl+F фокусируют поиск, ? открывает статистику
  *  - pull-to-refresh на мобиле
@@ -23,17 +24,12 @@ function sendToBot(name, game) {
   } else {
     showToast(`✅ Отправлено: ${name}`);
   }
-  // history добавляется в modal.js ДО этого вызова
 }
 
 // ── Загрузка и запуск ────────────────────────────────────────────
 (async () => {
-  listEl.innerHTML = `
-    <div class="loader">
-      <div class="loader-spinner"></div>
-      <div class="loader-text">Загрузка каталога...</div>
-    </div>
-  `;
+  // Показываем скелетон вместо спиннера
+  renderSkeleton(8);
 
   try {
     const games = await fetchGames();
@@ -59,7 +55,7 @@ function sendToBot(name, game) {
     renderFavorites();
     render();
 
-    // Секции сворачиваем по умолчанию (Студия, Жанр, Теги)
+    // Секции сворачиваем по умолчанию
     ['sec-studio', 'sec-genre', 'sec-tags'].forEach(id => {
       document.getElementById(id)?.classList.add('collapsed');
     });
@@ -67,9 +63,9 @@ function sendToBot(name, game) {
   } catch (err) {
     console.error('Ошибка загрузки каталога:', err);
     listEl.innerHTML = `
-      <div class="loader">
-        <div class="empty-icon">⚠️</div>
-        <div class="loader-text">Ошибка загрузки данных</div>
+      <div style="text-align:center;padding:60px 20px">
+        <div style="font-size:38px;margin-bottom:12px;opacity:.5">⚠️</div>
+        <div style="font-family:'Syne',sans-serif;font-size:15px;color:var(--muted)">Ошибка загрузки данных</div>
       </div>
     `;
   }
@@ -77,31 +73,27 @@ function sendToBot(name, game) {
 
 // ── Горячие клавиши ──────────────────────────────────────────────
 document.addEventListener('keydown', e => {
-  // Игнорируем если фокус в input/textarea
   const tag = document.activeElement?.tagName;
   const inInput = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
 
-  // / или Ctrl+F → фокус на поиск
   if ((e.key === '/' && !inInput) || (e.ctrlKey && e.key === 'f')) {
     e.preventDefault();
     const searchEl = document.getElementById('search');
     if (searchEl) {
       searchEl.focus();
       searchEl.select();
-      // На мобиле открываем дровер
       if (window.innerWidth <= 700) openDrawer();
     }
     return;
   }
 
-  // ? → статистика
   if (e.key === '?' && !inInput) {
     toggleStats();
     return;
   }
 });
 
-// ── Кнопка статистики в шапке ────────────────────────────────────
+// ── Кнопка статистики ────────────────────────────────────────────
 document.getElementById('statsBtn')?.addEventListener('click', toggleStats);
 
 // ── Pull-to-refresh (мобиль) ─────────────────────────────────────
@@ -133,7 +125,6 @@ document.addEventListener('touchend', e => {
   const dy = e.changedTouches[0].clientY - ptr_startY;
   if (ptr_el) { ptr_el.remove(); ptr_el = null; }
   if (dy > 100) {
-    // Перезагружаем каталог
     renderHistory();
     renderFavorites();
     render();

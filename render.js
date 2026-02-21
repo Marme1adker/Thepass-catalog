@@ -2,11 +2,10 @@
  * render.js — отрисовка каталога игр
  *
  * Изменения:
- *  - source-badge перенесён на отдельную строку под названием
- *  - анимация появления карточек (fadeInUp с задержкой по индексу)
- *  - исправлен двойной .slice(0,3)
- *  - кнопка ❤️ на каждой карточке (список и сетка)
- *  - XSS-безопасный pubHdr через escapeHtml
+ *  - скелетон-загрузка вместо спиннера
+ *  - data-source на grid-card для hover-glow
+ *  - кнопка "Сбросить фильтры" в блоке "ничего не найдено"
+ *  - debounce на поиск (150мс)
  */
 
 const listEl   = document.getElementById('list');
@@ -25,7 +24,6 @@ function hl(text, query) {
   if (!query) return escapeHtml(text);
   const norm    = normalizeQuery(query);
   const escaped = norm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  // Подсвечиваем по нормализованному запросу в исходном тексте
   const re = new RegExp(`(${escaped})`, 'gi');
   return escapeHtml(text).replace(re, '<mark>$1</mark>');
 }
@@ -37,7 +35,6 @@ function showToast(message) {
   toastTimer = setTimeout(() => toastEl.classList.remove('show'), 2200);
 }
 
-// ФИХ: XSS-безопасный pubHdr
 function pubHdr(name, extraClass = '') {
   const el = document.createElement('div');
   el.className = `pub-header${extraClass ? ' ' + extraClass : ''}`;
@@ -48,6 +45,37 @@ function pubHdr(name, extraClass = '') {
     <div class="pub-line"></div>
   `;
   return el;
+}
+
+// ── Скелетон ─────────────────────────────────────────────────────
+
+function renderSkeleton(count = 6) {
+  if (view === 'list') {
+    listEl.innerHTML = Array(count).fill(`
+      <div class="skeleton-card">
+        <div class="skeleton skeleton-icon"></div>
+        <div class="skeleton-info">
+          <div class="skeleton skeleton-title"></div>
+          <div class="skeleton skeleton-sub"></div>
+          <div class="skeleton skeleton-tags"></div>
+        </div>
+      </div>
+    `).join('');
+  } else {
+    const wrap = document.createElement('div');
+    wrap.className = 'grid-wrap';
+    wrap.innerHTML = Array(count).fill(`
+      <div class="skeleton-grid-card">
+        <div class="skeleton skeleton-grid-img"></div>
+        <div class="skeleton-grid-body">
+          <div class="skeleton skeleton-grid-title"></div>
+          <div class="skeleton skeleton-grid-pub"></div>
+        </div>
+      </div>
+    `).join('');
+    listEl.innerHTML = '';
+    listEl.appendChild(wrap);
+  }
 }
 
 // ── Source badge HTML ─────────────────────────────────────────────
@@ -67,11 +95,9 @@ function renderList(grouped, query) {
     games.forEach(game => {
       const card = document.createElement('div');
       card.className = 'list-card';
-      // Анимация — задержка по индексу (максимум 20 карточек с задержкой)
       card.style.animationDelay = `${Math.min(cardIndex, 20) * 30}ms`;
       cardIndex++;
 
-      // ФИХ: один раз вычисляем теги
       const gameTags = game.tags || [];
       const tagsHtml = gameTags.length
         ? `<div class="list-tags">${gameTags.map(t => `<span class="list-tag">${escapeHtml(t)}</span>`).join('')}</div>`
@@ -104,13 +130,11 @@ function renderList(grouped, query) {
         <div class="list-arrow">›</div>
       `;
 
-      // Клик по карточке → модалка
       card.addEventListener('click', e => {
         if (e.target.closest('.fav-btn')) return;
         openModal(game);
       });
 
-      // Клик по ❤️
       card.querySelector('.fav-btn').addEventListener('click', e => {
         e.stopPropagation();
         toggleFavorite(game);
@@ -134,10 +158,10 @@ function renderGrid(grouped, query) {
     games.forEach(game => {
       const card = document.createElement('div');
       card.className = `grid-card${game.hasDlc ? ' is-dlc' : ''}`;
+      card.dataset.source = game.source; // ← для hover-glow в CSS
       card.style.animationDelay = `${Math.min(cardIndex, 20) * 35}ms`;
       cardIndex++;
 
-      // ФИХ: один раз нарезаем теги
       const topTags = (game.tags || []).slice(0, 3);
       const tagsHtml = topTags.length
         ? `<div class="grid-tags">${topTags.map(t => `<span class="grid-tag">${escapeHtml(t)}</span>`).join('')}</div>`
@@ -194,10 +218,25 @@ function render() {
   countEl.textContent = filtered.length;
   listEl.innerHTML = '';
 
-  // Счётчик источников под тулбаром
   updateSourceStats(filtered);
 
-  if (!filtered.length) { emptyEl.classList.add('visible'); return; }
+  if (!filtered.length) {
+    // Показываем блок "не найдено" с кнопкой сброса
+    emptyEl.classList.add('visible');
+
+    // Добавляем кнопку сброса если её нет
+    if (!emptyEl.querySelector('.empty-reset-btn')) {
+      const btn = document.createElement('button');
+      btn.className = 'empty-reset-btn';
+      btn.innerHTML = '✕ Сбросить фильтры';
+      btn.addEventListener('click', () => {
+        // Вызываем resetBtn чтобы сработала логика в sidebar.js
+        document.getElementById('resetBtn')?.click();
+      });
+      emptyEl.appendChild(btn);
+    }
+    return;
+  }
   emptyEl.classList.remove('visible');
 
   const grouped = applySortAndGroup(filtered);

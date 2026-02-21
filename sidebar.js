@@ -2,6 +2,8 @@
  * sidebar.js — управление сайдбаром фильтров
  *
  * Изменения:
+ *  - debounce на поиск (150мс) — ФИХ #UX-1
+ *  - badge pop-анимация при смене счётчика — ФИХ #UX-4
  *  - счётчик filterBadge учитывает source
  *  - счётчик активных фильтров на заголовках секций
  *  - секции Теги / Студии / Жанры свёрнуты по умолчанию
@@ -26,6 +28,15 @@ const activeFilters = document.getElementById('activeFilters');
 const sourceLocal   = document.getElementById('sourceLocal');
 const sourceSteam   = document.getElementById('sourceSteam');
 const sortSel       = document.getElementById('sortSelect');
+
+// ── Debounce ──────────────────────────────────────────────────────
+function debounce(fn, ms) {
+  let timer;
+  return (...args) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn(...args), ms);
+  };
+}
 
 // ── Дровер ───────────────────────────────────────────────────────
 
@@ -59,7 +70,7 @@ let swipeActive = false;
 sidebar.addEventListener('touchstart', e => {
   if (window.innerWidth > 700) return;
   swipeStartX = e.touches[0].clientX;
-  swipeCurX   = swipeStartX;  // ФИХ: сбрасываем swipeCurX при каждом старте
+  swipeCurX   = swipeStartX;
   swipeActive = true;
 }, { passive: true });
 
@@ -130,12 +141,16 @@ tagSearchEl.addEventListener('input', () => {
   tagSearchEl.addEventListener(evt, e => e.stopPropagation());
 });
 
-// ── Поиск по названию ────────────────────────────────────────────
-searchEl.addEventListener('input', () => {
+// ── Поиск по названию (с debounce) ───────────────────────────────
+const _doSearch = debounce(() => {
   state.query = searchEl.value;
-  clearBtn.classList.toggle('visible', searchEl.value.length > 0);
   render();
   saveFilters();
+}, 150);
+
+searchEl.addEventListener('input', () => {
+  clearBtn.classList.toggle('visible', searchEl.value.length > 0);
+  _doSearch();
 });
 
 clearBtn.addEventListener('click', e => {
@@ -235,11 +250,9 @@ function syncButtonStates() {
   if (sourceLocal) sourceLocal.classList.toggle('active', state.source === 'local');
   if (sourceSteam) sourceSteam.classList.toggle('active', state.source === 'steam');
 
-  // Обновляем счётчики на заголовках секций
   updateSectionCounters();
 }
 
-/** Показывает сколько активных фильтров в каждой секции */
 function updateSectionCounters() {
   const sections = {
     'sec-studio': state.studios.size,
@@ -289,10 +302,19 @@ function updateActiveFilters() {
   if (state.source === 'local') addChip('⚡ Локальные',   () => { state.source = null; syncAndRender(); });
   if (state.source === 'steam') addChip('🔵 База данных', () => { state.source = null; syncAndRender(); });
 
-  // ФИХ: счётчик badge теперь включает source
-  const total = totalActiveFilters();
+  // Обновляем badge с pop-анимацией
+  const total   = totalActiveFilters();
+  const prevVal = parseInt(filterBadge.textContent || '0', 10);
+
   filterBadge.textContent = total;
   filterBadge.classList.toggle('show', total > 0);
+
+  // Pop только если счётчик вырос
+  if (total > prevVal && total > 0) {
+    filterBadge.classList.remove('pop');
+    void filterBadge.offsetWidth; // reflow для перезапуска анимации
+    filterBadge.classList.add('pop');
+  }
 }
 
 // ── Главная функция синхронизации ────────────────────────────────
