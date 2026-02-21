@@ -17,13 +17,14 @@ let ALL_TAGS = [];
 const STATE_KEY = 'thepass_filters';
 
 const state = {
-  query:   '',
-  studios: new Set(),
-  genres:  new Set(),
-  tags:    new Set(),
-  opts:    new Set(),   // 'dlc' | 'ru' | 'online'
-  source:  null,        // null | 'local' | 'steam'
-  sort:    'default',   // 'default' | 'az' | 'za' | 'recent'
+  query:        '',
+  studios:      new Set(),
+  genres:       new Set(),
+  tags:         new Set(),
+  opts:         new Set(),   // 'dlc' | 'ru' | 'online'
+  source:       null,        // null | 'local' | 'steam'
+  marme1adker:  false,       // фильтр: только игры аккаунта marme1adker
+  sort:         'default',   // 'default' | 'az' | 'za' | 'recent'
 };
 
 // ── Нормализация поискового запроса ─────────────────────────────
@@ -51,13 +52,14 @@ function escapeHtml(str) {
 function saveFilters() {
   try {
     const data = {
-      query:   state.query,
-      studios: [...state.studios],
-      genres:  [...state.genres],
-      tags:    [...state.tags],
-      opts:    [...state.opts],
-      source:  state.source,
-      sort:    state.sort,
+      query:       state.query,
+      studios:     [...state.studios],
+      genres:      [...state.genres],
+      tags:        [...state.tags],
+      opts:        [...state.opts],
+      source:      state.source,
+      marme1adker: state.marme1adker,
+      sort:        state.sort,
     };
     sessionStorage.setItem(STATE_KEY, JSON.stringify(data));
   } catch {}
@@ -68,9 +70,10 @@ function restoreFilters() {
     const raw = sessionStorage.getItem(STATE_KEY);
     if (!raw) return;
     const data = JSON.parse(raw);
-    state.query  = data.query  || '';
-    state.source = data.source || null;
-    state.sort   = data.sort   || 'default';
+    state.query       = data.query  || '';
+    state.source      = data.source || null;
+    state.marme1adker = data.marme1adker || false;
+    state.sort        = data.sort   || 'default';
     (data.studios || []).forEach(v => state.studios.add(v));
     (data.genres  || []).forEach(v => state.genres.add(v));
     (data.tags    || []).forEach(v => state.tags.add(v));
@@ -108,6 +111,8 @@ function matchesState(game, s = state) {
 
   if (s.source === 'local' && game.source !== 'local') return false;
   if (s.source === 'steam' && game.source !== 'steam') return false;
+
+  if (s.marme1adker && !game.marme1adker) return false;
 
   return true;
 }

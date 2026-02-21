@@ -57,7 +57,7 @@ function openModal(game) {
   const opts = game.opts || [];
   const tagItems = tags.map(t => `<span class="modal-tag">${escapeHtml(t)}</span>`);
   if (opts.includes('ru'))     tagItems.push('<span class="modal-tag">🇷🇺 Русский</span>');
-  if (opts.includes('online')) tagItems.push('<span class="modal-tag">🌐 Онлайн (бета)</span>');
+  if (opts.includes('online')) tagItems.push('<span class="modal-tag">🌐 Онлайн</span>');
   modalTags.innerHTML = tagItems.join('');
 
   // Кнопка избранного

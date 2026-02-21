@@ -27,6 +27,7 @@ const clearBtn      = document.getElementById('clearBtn');
 const activeFilters = document.getElementById('activeFilters');
 const sourceLocal   = document.getElementById('sourceLocal');
 const sourceSteam   = document.getElementById('sourceSteam');
+const sourceMarme   = document.getElementById('sourceMarme');
 const sortSel       = document.getElementById('sortSelect');
 
 // ── Debounce ──────────────────────────────────────────────────────
@@ -103,7 +104,11 @@ function handleSidebarClick(e) {
   const srcBtn = e.target.closest('.tag-btn[data-source]');
   if (srcBtn) {
     const val = srcBtn.dataset.source;
-    state.source = (state.source === val) ? null : val;
+    if (val === 'marme1adker') {
+      state.marme1adker = !state.marme1adker;
+    } else {
+      state.source = (state.source === val) ? null : val;
+    }
     syncAndRender(); return;
   }
 
@@ -179,8 +184,9 @@ resetBtn.addEventListener('click', e => {
   state.genres.clear();
   state.tags.clear();
   state.opts.clear();
-  state.source = null;
-  state.sort   = 'default';
+  state.source      = null;
+  state.marme1adker = false;
+  state.sort        = 'default';
   state.query  = '';
   searchEl.value = '';
   clearBtn.classList.remove('visible');
@@ -198,7 +204,7 @@ function updateDoneBtn() {
 
 function totalActiveFilters() {
   return state.studios.size + state.genres.size +
-    state.tags.size + state.opts.size + (state.source ? 1 : 0);
+    state.tags.size + state.opts.size + (state.source ? 1 : 0) + (state.marme1adker ? 1 : 0);
 }
 
 // ── Генерация кнопок в сайдбаре ──────────────────────────────────
@@ -249,6 +255,7 @@ function syncButtonStates() {
   });
   if (sourceLocal) sourceLocal.classList.toggle('active', state.source === 'local');
   if (sourceSteam) sourceSteam.classList.toggle('active', state.source === 'steam');
+  if (sourceMarme) sourceMarme.classList.toggle('active', state.marme1adker);
 
   updateSectionCounters();
 }
@@ -259,7 +266,7 @@ function updateSectionCounters() {
     'sec-genre':  state.genres.size,
     'sec-tags':   state.tags.size,
     'sec-opts':   state.opts.size,
-    'sec-source': state.source ? 1 : 0,
+    'sec-source': (state.source ? 1 : 0) + (state.marme1adker ? 1 : 0),
   };
   Object.entries(sections).forEach(([id, count]) => {
     const sec = document.getElementById(id);
@@ -298,9 +305,10 @@ function updateActiveFilters() {
 
   if (state.opts.has('dlc'))    addChip('🔖 DLC',        () => { state.opts.delete('dlc');    syncAndRender(); });
   if (state.opts.has('ru'))     addChip('🇷🇺 Русский',   () => { state.opts.delete('ru');     syncAndRender(); });
-  if (state.opts.has('online')) addChip('🌐 Онлайн (бета)',     () => { state.opts.delete('online'); syncAndRender(); });
+  if (state.opts.has('online')) addChip('🌐 Онлайн',     () => { state.opts.delete('online'); syncAndRender(); });
   if (state.source === 'local') addChip('⚡ Локальные',   () => { state.source = null; syncAndRender(); });
   if (state.source === 'steam') addChip('🔵 База данных', () => { state.source = null; syncAndRender(); });
+  if (state.marme1adker)        addChip('➕ Plus',  () => { state.marme1adker = false; syncAndRender(); });
 
   // Обновляем badge с pop-анимацией
   const total   = totalActiveFilters();
