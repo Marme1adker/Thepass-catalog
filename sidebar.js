@@ -25,6 +25,8 @@ const tagSearchEl   = document.getElementById('tagSearch');
 const searchEl      = document.getElementById('search');
 const clearBtn      = document.getElementById('clearBtn');
 const activeFilters = document.getElementById('activeFilters');
+const sourceLocal   = document.getElementById('sourceLocal');
+const sourceSteam   = document.getElementById('sourceSteam');
 
 // ── Дровер ───────────────────────────────────────────────────────
 
@@ -97,6 +99,15 @@ sidebar.addEventListener('touchend', handleSidebarClick, true);
 function handleSidebarClick(e) {
   e.stopPropagation();
 
+  // Кнопка источника (local / steam)
+  const srcBtn = e.target.closest('.tag-btn[data-source]');
+  if (srcBtn) {
+    const val = srcBtn.dataset.source;
+    state.source = (state.source === val) ? null : val;
+    syncAndRender();
+    return;
+  }
+
   // Кнопка-тег (студия / жанр / тег)
   const tagBtn = e.target.closest('.tag-btn[data-type]');
   if (tagBtn) {
@@ -163,6 +174,7 @@ resetBtn.addEventListener('click', e => {
   state.genres.clear();
   state.tags.clear();
   state.opts.clear();
+  state.source = null;
   state.query = '';
   searchEl.value = '';
   clearBtn.classList.remove('visible');
@@ -179,7 +191,8 @@ doneBtn.addEventListener('click', e => {
 function updateDoneBtn() {
   const total =
     state.studios.size + state.genres.size +
-    state.tags.size + state.opts.size;
+    state.tags.size + state.opts.size +
+    (state.source ? 1 : 0);
   doneBtn.textContent = total > 0 ? `Готово (${total})` : 'Готово';
 }
 
@@ -234,6 +247,10 @@ function syncButtonStates() {
   document.querySelectorAll('.tag-btn[data-opt]').forEach(btn => {
     btn.classList.toggle('active', state.opts.has(btn.dataset.opt));
   });
+
+  // Кнопки источника
+  if (sourceLocal) sourceLocal.classList.toggle('active', state.source === 'local');
+  if (sourceSteam) sourceSteam.classList.toggle('active', state.source === 'steam');
 }
 
 /** Обновляет чипы активных фильтров над списком */
@@ -255,6 +272,9 @@ function updateActiveFilters() {
   if (state.opts.has('dlc'))    addChip('🔖 DLC',        () => { state.opts.delete('dlc');    syncAndRender(); });
   if (state.opts.has('ru'))     addChip('🇷🇺 Русский',   () => { state.opts.delete('ru');     syncAndRender(); });
   if (state.opts.has('online')) addChip('🌐 Онлайн',     () => { state.opts.delete('online'); syncAndRender(); });
+
+  if (state.source === 'local') addChip('⚡ Локальные',   () => { state.source = null; syncAndRender(); });
+  if (state.source === 'steam') addChip('🔵 SteamPass',   () => { state.source = null; syncAndRender(); });
 
   // Счётчик на кнопке «Фильтры» (мобиль)
   const total =
