@@ -1,85 +1,107 @@
 /**
- * modal.js — модальное окно подтверждения поиска игры
+ * modal.js — модальное окно подтверждения поиска
  *
- * Открывается при клике на карточку игры.
- * При нажатии «Найти» вызывает sendToBot() и сохраняет игру в историю.
+ * Изменения:
+ *  - бейдж источника (⚡ Локальная / 🔵 База данных)
+ *  - кнопка избранного ❤️
+ *  - addToHistory вызывается ДО tg.sendData() чтобы успело записаться
  */
 
-/** Игра, ожидающая подтверждения */
 let pendingGame = null;
 
-// DOM-элементы модалки
 const modalOverlay = document.getElementById('modalOverlay');
 const modalImg     = document.getElementById('modalImg');
 const modalTitle   = document.getElementById('modalTitle');
 const modalMeta    = document.getElementById('modalMeta');
 const modalTags    = document.getElementById('modalTags');
+const modalSource  = document.getElementById('modalSource');
 const modalCancel  = document.getElementById('modalCancel');
 const modalConfirm = document.getElementById('modalConfirm');
+const modalFavBtn  = document.getElementById('modalFavBtn');
 
-/** Открывает модалку с данными игры */
 function openModal(game) {
   pendingGame = game;
 
   // Обложка
   modalImg.style.display = 'block';
   modalImg.src = game.img || '';
-  modalImg.alt = game.title;
+  modalImg.alt = escapeHtml(game.title);
+
+  // Сбрасываем placeholder
+  const ph = modalImg.parentNode.querySelector('.modal-img-placeholder');
+  if (ph) ph.style.display = 'none';
+
   modalImg.onerror = function () {
     this.style.display = 'none';
-    const ph = this.parentNode.querySelector('.modal-img-placeholder');
-    if (ph) ph.style.display = 'flex';
+    const ph2 = this.parentNode.querySelector('.modal-img-placeholder');
+    if (ph2) ph2.style.display = 'flex';
   };
 
-  // Сбрасываем placeholder если был показан
-  const placeholder = modalImg.parentNode.querySelector('.modal-img-placeholder');
-  if (placeholder) placeholder.style.display = 'none';
-
-  // Заголовок и студия
+  // Заголовок + студия + DLC
   modalTitle.textContent = game.title;
   modalMeta.innerHTML =
-    `<span>📁 ${game.group}</span>` +
+    `<span>📁 ${escapeHtml(game.group)}</span>` +
     (game.hasDlc ? ' <span class="modal-dlc">DLC</span>' : '');
+
+  // Источник
+  if (modalSource) {
+    const isLocal = game.source === 'local';
+    modalSource.className = `modal-source ${isLocal ? 'local' : 'steam'}`;
+    modalSource.textContent = isLocal ? '⚡ Локальная база' : '🔵 База данных';
+  }
 
   // Теги
   const tags = game.tags || [];
   const opts = game.opts || [];
-  const tagItems = tags.map(t => `<span class="modal-tag">${t}</span>`);
+  const tagItems = tags.map(t => `<span class="modal-tag">${escapeHtml(t)}</span>`);
   if (opts.includes('ru'))     tagItems.push('<span class="modal-tag">🇷🇺 Русский</span>');
   if (opts.includes('online')) tagItems.push('<span class="modal-tag">🌐 Онлайн</span>');
   modalTags.innerHTML = tagItems.join('');
 
-  // Открываем
+  // Кнопка избранного
+  if (modalFavBtn) {
+    modalFavBtn.dataset.title = game.title;
+    const fav = isFavorite(game.title);
+    modalFavBtn.textContent = fav ? '❤️' : '🤍';
+    modalFavBtn.classList.toggle('active', fav);
+    modalFavBtn.title = fav ? 'Убрать из избранного' : 'В избранное';
+  }
+
   modalOverlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 }
 
-/** Закрывает модалку */
 function closeModal() {
   modalOverlay.classList.remove('open');
   document.body.style.overflow = '';
   pendingGame = null;
 }
 
-// ── Обработчики ──────────────────────────────────────────────────
+// Избранное в модалке
+if (modalFavBtn) {
+  modalFavBtn.addEventListener('click', e => {
+    e.stopPropagation();
+    if (pendingGame) toggleFavorite(pendingGame);
+  });
+}
 
 modalCancel.addEventListener('click', closeModal);
 
-// Закрытие по клику на затемнение (не на само окно)
 modalOverlay.addEventListener('click', e => {
   if (e.target === modalOverlay) closeModal();
 });
 
-// Закрытие по Escape
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
   if (modalOverlay.classList.contains('open')) closeModal();
-  else closeDrawer();
+  else if (typeof closeDrawer === 'function') closeDrawer();
 });
 
-// Подтверждение — отправить в бот и сохранить в историю
+// ФИХ: addToHistory ДО sendData — чтобы localStorage успел записаться
+// перед закрытием WebApp
 modalConfirm.addEventListener('click', () => {
   if (!pendingGame) return;
+  addToHistory(pendingGame);   // сначала история
   sendToBot(pendingGame.title, pendingGame);
   closeModal();
 });

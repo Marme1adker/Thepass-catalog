@@ -7,7 +7,7 @@
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -20,11 +20,17 @@
       <div class="modal-img">
         <img id="modalImg" src="" alt="">
         <div class="modal-img-overlay"></div>
+        <div class="modal-img-placeholder" style="display:none">🎮</div>
       </div>
       <div class="modal-body">
-        <div class="modal-label">Начать поиск игры?</div>
+        <div class="modal-top-row">
+          <div class="modal-label">Начать поиск игры?</div>
+          <button class="modal-fav-btn" id="modalFavBtn" title="В избранное">🤍</button>
+        </div>
         <div class="modal-title" id="modalTitle"></div>
         <div class="modal-meta"  id="modalMeta"></div>
+        <!-- Бейдж источника -->
+        <div class="modal-source" id="modalSource"></div>
         <div class="modal-tags"  id="modalTags"></div>
         <div class="modal-actions">
           <button class="modal-btn modal-btn-cancel"  id="modalCancel">Отмена</button>
@@ -51,7 +57,7 @@
             <span class="search-icon">🔍</span>
             <input
               class="search-input" id="search" type="text"
-              placeholder="Поиск по названию..."
+              placeholder="Поиск по названию, тегу..."
               autocomplete="off" autocorrect="off" spellcheck="false"
               style="font-size:12px;padding:8px 8px 8px 30px"
             >
@@ -62,8 +68,8 @@
 
       <div class="sb-sep"></div>
 
-      <!-- Студии -->
-      <div class="sb-section" id="sec-studio">
+      <!-- Студии — свёрнуты по умолчанию -->
+      <div class="sb-section collapsed" id="sec-studio">
         <div class="sb-section-hdr">
           <span>Студия</span>
           <span class="sb-chevron">▾</span>
@@ -73,8 +79,8 @@
 
       <div class="sb-sep"></div>
 
-      <!-- Жанры (инди-группы) -->
-      <div class="sb-section" id="sec-genre">
+      <!-- Жанры — свёрнуты по умолчанию -->
+      <div class="sb-section collapsed" id="sec-genre">
         <div class="sb-section-hdr">
           <span>Жанр</span>
           <span class="sb-chevron">▾</span>
@@ -84,8 +90,8 @@
 
       <div class="sb-sep"></div>
 
-      <!-- Теги -->
-      <div class="sb-section" id="sec-tags">
+      <!-- Теги — свёрнуты по умолчанию -->
+      <div class="sb-section collapsed" id="sec-tags">
         <div class="sb-section-hdr">
           <span>Теги</span>
           <span class="sb-chevron">▾</span>
@@ -118,7 +124,7 @@
             <span class="source-hint">мгновенно</span>
           </button>
           <button class="tag-btn" id="sourceSteam" data-source="steam">
-            <span class="tag-ico">🔵</span>SteamPass
+            <span class="tag-ico">🔵</span>База данных
             <span class="source-hint">через сайт</span>
           </button>
         </div>
@@ -165,6 +171,8 @@
           <p>Каталог игр</p>
         </div>
         <div class="header-spacer"></div>
+        <!-- Кнопка статистики -->
+        <button class="stats-toggle-btn" id="statsBtn" title="Статистика (?)">📊</button>
         <button class="filter-toggle-btn" id="filterToggleBtn">
           <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
             <path d="M1 3h14v1.5L9 10v5l-2-1V10L1 4.5V3z"/>
@@ -174,8 +182,20 @@
         </button>
       </div>
 
+      <!-- Панель статистики (скрыта по умолчанию) -->
+      <div class="stats-panel" id="statsPanel"></div>
+
       <!-- Активные фильтры-чипы -->
       <div class="active-filters" id="activeFilters"></div>
+
+      <!-- Избранное -->
+      <div class="fav-panel" id="favPanel">
+        <div class="fav-hdr">
+          <div class="fav-title">❤️ Избранное <span class="fav-count" id="favCount"></span></div>
+          <button class="history-clear" id="favClear">Очистить</button>
+        </div>
+        <div class="fav-list" id="favList"></div>
+      </div>
 
       <!-- История просмотров -->
       <div class="history-panel" id="historyPanel">
@@ -216,6 +236,9 @@
         </div>
       </div>
 
+      <!-- Счётчик источников -->
+      <div class="source-stats" id="sourceStats"></div>
+
       <!-- Список / сетка игр -->
       <div id="list"></div>
 
@@ -232,15 +255,21 @@
   <!-- Тост-уведомление -->
   <div class="toast" id="toast"></div>
 
+  <!-- Подсказка горячих клавиш -->
+  <div class="hotkey-hint" id="hotkeyHint">
+    <kbd>/</kbd> поиск · <kbd>?</kbd> статистика · <kbd>Esc</kbd> закрыть
+  </div>
+
   <!-- ══════════ СКРИПТЫ ══════════ -->
-  <!-- Порядок важен: сначала данные и утилиты, потом логика, потом инициализация -->
-  <script src="js/data.js"></script>
-  <script src="js/state.js"></script>
-  <script src="js/history.js"></script>
-  <script src="js/modal.js"></script>
-  <script src="js/sidebar.js"></script>
-  <script src="js/render.js"></script>
-  <script src="js/app.js"></script>
+  <script src="data.js"></script>
+  <script src="state.js"></script>
+  <script src="history.js"></script>
+  <script src="favorites.js"></script>
+  <script src="stats.js"></script>
+  <script src="modal.js"></script>
+  <script src="sidebar.js"></script>
+  <script src="render.js"></script>
+  <script src="app.js"></script>
 
 </body>
 </html>

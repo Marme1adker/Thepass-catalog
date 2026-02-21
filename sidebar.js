@@ -1,14 +1,12 @@
 /**
  * sidebar.js — управление сайдбаром фильтров
  *
- * Отвечает за:
- *  - мобильный дровер (открытие / закрытие / swipe)
- *  - генерацию кнопок студий, жанров и тегов
- *  - обработку кликов по фильтрам
- *  - кнопки «Сбросить» и «Готово»
- *  - поиск по тегам внутри сайдбара
- *  - обновление активных чипов над списком
- *  - обновление счётчика на кнопке «Фильтры»
+ * Изменения:
+ *  - счётчик filterBadge учитывает source
+ *  - счётчик активных фильтров на заголовках секций
+ *  - секции Теги / Студии / Жанры свёрнуты по умолчанию
+ *  - исправлен swipeCurX сброс при touchstart
+ *  - сохранение фильтров через state.saveFilters()
  */
 
 // ── DOM ──────────────────────────────────────────────────────────
@@ -27,6 +25,7 @@ const clearBtn      = document.getElementById('clearBtn');
 const activeFilters = document.getElementById('activeFilters');
 const sourceLocal   = document.getElementById('sourceLocal');
 const sourceSteam   = document.getElementById('sourceSteam');
+const sortSel       = document.getElementById('sortSelect');
 
 // ── Дровер ───────────────────────────────────────────────────────
 
@@ -42,25 +41,17 @@ function closeDrawer() {
   document.body.classList.remove('drawer-open');
 }
 
-// Открытие по кнопке «Фильтры»
-filterToggle.addEventListener('click', e => {
-  e.stopPropagation();
-  openDrawer();
-});
+filterToggle.addEventListener('click', e => { e.stopPropagation(); openDrawer(); });
 
-// Закрытие по тапу на затемнение (не на сайдбар)
 overlay.addEventListener('click', e => {
   if (!sidebar.contains(e.target)) closeDrawer();
 });
 overlay.addEventListener('touchend', e => {
   if (!sidebar.classList.contains('open')) return;
-  if (e.target === overlay) {
-    e.preventDefault();
-    closeDrawer();
-  }
+  if (e.target === overlay) { e.preventDefault(); closeDrawer(); }
 });
 
-// ── Swipe влево для закрытия ─────────────────────────────────────
+// ── Swipe ────────────────────────────────────────────────────────
 let swipeStartX = 0;
 let swipeCurX   = 0;
 let swipeActive = false;
@@ -68,6 +59,7 @@ let swipeActive = false;
 sidebar.addEventListener('touchstart', e => {
   if (window.innerWidth > 700) return;
   swipeStartX = e.touches[0].clientX;
+  swipeCurX   = swipeStartX;  // ФИХ: сбрасываем swipeCurX при каждом старте
   swipeActive = true;
 }, { passive: true });
 
@@ -86,12 +78,9 @@ sidebar.addEventListener('touchend', () => {
 });
 
 // ── Клики внутри сайдбара ────────────────────────────────────────
-// Используем capture-фазу, чтобы перехватить событие до overlay
-
 sidebar.addEventListener('click', handleSidebarClick, true);
 sidebar.addEventListener('touchend', handleSidebarClick, true);
 
-// Блокируем всплытие низкоуровневых событий из сайдбара к overlay
 ['touchstart', 'mousedown', 'mouseup'].forEach(evt => {
   sidebar.addEventListener(evt, e => e.stopPropagation(), true);
 });
@@ -99,60 +88,54 @@ sidebar.addEventListener('touchend', handleSidebarClick, true);
 function handleSidebarClick(e) {
   e.stopPropagation();
 
-  // Кнопка источника (local / steam)
+  // Источник
   const srcBtn = e.target.closest('.tag-btn[data-source]');
   if (srcBtn) {
     const val = srcBtn.dataset.source;
     state.source = (state.source === val) ? null : val;
-    syncAndRender();
-    return;
+    syncAndRender(); return;
   }
 
-  // Кнопка-тег (студия / жанр / тег)
+  // Студия / жанр / тег
   const tagBtn = e.target.closest('.tag-btn[data-type]');
   if (tagBtn) {
     const { type, val } = tagBtn.dataset;
     const setMap = { studio: state.studios, genre: state.genres, tag: state.tags };
     const set = setMap[type];
-    set.has(val) ? set.delete(val) : set.add(val);
-    syncAndRender();
-    return;
+    if (set) { set.has(val) ? set.delete(val) : set.add(val); }
+    syncAndRender(); return;
   }
 
-  // Кнопка параметра (dlc / ru / online)
+  // Параметры
   const optBtn = e.target.closest('.tag-btn[data-opt]');
   if (optBtn) {
     const opt = optBtn.dataset.opt;
     state.opts.has(opt) ? state.opts.delete(opt) : state.opts.add(opt);
-    syncAndRender();
-    return;
+    syncAndRender(); return;
   }
 
-  // Сворачивание/разворачивание секции
+  // Сворачивание секции
   const hdr = e.target.closest('.sb-section-hdr');
-  if (hdr) {
-    hdr.parentElement.classList.toggle('collapsed');
-  }
+  if (hdr) hdr.parentElement.classList.toggle('collapsed');
 }
 
-// ── Поиск по тегам ───────────────────────────────────────────────
+// ── Поиск по тегам внутри сайдбара ───────────────────────────────
 tagSearchEl.addEventListener('input', () => {
   const q = tagSearchEl.value.trim().toLowerCase();
   tagListEl.querySelectorAll('.tag-btn[data-type="tag"]').forEach(btn => {
     btn.style.display = btn.dataset.val.toLowerCase().includes(q) ? '' : 'none';
   });
 });
-
-// Стоп-пропагация для всех событий поля поиска тегов
 ['click', 'focus', 'mousedown', 'touchstart'].forEach(evt => {
   tagSearchEl.addEventListener(evt, e => e.stopPropagation());
 });
 
 // ── Поиск по названию ────────────────────────────────────────────
 searchEl.addEventListener('input', () => {
-  state.query = searchEl.value.trim().toLowerCase();
+  state.query = searchEl.value;
   clearBtn.classList.toggle('visible', searchEl.value.length > 0);
   render();
+  saveFilters();
 });
 
 clearBtn.addEventListener('click', e => {
@@ -161,10 +144,17 @@ clearBtn.addEventListener('click', e => {
   state.query = '';
   clearBtn.classList.remove('visible');
   render();
+  saveFilters();
 });
-
 ['click', 'focus', 'mousedown', 'touchstart'].forEach(evt => {
   searchEl.addEventListener(evt, e => e.stopPropagation());
+});
+
+// ── Сортировка ───────────────────────────────────────────────────
+sortSel.addEventListener('change', () => {
+  state.sort = sortSel.value;
+  render();
+  saveFilters();
 });
 
 // ── Кнопка «Сбросить фильтры» ────────────────────────────────────
@@ -175,49 +165,45 @@ resetBtn.addEventListener('click', e => {
   state.tags.clear();
   state.opts.clear();
   state.source = null;
-  state.query = '';
+  state.sort   = 'default';
+  state.query  = '';
   searchEl.value = '';
   clearBtn.classList.remove('visible');
+  if (sortSel) sortSel.value = 'default';
   syncAndRender();
 });
 
 // ── Кнопка «Готово» ──────────────────────────────────────────────
-doneBtn.addEventListener('click', e => {
-  e.stopPropagation();
-  closeDrawer();
-});
+doneBtn.addEventListener('click', e => { e.stopPropagation(); closeDrawer(); });
 
-/** Обновляет текст кнопки «Готово» со счётчиком активных фильтров */
 function updateDoneBtn() {
-  const total =
-    state.studios.size + state.genres.size +
-    state.tags.size + state.opts.size +
-    (state.source ? 1 : 0);
+  const total = totalActiveFilters();
   doneBtn.textContent = total > 0 ? `Готово (${total})` : 'Готово';
+}
+
+function totalActiveFilters() {
+  return state.studios.size + state.genres.size +
+    state.tags.size + state.opts.size + (state.source ? 1 : 0);
 }
 
 // ── Генерация кнопок в сайдбаре ──────────────────────────────────
 
-/** Создаёт одну кнопку-фильтр */
 function createFilterBtn(type, value, icon, label, count) {
   const btn = document.createElement('button');
   btn.className    = 'tag-btn';
   btn.dataset.type = type;
   btn.dataset.val  = value;
-  btn.innerHTML    = `<span class="tag-ico">${icon}</span>${label}<span class="tag-count">${count}</span>`;
+  btn.innerHTML = `<span class="tag-ico">${icon}</span>${escapeHtml(label)}<span class="tag-count">${count}</span>`;
   return btn;
 }
 
-/** Строит все кнопки сайдбара (студии, жанры, теги) */
 function buildSidebarButtons() {
-  // Студии
   studioList.innerHTML = '';
   STUDIOS.forEach(studio => {
     const count = ALL.filter(g => g.group === studio).length;
     studioList.appendChild(createFilterBtn('studio', studio, '🎮', studio, count));
   });
 
-  // Жанры (инди-группы) — убираем префикс «Инди • » для краткости
   genreList.innerHTML = '';
   GENRES.forEach(genre => {
     const count = ALL.filter(g => g.group === genre).length;
@@ -225,7 +211,6 @@ function buildSidebarButtons() {
     genreList.appendChild(createFilterBtn('genre', genre, '🕹️', label, count));
   });
 
-  // Теги
   tagListEl.innerHTML = '';
   ALL_TAGS.forEach(tag => {
     const count = ALL.filter(g => (g.tags || []).includes(tag)).length;
@@ -233,7 +218,8 @@ function buildSidebarButtons() {
   });
 }
 
-/** Подсвечивает активные кнопки фильтров */
+// ── Синхронизация активных состояний ─────────────────────────────
+
 function syncButtonStates() {
   document.querySelectorAll('.tag-btn[data-type]').forEach(btn => {
     const { type, val } = btn.dataset;
@@ -243,24 +229,52 @@ function syncButtonStates() {
       type === 'tag'    ? state.tags.has(val)     : false;
     btn.classList.toggle('active', active);
   });
-
   document.querySelectorAll('.tag-btn[data-opt]').forEach(btn => {
     btn.classList.toggle('active', state.opts.has(btn.dataset.opt));
   });
-
-  // Кнопки источника
   if (sourceLocal) sourceLocal.classList.toggle('active', state.source === 'local');
   if (sourceSteam) sourceSteam.classList.toggle('active', state.source === 'steam');
+
+  // Обновляем счётчики на заголовках секций
+  updateSectionCounters();
 }
 
-/** Обновляет чипы активных фильтров над списком */
+/** Показывает сколько активных фильтров в каждой секции */
+function updateSectionCounters() {
+  const sections = {
+    'sec-studio': state.studios.size,
+    'sec-genre':  state.genres.size,
+    'sec-tags':   state.tags.size,
+    'sec-opts':   state.opts.size,
+    'sec-source': state.source ? 1 : 0,
+  };
+  Object.entries(sections).forEach(([id, count]) => {
+    const sec = document.getElementById(id);
+    if (!sec) return;
+    let badge = sec.querySelector('.sb-section-badge');
+    if (!badge) {
+      badge = document.createElement('span');
+      badge.className = 'sb-section-badge';
+      const hdr = sec.querySelector('.sb-section-hdr');
+      if (hdr) {
+        const chevron = hdr.querySelector('.sb-chevron');
+        hdr.insertBefore(badge, chevron);
+      }
+    }
+    badge.textContent = count > 0 ? count : '';
+    badge.style.display = count > 0 ? 'inline-flex' : 'none';
+  });
+}
+
+// ── Активные чипы над списком ─────────────────────────────────────
+
 function updateActiveFilters() {
   activeFilters.innerHTML = '';
 
   const addChip = (label, onRemove) => {
     const chip = document.createElement('div');
     chip.className = 'af-chip';
-    chip.innerHTML = `${label}<span class="af-chip-x">×</span>`;
+    chip.innerHTML = `${escapeHtml(label)}<span class="af-chip-x">×</span>`;
     chip.addEventListener('click', onRemove);
     activeFilters.appendChild(chip);
   };
@@ -272,22 +286,33 @@ function updateActiveFilters() {
   if (state.opts.has('dlc'))    addChip('🔖 DLC',        () => { state.opts.delete('dlc');    syncAndRender(); });
   if (state.opts.has('ru'))     addChip('🇷🇺 Русский',   () => { state.opts.delete('ru');     syncAndRender(); });
   if (state.opts.has('online')) addChip('🌐 Онлайн',     () => { state.opts.delete('online'); syncAndRender(); });
-
   if (state.source === 'local') addChip('⚡ Локальные',   () => { state.source = null; syncAndRender(); });
-  if (state.source === 'steam') addChip('🔵 SteamPass',   () => { state.source = null; syncAndRender(); });
+  if (state.source === 'steam') addChip('🔵 База данных', () => { state.source = null; syncAndRender(); });
 
-  // Счётчик на кнопке «Фильтры» (мобиль)
-  const total =
-    state.studios.size + state.genres.size +
-    state.tags.size + state.opts.size;
+  // ФИХ: счётчик badge теперь включает source
+  const total = totalActiveFilters();
   filterBadge.textContent = total;
   filterBadge.classList.toggle('show', total > 0);
 }
 
-/** Синхронизирует UI и перерисовывает каталог */
+// ── Главная функция синхронизации ────────────────────────────────
+
 function syncAndRender() {
   syncButtonStates();
   updateActiveFilters();
   updateDoneBtn();
+  saveFilters();
   render();
+}
+
+// ── Восстановление UI при загрузке (вызывается из app.js) ────────
+
+function restoreFilterUI() {
+  if (state.query) {
+    searchEl.value = state.query;
+    clearBtn.classList.add('visible');
+  }
+  if (state.sort && sortSel) {
+    sortSel.value = state.sort;
+  }
 }
