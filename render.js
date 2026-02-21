@@ -60,7 +60,10 @@ function renderList(grouped, query) {
       const card = document.createElement('div');
       card.className = 'list-card';
 
-      const dlcBadge = game.hasDlc ? '<span class="dlc-tag">DLC</span>' : '';
+      const dlcBadge    = game.hasDlc ? '<span class="dlc-tag">DLC</span>' : '';
+      const sourceBadge = game.source === 'local'
+        ? '<span class="source-badge local">⚡ Локальная</span>'
+        : '<span class="source-badge steam">🔵 SteamPass</span>';
       const tagsHtml = (game.tags || []).length
         ? `<div class="list-tags">
             ${(game.tags).map(t => `<span class="list-tag">${t}</span>`).join('')}
@@ -79,6 +82,7 @@ function renderList(grouped, query) {
           <div class="list-row">
             <div class="list-title">${hl(game.title, query)}</div>
             ${dlcBadge}
+            ${sourceBadge}
           </div>
           <div class="list-sub">${game.short || ''}</div>
           ${tagsHtml}
@@ -111,7 +115,10 @@ function renderGrid(grouped, query) {
            </div>`
         : '';
 
-      const displayGroup = groupName === '_' ? game.group : groupName;
+      const displayGroup  = groupName === '_' ? game.group : groupName;
+      const gridSrcBadge  = game.source === 'local'
+        ? '<div class="grid-source-badge local">⚡</div>'
+        : '<div class="grid-source-badge steam">🔵</div>';
 
       card.innerHTML = `
         <div class="grid-img">
@@ -123,6 +130,7 @@ function renderGrid(grouped, query) {
           <div class="grid-placeholder" style="display:none">🎮</div>
           <div class="grid-badge">${game.short || ''}</div>
           ${game.hasDlc ? '<div class="grid-dlc-badge">DLC</div>' : ''}
+          ${gridSrcBadge}
         </div>
         <div class="grid-info">
           <div class="grid-title">${hl(game.title, query)}</div>
