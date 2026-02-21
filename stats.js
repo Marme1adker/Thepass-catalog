@@ -45,7 +45,7 @@ function renderStats() {
       </div>
       <div class="stats-card">
         <div class="stats-num">${onlineCount}</div>
-        <div class="stats-label">С онлайном</div>
+        <div class="stats-label">С онлайном (бета)</div>
       </div>
     </div>
     <div class="stats-section-title">🏷️ Популярные теги</div>
