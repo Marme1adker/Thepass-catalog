@@ -226,6 +226,131 @@ async function fetchGames() {
     { title: 'Metro 2033 Redux',                      short: 'Metro 2033 Redux',   group: 'Metro series',        img: steamImg(286690),                 tags: ['Шутер', 'Постапокалипсис', 'Атмосфера'],          opts: ['ru'],             source: 'local' },
     { title: 'Metro: Last Light',                     short: 'Metro LL',           group: 'Metro series',        img: steamImg(239030),                 tags: ['Шутер', 'Постапокалипсис', 'Атмосфера', 'Хоррор'], opts: ['ru'],            source: 'local' },
     { title: 'Metro Exodus',                          short: 'Metro Exodus',       group: 'Metro series',        img: steamImg(412020),   hasDlc: true,  tags: ['Шутер', 'Постапокалипсис', 'Открытый мир'],       opts: ['dlc', 'ru'],      source: 'local' },
+    { title: 'Metro Exodus Enhanced Edition',         short: 'Metro Exodus EE',    group: 'Metro series',        img: steamImg(1449560),  hasDlc: true,  tags: ['Шутер', 'Постапокалипсис', 'Открытый мир'],       opts: ['dlc', 'ru'],      source: 'local' },
+
+    // ── Hitman series ─────────────────────────────────────────────
+    { title: 'HITMAN World of Assassination',         short: 'Hitman WOA',         group: 'Hitman series',       img: steamImg(1659040),  hasDlc: true,  tags: ['Стелс', 'Экшн', 'Сюжет'],                        opts: ['dlc'],            source: 'local' },
+    { title: 'Hitman: Absolution',                    short: 'Hitman Absolution',  group: 'Hitman series',       img: steamImg(203140),                 tags: ['Стелс', 'Экшн', 'Сюжет'],                        opts: [],                 source: 'local' },
+    { title: 'Hitman: Sniper Challenge',              short: 'Hitman Sniper',      group: 'Hitman series',       img: steamImg(205930),                 tags: ['Стелс', 'Снайпер'],                               opts: [],                 source: 'local' },
+
+    // ── Hotline Miami ─────────────────────────────────────────────
+    { title: 'Hotline Miami',                         short: 'Hotline Miami 1',    group: 'Hotline Miami',       img: steamImg(219150),                 tags: ['Экшн', 'Хардкор', 'Пиксели', 'Атмосфера'],       opts: [],                 source: 'local' },
+    { title: 'Hotline Miami 2: Wrong Number',         short: 'Hotline Miami 2',    group: 'Hotline Miami',       img: steamImg(274170),                 tags: ['Экшн', 'Хардкор', 'Пиксели', 'Атмосфера'],       opts: [],                 source: 'local' },
+
+    // ── Batman Arkham ─────────────────────────────────────────────
+    { title: 'Batman: Arkham Asylum GOTY Edition',    short: 'Batman AA',          group: 'Batman Arkham',       img: steamImg(35140),    hasDlc: true,  tags: ['Экшн', 'Стелс', 'Супергерой'],                   opts: ['dlc'],            source: 'local' },
+    { title: 'Batman: Arkham Knight',                 short: 'Batman AK',          group: 'Batman Arkham',       img: steamImg(208650),   hasDlc: true,  tags: ['Экшн', 'Стелс', 'Супергерой', 'Открытый мир'],  opts: ['dlc'],            source: 'local' },
+
+    // ── Resident Evil ─────────────────────────────────────────────
+    { title: 'Resident Evil 7 Biohazard',             short: 'RE7',                group: 'Resident Evil',       img: steamImg(418370),   hasDlc: true,  tags: ['Хоррор', 'Выживание', 'Сюжет'],                  opts: ['dlc'],            source: 'local' },
+    { title: 'Resident Evil Village',                 short: 'RE Village',         group: 'Resident Evil',       img: steamImg(1196590),  hasDlc: true,  tags: ['Хоррор', 'Выживание', 'Сюжет'],                  opts: ['dlc'],            source: 'local' },
+
+    // ── BioShock ──────────────────────────────────────────────────
+    { title: 'BioShock 2',                            short: 'BioShock 2',         group: 'BioShock',            img: steamImg(8850),     hasDlc: true,  tags: ['Шутер', 'Сюжет', 'Фантастика', 'Атмосфера'],     opts: ['dlc'],            source: 'local' },
+    { title: 'BioShock 2 Remastered',                 short: 'BioShock 2 R',       group: 'BioShock',            img: steamImg(409720),   hasDlc: true,  tags: ['Шутер', 'Сюжет', 'Фантастика', 'Атмосфера'],     opts: ['dlc'],            source: 'local' },
+
+    // ── Mafia ─────────────────────────────────────────────────────
+    { title: 'Mafia: Definitive Edition',             short: 'Mafia DE',           group: '2K',                  img: steamImg(1030840),                tags: ['Экшн', 'Сюжет', 'Криминал'],                     opts: ['ru'],             source: 'local' },
+    { title: 'Mafia II: Definitive Edition',          short: 'Mafia II DE',        group: '2K',                  img: steamImg(1030830),                tags: ['Экшн', 'Сюжет', 'Криминал', 'Открытый мир'],     opts: ['ru'],             source: 'local' },
+
+    // ── Wolfenstein ───────────────────────────────────────────────
+    { title: 'Wolfenstein II: The New Colossus',      short: 'Wolfenstein II',     group: 'Wolfenstein',         img: steamImg(612880),   hasDlc: true,  tags: ['Шутер', 'Сюжет', 'Экшн'],                        opts: ['dlc'],            source: 'local' },
+    { title: 'Wolfenstein: The Old Blood',            short: 'Wolfenstein TOB',    group: 'Wolfenstein',         img: steamImg(350080),                 tags: ['Шутер', 'Экшн'],                                  opts: [],                 source: 'local' },
+
+    // ── The Dark Pictures ─────────────────────────────────────────
+    { title: 'The Dark Pictures Anthology: Man of Medan',   short: 'Man of Medan',  group: 'The Dark Pictures', img: steamImg(960090),                tags: ['Хоррор', 'Сюжет', 'Интерактивное кино', 'Кооп'],  opts: ['online'],         source: 'local' },
+    { title: 'The Dark Pictures Anthology: Little Hope',    short: 'Little Hope',   group: 'The Dark Pictures', img: steamImg(1286840),               tags: ['Хоррор', 'Сюжет', 'Интерактивное кино'],          opts: [],                 source: 'local' },
+
+    // ── Choice of Life ────────────────────────────────────────────
+    { title: 'Choice of Life: Middle Ages',           short: 'CoL Middle Ages',    group: 'Choice of Life',      img: steamImg(1123990),                tags: ['Стратегия', 'Пиксели', 'Необычное'],              opts: [],                 source: 'local' },
+    { title: 'Choice of Life: Middle Ages 2',         short: 'CoL Middle Ages 2',  group: 'Choice of Life',      img: steamImg(1781620),                tags: ['Стратегия', 'Пиксели', 'Необычное'],              opts: [],                 source: 'local' },
+    { title: 'Choice of Life: Wild Islands',          short: 'CoL Wild Islands',   group: 'Choice of Life',      img: steamImg(2139640),                tags: ['Стратегия', 'Пиксели', 'Необычное'],              opts: [],                 source: 'local' },
+
+    // ── LEGO ──────────────────────────────────────────────────────
+    { title: 'The LEGO Movie - Videogame',            short: 'LEGO Movie 1',       group: 'LEGO',                img: steamImg(267530),                 tags: ['Платформер', 'Для всех', 'Кооп'],                 opts: ['online'],         source: 'local' },
+    { title: 'The LEGO Movie 2 - The Second Part',    short: 'LEGO Movie 2',       group: 'LEGO',                img: steamImg(787460),                 tags: ['Платформер', 'Для всех', 'Кооп'],                 opts: ['online'],         source: 'local' },
+
+    // ── FlatOut series ────────────────────────────────────────────
+    { title: 'FlatOut',                               short: 'FlatOut 1',          group: 'FlatOut',             img: steamImg(2990),                   tags: ['Гонки', 'Аркада', 'Классика'],                   opts: [],                 source: 'local' },
+    { title: 'FlatOut: Ultimate Carnage',             short: 'FlatOut UC',         group: 'FlatOut',             img: steamImg(12830),                  tags: ['Гонки', 'Аркада', 'Разрушение'],                 opts: [],                 source: 'local' },
+    { title: 'FlatOut 3: Chaos & Destruction',        short: 'FlatOut 3',          group: 'FlatOut',             img: steamImg(222850),                 tags: ['Гонки', 'Аркада'],                               opts: [],                 source: 'local' },
+
+    // ── Alan Wake ─────────────────────────────────────────────────
+    { title: 'Alan Wake',                             short: 'Alan Wake',          group: 'Remedy',              img: steamImg(108710),   hasDlc: true,  tags: ['Хоррор', 'Экшн', 'Сюжет', 'Атмосфера'],         opts: ['dlc'],            source: 'local' },
+    { title: 'Rise of the Tomb Raider',               short: 'Rise of TR',         group: 'Remedy',              img: steamImg(391220),   hasDlc: true,  tags: ['Экшн', 'Приключение', 'Открытый мир'],           opts: ['dlc'],            source: 'local' },
+
+    // ── Инди • Выживание (новые) ──────────────────────────────────
+    { title: 'Raft',                                  short: 'Raft',               group: 'Инди • Выживание',    img: steamImg(648800),                 tags: ['Выживание', 'Крафт', 'Кооп'],                    opts: ['online'],         source: 'local' },
+    { title: 'SnowRunner',                            short: 'SnowRunner',         group: 'Инди • Выживание',    img: steamImg(1465360),  hasDlc: true,  tags: ['Симулятор', 'Бездорожье', 'Кооп'],               opts: ['dlc', 'online'],  source: 'local' },
+    { title: 'Manor Lords',                           short: 'Manor Lords',        group: 'Инди • Выживание',    img: steamImg(1363080),                tags: ['Стратегия', 'Строительство', 'Средневековье'],   opts: [],                 source: 'local' },
+
+    // ── Инди • Хоррор (новые) ─────────────────────────────────────
+    { title: 'The Outlast Trials',                    short: 'Outlast Trials',     group: 'Инди • Хоррор',       img: steamImg(1304930),                tags: ['Хоррор', 'Кооп', 'Выживание'],                   opts: ['online'],         source: 'local' },
+    { title: 'Hello Neighbor',                        short: 'Hello Neighbor',     group: 'Инди • Хоррор',       img: steamImg(730490),                 tags: ['Хоррор', 'Стелс', 'Головоломка'],                opts: [],                 source: 'local' },
+    { title: 'Secret Neighbor',                       short: 'Secret Neighbor',    group: 'Инди • Хоррор',       img: steamImg(1053830),                tags: ['Хоррор', 'Мультиплеер', 'Кооп'],                 opts: ['online'],         source: 'local' },
+    { title: 'PANICORE',                              short: 'PANICORE',           group: 'Инди • Хоррор',       img: steamImg(2289920),                tags: ['Хоррор', 'Кооп'],                                opts: ['online'],         source: 'local' },
+    { title: 'Nuclear Nightmare',                     short: 'Nuclear Nightmare',  group: 'Инди • Хоррор',       img: steamImg(1875560),                tags: ['Хоррор', 'Выживание'],                           opts: [],                 source: 'local' },
+    { title: 'LIMBO',                                 short: 'LIMBO',              group: 'Инди • Хоррор',       img: steamImg(48000),                  tags: ['Платформер', 'Атмосфера', 'Головоломка'],        opts: [],                 source: 'local' },
+    { title: 'Buckshot Roulette',                     short: 'Buckshot Roulette',  group: 'Инди • Хоррор',       img: steamImg(2835570),                tags: ['Хоррор', 'Необычное', 'Казуальное'],             opts: [],                 source: 'local' },
+
+    // ── Инди • Экшн (новые) ───────────────────────────────────────
+    { title: 'SUPERHOT',                              short: 'SUPERHOT',           group: 'Инди • Экшн',         img: steamImg(322500),                 tags: ['Шутер', 'Головоломка', 'Необычное'],             opts: [],                 source: 'local' },
+    { title: 'Devil May Cry 5',                       short: 'DMC5',               group: 'Инди • Экшн',         img: steamImg(601150),   hasDlc: true,  tags: ['Экшн', 'Слэшер', 'Хардкор'],                    opts: ['dlc'],            source: 'local' },
+    { title: 'Saints Row: The Third',                 short: 'Saints Row 3',       group: 'Инди • Экшн',         img: steamImg(55230),    hasDlc: true,  tags: ['Открытый мир', 'Экшн', 'Юмор'],                 opts: ['dlc'],            source: 'local' },
+    { title: 'Sniper Elite 4',                        short: 'Sniper Elite 4',     group: 'Инди • Экшн',         img: steamImg(314800),   hasDlc: true,  tags: ['Шутер', 'Стелс', 'Снайпер'],                    opts: ['dlc'],            source: 'local' },
+    { title: 'Risk of Rain 2',                        short: 'RoR2',               group: 'Инди • Экшн',         img: steamImg(632360),   hasDlc: true,  tags: ['Roguelike', 'Кооп', 'Шутер'],                   opts: ['dlc', 'online'],  source: 'local' },
+    { title: 'Dark Sector',                           short: 'Dark Sector',        group: 'Инди • Экшн',         img: steamImg(10110),                  tags: ['Экшн', 'Шутер', 'Сюжет'],                       opts: [],                 source: 'local' },
+    { title: 'Stray',                                 short: 'Stray',              group: 'Инди • Экшн',         img: steamImg(1332010),                tags: ['Приключение', 'Атмосфера', 'Необычное'],         opts: [],                 source: 'local' },
+    { title: 'JoJo\'s Bizarre Adventure: All-Star Battle R', short: 'JoJo ASBR', group: 'Инди • Экшн',          img: steamImg(1372110),  hasDlc: true,  tags: ['Файтинг', 'Аниме', 'Мультиплеер'],              opts: ['dlc', 'online'],  source: 'local' },
+
+    // ── Инди • Симулятор (новые) ──────────────────────────────────
+    { title: 'Totally Accurate Battle Simulator',     short: 'TABS',               group: 'Инди • Симулятор',    img: steamImg(508440),                 tags: ['Симулятор', 'Физика', 'Юмор', 'Для всех'],      opts: ['online'],         source: 'local' },
+    { title: 'WorldBox - God Simulator',              short: 'WorldBox',           group: 'Инди • Симулятор',    img: steamImg(1206560),                tags: ['Симулятор', 'Песочница', 'Стратегия'],           opts: [],                 source: 'local' },
+    { title: 'Goat Simulator',                        short: 'Goat Sim',           group: 'Инди • Симулятор',    img: steamImg(265930),   hasDlc: true,  tags: ['Симулятор', 'Юмор', 'Необычное'],                opts: ['dlc'],            source: 'local' },
+    { title: 'Spore',                                 short: 'Spore',              group: 'Инди • Симулятор',    img: steamImg(17390),    hasDlc: true,  tags: ['Симулятор', 'Песочница', 'Стратегия'],           opts: ['dlc'],            source: 'local' },
+    { title: 'Cities: Skylines',                      short: 'Cities Skylines',    group: 'Инди • Симулятор',    img: steamImg(255710),   hasDlc: true,  tags: ['Симулятор', 'Строительство', 'Стратегия'],       opts: ['dlc'],            source: 'local' },
+    { title: 'Poly Bridge',                           short: 'Poly Bridge',        group: 'Инди • Симулятор',    img: steamImg(367450),                 tags: ['Головоломка', 'Строительство', 'Физика'],        opts: [],                 source: 'local' },
+    { title: 'Sand:box',                              short: 'Sandbox',            group: 'Инди • Симулятор',    img: steamImg(1003650),                tags: ['Симулятор', 'Физика', 'Песочница'],              opts: [],                 source: 'local' },
+    { title: 'Happy Room',                            short: 'Happy Room',         group: 'Инди • Симулятор',    img: steamImg(415280),                 tags: ['Симулятор', 'Физика', 'Юмор'],                   opts: [],                 source: 'local' },
+    { title: 'FPV Kamikaze Drone',                    short: 'FPV Drone',          group: 'Инди • Симулятор',    img: steamImg(1521580),                tags: ['Симулятор', 'Дрон'],                             opts: [],                 source: 'local' },
+    { title: 'theHunter: Call of the Wild',           short: 'theHunter',          group: 'Инди • Симулятор',    img: steamImg(518790),   hasDlc: true,  tags: ['Симулятор', 'Охота', 'Открытый мир'],            opts: ['dlc'],            source: 'local' },
+
+    // ── Инди • RPG (новые) ────────────────────────────────────────
+    { title: 'The Wolf Among Us',                     short: 'Wolf Among Us',      group: 'Инди • RPG',          img: steamImg(250320),                 tags: ['Сюжет', 'Интерактивное кино', 'Детектив'],       opts: [],                 source: 'local' },
+    { title: 'Papers, Please',                        short: 'Papers Please',      group: 'Инди • RPG',          img: steamImg(239030),                 tags: ['Инди', 'Необычное', 'Атмосфера', 'Сюжет'],      opts: [],                 source: 'local' },
+    { title: 'Firewatch',                             short: 'Firewatch',          group: 'Инди • RPG',          img: steamImg(383870),                 tags: ['Приключение', 'Атмосфера', 'Сюжет'],             opts: [],                 source: 'local' },
+    { title: 'Beholder',                              short: 'Beholder',           group: 'Инди • RPG',          img: steamImg(475550),   hasDlc: true,  tags: ['Стратегия', 'Сюжет', 'Атмосфера', 'Необычное'], opts: ['dlc'],            source: 'local' },
+    { title: 'Plague Inc: Evolved',                   short: 'Plague Inc',         group: 'Инди • RPG',          img: steamImg(246620),                 tags: ['Стратегия', 'Необычное', 'Симулятор'],           opts: [],                 source: 'local' },
+
+    // ── Инди • Кооп (новые) ───────────────────────────────────────
+    { title: 'Human Fall Flat',                       short: 'Human Fall Flat',    group: 'Инди • Кооп',         img: steamImg(477160),   hasDlc: true,  tags: ['Головоломка', 'Кооп', 'Физика', 'Юмор'],        opts: ['dlc', 'online'],  source: 'local' },
+    { title: "Who's Your Daddy?!",                    short: "Who's Your Daddy",   group: 'Инди • Кооп',         img: steamImg(427730),                 tags: ['Кооп', 'Юмор', 'Необычное'],                    opts: ['online'],         source: 'local' },
+    { title: 'Clone Drone in the Danger Zone',        short: 'Clone Drone',        group: 'Инди • Кооп',         img: steamImg(597170),                 tags: ['Экшн', 'Кооп', 'Roguelike'],                    opts: ['online'],         source: 'local' },
+    { title: 'Tomato Jones 2',                        short: 'Tomato Jones 2',     group: 'Инди • Кооп',         img: steamImg(2383280),                tags: ['Платформер', 'Кооп'],                            opts: ['online'],         source: 'local' },
+    { title: 'Choo-Choose',                           short: 'Choo-Choose',        group: 'Инди • Кооп',         img: steamImg(1271690),                tags: ['Ужастик', 'Кооп', 'Необычное'],                  opts: ['online'],         source: 'local' },
+    { title: 'DeathComing',                           short: 'DeathComing',        group: 'Инди • Кооп',         img: steamImg(811780),                 tags: ['Головоломка', 'Необычное', 'Пиксели'],           opts: [],                 source: 'local' },
+
+    // ── Инди • Платформер (новые) ─────────────────────────────────
+    { title: 'Bully: Scholarship Edition',            short: 'Bully',              group: 'Инди • Платформер',   img: steamImg(12200),                  tags: ['Открытый мир', 'Экшн', 'Классика'],              opts: [],                 source: 'local' },
+    { title: 'Webbed',                                short: 'Webbed',             group: 'Инди • Платформер',   img: steamImg(1390350),                tags: ['Платформер', 'Инди', 'Расслабляющее'],           opts: [],                 source: 'local' },
+    { title: 'Super Bunny Man',                       short: 'Super Bunny Man',    group: 'Инди • Платформер',   img: steamImg(902490),                 tags: ['Платформер', 'Кооп', 'Юмор'],                   opts: ['online'],         source: 'local' },
+    { title: 'Clustertruck',                          short: 'Clustertruck',       group: 'Инди • Платформер',   img: steamImg(427550),                 tags: ['Платформер', 'Физика', 'Хардкор'],               opts: [],                 source: 'local' },
+    { title: 'Black Mesa',                            short: 'Black Mesa',         group: 'Инди • Платформер',   img: steamImg(362890),   hasDlc: true,  tags: ['Шутер', 'Классика', 'Сюжет'],                   opts: ['dlc'],            source: 'local' },
+    { title: 'Punch Club',                            short: 'Punch Club',         group: 'Инди • Платформер',   img: steamImg(394730),                 tags: ['Симулятор', 'RPG', 'Пиксели'],                  opts: [],                 source: 'local' },
+
+    // ── Инди • Разное (новые) ─────────────────────────────────────
+    { title: 'Little Nightmares Enhanced Edition',    short: 'LN Enhanced',        group: 'Инди • Разное',       img: steamImg(860510),   hasDlc: true,  tags: ['Хоррор', 'Платформер', 'Атмосфера'],            opts: ['dlc'],            source: 'local' },
+    { title: 'The Binding of Isaac',                  short: 'BoI',                group: 'Инди • Разное',       img: steamImg(113200),                 tags: ['Roguelike', 'Хоррор', 'Хардкор'],               opts: [],                 source: 'local' },
+    { title: 'The Binding of Isaac: Rebirth',         short: 'BoI Rebirth',        group: 'Инди • Разное',       img: steamImg(250900),   hasDlc: true,  tags: ['Roguelike', 'Хоррор', 'Хардкор'],               opts: ['dlc'],            source: 'local' },
+    { title: 'MyVoiceZoo',                            short: 'MyVoiceZoo',         group: 'Инди • Разное',       img: steamImg(2140290),                tags: ['Казуальное', 'Для всех'],                        opts: [],                 source: 'local' },
+    { title: 'Ben and Ed',                            short: 'Ben and Ed',         group: 'Инди • Разное',       img: steamImg(321180),                 tags: ['Платформер', 'Хоррор', 'Юмор'],                 opts: [],                 source: 'local' },
+    { title: 'Party Hard 2',                          short: 'Party Hard 2',       group: 'Инди • Разное',       img: steamImg(621060),                 tags: ['Стелс', 'Пиксели', 'Необычное'],                opts: [],                 source: 'local' },
+    { title: 'Cult of the Lamb',                      short: 'Cult of the Lamb',   group: 'Инди • Разное',       img: steamImg(1313140),  hasDlc: true,  tags: ['Roguelike', 'Необычное', 'Управление'],         opts: ['dlc'],            source: 'local' },
+    { title: 'Plants vs. Zombies: Game of the Year',  short: 'PvZ GOTY',           group: 'Инди • Разное',       img: steamImg(3590),                   tags: ['Стратегия', 'Казуальное', 'Для всех'],          opts: [],                 source: 'local' },
+    { title: '60 Seconds! Reatomized',                short: '60 Seconds',         group: 'Инди • Разное',       img: steamImg(1012880),                tags: ['Выживание', 'Необычное', 'Юмор'],               opts: [],                 source: 'local' },
+    { title: 'Barro 22',                              short: 'Barro 22',           group: 'Инди • Разное',       img: steamImg(1644380),                tags: ['Гонки', 'Аркада'],                              opts: [],                 source: 'local' },
+    { title: 'Jacksmith: Weapons and Warriors',       short: 'Jacksmith',          group: 'Инди • Разное',       img: steamImg(2277290),                tags: ['Казуальное', 'Необычное'],                      opts: [],                 source: 'local' },
+    { title: '12 is Better Than 6',                   short: '12 is Better',       group: 'Инди • Разное',       img: steamImg(410110),                 tags: ['Шутер', 'Пиксели', 'Экшн'],                     opts: [],                 source: 'local' },
 
   ];
 }
