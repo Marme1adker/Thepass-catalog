@@ -21,7 +21,7 @@ async function fetchGames() {
     { title: 'Grand Theft Auto III',                  short: 'GTA III',            group: 'Rockstar',            img: steamImg(12100),                  tags: ['Открытый мир', 'Экшн'],                           opts: [],                 source: 'steam' },
 
     // ── CD Projekt Red ───────────────────────────────────────────
-    { title: 'Cyberpunk 2077',                        short: 'Cyberpunk',          group: 'CD Projekt Red',      img: steamImg(1091500),  hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Сюжет', 'Экшн'],           opts: ['dlc', 'ru'],      source: 'steam' },
+    { title: 'Cyberpunk 2077',                        short: 'Cyberpunk',          group: 'CD Projekt Red',      img: steamImg(1091500),  hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Сюжет', 'Экшн'],           opts: ['dlc', 'ru'],      source: 'local' },
     { title: 'The Witcher 3: Wild Hunt',              short: 'Witcher 3',          group: 'CD Projekt Red',      img: steamImg(292030),   hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Сюжет', 'Фэнтези'],        opts: ['dlc', 'ru'],      source: 'local' },
 
     // ── Ubisoft ──────────────────────────────────────────────────
@@ -74,11 +74,11 @@ async function fetchGames() {
     { title: 'Borderlands 2',                         short: 'BL2',                group: 'Gearbox',             img: steamImg(49520),    hasDlc: true,  tags: ['Шутер', 'RPG', 'Кооп', 'Юмор'],                   opts: ['dlc', 'online'],  source: 'local' },
 
     // ── Bethesda ─────────────────────────────────────────────────
-    { title: 'Fallout 4',                             short: 'FO4',                group: 'Bethesda',            img: steamImg(377160),   hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Постапокалипсис'],          opts: ['dlc', 'ru'],      source: 'steam' },
+    { title: 'Fallout 4',                             short: 'FO4',                group: 'Bethesda',            img: steamImg(377160),   hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Постапокалипсис'],          opts: ['dlc', 'ru'],      source: 'local' },
     { title: 'Fallout: New Vegas',                    short: 'FNV',                group: 'Bethesda',            img: steamImg(22380),    hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Постапокалипсис'],          opts: ['dlc'],            source: 'local' },
     { title: 'Fallout 3',                             short: 'FO3',                group: 'Bethesda',            img: steamImg(22300),    hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Постапокалипсис'],          opts: ['dlc'],            source: 'steam' },
     { title: 'Fallout 76',                            short: 'FO76',               group: 'Bethesda',            img: steamImg(1151340),  hasDlc: true,  tags: ['Открытый мир', 'Мультиплеер', 'Постапокалипсис'], opts: ['dlc', 'online'],  source: 'steam' },
-    { title: 'The Elder Scrolls V: Skyrim',           short: 'Skyrim',             group: 'Bethesda',            img: steamImg(489830),   hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Фэнтези'],                 opts: ['dlc', 'ru'],      source: 'steam' },
+    { title: 'The Elder Scrolls V: Skyrim',           short: 'Skyrim',             group: 'Bethesda',            img: steamImg(489830),   hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Фэнтези'],                 opts: ['dlc', 'ru'],      source: 'local' },
     { title: 'Starfield',                             short: 'Starfield',          group: 'Bethesda',            img: steamImg(1716740),  hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Фантастика'],               opts: ['dlc', 'ru'],      source: 'steam' },
 
     // ── 2K / Firaxis ─────────────────────────────────────────────
@@ -145,15 +145,15 @@ async function fetchGames() {
     { title: 'R.E.P.O.',                              short: 'R.E.P.O.',           group: 'Инди • Roguelike',    img: steamImg(3241660),                tags: ['Roguelike', 'Кооп', 'Хоррор'],                    opts: ['online'],         source: 'local' },
 
     // ── Platformer ───────────────────────────────────────────────
-    { title: 'Hollow Knight',                         short: 'Hollow Knight',      group: 'Инди • Платформер',   img: steamImg(367520),                 tags: ['Метроидвания', 'Хардкор', 'Атмосфера'],           opts: [],                 source: 'steam' },
+    { title: 'Hollow Knight',                         short: 'Hollow Knight',      group: 'Инди • Платформер',   img: steamImg(367520),                 tags: ['Метроидвания', 'Хардкор', 'Атмосфера'],           opts: [],                 source: 'local' },
     { title: 'Celeste',                               short: 'Celeste',            group: 'Инди • Платформер',   img: steamImg(504230),                 tags: ['Платформер', 'Хардкор', 'Сюжет'],                 opts: [],                 source: 'steam' },
-    { title: 'Cuphead',                               short: 'Cuphead',            group: 'Инди • Платформер',   img: steamImg(268910),   hasDlc: true,  tags: ['Платформер', 'Хардкор', 'Кооп'],                  opts: ['dlc', 'online'],  source: 'steam' },
+    { title: 'Cuphead',                               short: 'Cuphead',            group: 'Инди • Платформер',   img: steamImg(268910),   hasDlc: true,  tags: ['Платформер', 'Хардкор', 'Кооп'],                  opts: ['dlc', 'online'],  source: 'local' },
     { title: 'Geometry Dash',                         short: 'GD',                 group: 'Инди • Платформер',   img: steamImg(322170),                 tags: ['Платформер', 'Ритм', 'Хардкор'],                  opts: [],                 source: 'local' },
     { title: 'Broforce',                              short: 'Broforce',           group: 'Инди • Платформер',   img: steamImg(274190),                 tags: ['Платформер', 'Кооп', 'Юмор'],                     opts: ['online'],         source: 'local' },
 
     // ── RPG ──────────────────────────────────────────────────────
     { title: 'Stardew Valley',                        short: 'Stardew',            group: 'Инди • RPG',          img: steamImg(413150),                 tags: ['Фарминг', 'Расслабляющее', 'Кооп'],               opts: ['online'],         source: 'local' },
-    { title: 'Undertale',                             short: 'Undertale',          group: 'Инди • RPG',          img: steamImg(391540),                 tags: ['RPG', 'Сюжет', 'Необычное'],                      opts: [],                 source: 'steam' },
+    { title: 'Undertale',                             short: 'Undertale',          group: 'Инди • RPG',          img: steamImg(391540),                 tags: ['RPG', 'Сюжет', 'Необычное'],                      opts: [],                 source: 'local' },
     { title: 'Disco Elysium',                         short: 'Disco Elysium',      group: 'Инди • RPG',          img: steamImg(632470),   hasDlc: true,  tags: ['RPG', 'Сюжет', 'Детектив'],                       opts: ['dlc', 'ru'],      source: 'steam' },
     { title: 'Outer Wilds',                           short: 'Outer Wilds',        group: 'Инди • RPG',          img: steamImg(753640),   hasDlc: true,  tags: ['Приключение', 'Исследование', 'Сюжет'],           opts: ['dlc'],            source: 'steam' },
     { title: 'Kingdom Come: Deliverance',             short: 'KCD',                group: 'Инди • RPG',          img: steamImg(379430),   hasDlc: true,  tags: ['RPG', 'История', 'Реализм', 'Средневековье'],     opts: ['dlc'],            source: 'local' },
