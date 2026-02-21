@@ -31,12 +31,24 @@
 
     <div class="gp-scroll">
 
-      <!-- Обложка -->
-      <div class="gp-hero">
-        <img id="gamePageImg" src="" alt="" style="display:none">
-        <div class="gp-hero-placeholder" id="gamePagePlaceholder">🎮</div>
+      <!-- Обложка: на мобиле — полная, на десктопе — фон+миниатюра -->
+      <div class="gp-hero" id="gpHero">
+        <!-- Размытый фон (только десктоп) -->
+        <div class="gp-hero-bg" id="gpHeroBg"></div>
+        <div class="gp-hero-bg-dim"></div>
+
+        <!-- Миниатюра слева (только десктоп) -->
+        <div class="gp-hero-thumb-wrap">
+          <img class="gp-hero-thumb" id="gamePageImgThumb" src="" alt="" style="display:none">
+          <div class="gp-hero-thumb-ph" id="gpThumbPh">🎮</div>
+        </div>
+
+        <!-- Полная картинка (только мобиль) -->
+        <img class="gp-hero-full" id="gamePageImg" src="" alt="" style="display:none">
+        <div class="gp-hero-placeholder" id="gamePagePlaceholder" style="display:none">🎮</div>
         <div class="gp-hero-gradient"></div>
-        <!-- Бейджи поверх обложки -->
+
+        <!-- Бейджи поверх -->
         <div class="gp-hero-badges">
           <span class="game-page-source" id="gamePageSource"></span>
           <span class="game-page-new-badge" id="gamePageNewBadge" style="display:none">✨ Новинка</span>
@@ -77,17 +89,6 @@
 
       </div>
 
-      <!-- Последние просмотренные -->
-      <div class="gp-section" id="gpRecentSection" style="display:none">
-        <div class="gp-section-hdr">
-          <span class="gp-section-ico">🕐</span>
-          <div>
-            <div class="gp-section-title">Последние просмотренные</div>
-          </div>
-        </div>
-        <div class="gp-cards-row" id="gpRecentList"></div>
-      </div>
-
       <!-- Похожие игры -->
       <div class="gp-section" id="gpSimilarSection" style="display:none">
         <div class="gp-section-hdr">
@@ -98,6 +99,17 @@
           </div>
         </div>
         <div class="gp-cards-row" id="gpSimilarList"></div>
+      </div>
+
+      <!-- Последние просмотренные -->
+      <div class="gp-section" id="gpRecentSection" style="display:none">
+        <div class="gp-section-hdr">
+          <span class="gp-section-ico">🕐</span>
+          <div>
+            <div class="gp-section-title">Последние просмотренные</div>
+          </div>
+        </div>
+        <div class="gp-cards-row" id="gpRecentList"></div>
       </div>
 
       <div style="height:40px"></div>
@@ -322,16 +334,29 @@
     // Тайтл в топбаре
     document.getElementById('gpTopbarTitle').textContent = title;
 
-    // Обложка
-    const img = document.getElementById('gamePageImg');
-    const ph  = document.getElementById('gamePagePlaceholder');
+    // Обложка — мобиль (полная) + десктоп (миниатюра + фон)
     const imgSrc = game.img || game.image || '';
+    const imgFull  = document.getElementById('gamePageImg');
+    const imgThumb = document.getElementById('gamePageImgThumb');
+    const heroBg   = document.getElementById('gpHeroBg');
+    const ph       = document.getElementById('gamePagePlaceholder');
+    const thumbPh  = document.getElementById('gpThumbPh');
+
     if (imgSrc) {
-      img.src = imgSrc; img.style.display = '';
+      // Мобиль: полная картинка
+      imgFull.src = imgSrc; imgFull.style.display = '';
+      imgFull.onerror = () => { imgFull.style.display='none'; ph.style.display=''; };
       ph.style.display = 'none';
-      img.onerror = () => { img.style.display = 'none'; ph.style.display = ''; };
+      // Десктоп: миниатюра
+      imgThumb.src = imgSrc; imgThumb.style.display = '';
+      imgThumb.onerror = () => { imgThumb.style.display='none'; thumbPh.style.display='flex'; };
+      thumbPh.style.display = 'none';
+      // Десктоп: размытый фон
+      heroBg.style.backgroundImage = `url('${imgSrc}')`;
     } else {
-      img.style.display = 'none'; ph.style.display = '';
+      imgFull.style.display = 'none'; ph.style.display = '';
+      imgThumb.style.display = 'none'; thumbPh.style.display = 'flex';
+      heroBg.style.backgroundImage = '';
     }
 
     // Заголовок
@@ -409,10 +434,10 @@
     };
 
     // ── Похожие игры (тот же жанр или теги) ──
-    renderSimilarGames(game);
+    renderSimilarGames(game);  // async, не блокируем открытие страницы
 
     // ── Последние просмотренные ──
-    renderRecentGames(game);
+    renderRecentGames(game);   // async, не блокируем открытие страницы
 
     // Кнопка назад
     document.getElementById('gameBackBtn').onclick = closeGamePage;
@@ -435,27 +460,37 @@
   };
 
   // ── Похожие игры ────────────────────────────────────────────
-  function renderSimilarGames(current) {
+  async function renderSimilarGames(current) {
     const sec  = document.getElementById('gpSimilarSection');
     const list = document.getElementById('gpSimilarList');
     const sub  = document.getElementById('gpSimilarSub');
+    if (!window.ALL || !window.ALL.length) {
+      if (typeof fetchGames === 'function') {
+        try { window.ALL = await fetchGames(); } catch(e) {}
+      }
+    }
     if (!window.ALL || !window.ALL.length) { sec.style.display='none'; return; }
 
-    const curTags  = new Set(current.tags || []);
-    const curTitle = (current.name || current.title || '').toLowerCase();
+    // Поддерживаем оба варианта полей: title/name, group/genre
+    const getTitle = g => (g.title || g.name || '').toLowerCase();
+    const getGroup = g => g.group || g.genre || '';
+    const getTags  = g => g.tags || [];
+
+    const curTitle = getTitle(current);
+    const curGroup = getGroup(current);
+    const curTags  = new Set(getTags(current));
 
     const scored = window.ALL
-      .filter(g => (g.name||g.title||'').toLowerCase() !== curTitle)
+      .filter(g => getTitle(g) !== curTitle)
       .map(g => {
         let score = 0;
-        if (g.genre && g.genre === current.genre) score += 3;
-        (g.tags||[]).forEach(t => { if (curTags.has(t)) score += 1; });
-        if (g.group && g.group === current.group) score += 1;
+        if (getGroup(g) && getGroup(g) === curGroup) score += 3;
+        getTags(g).forEach(t => { if (curTags.has(t)) score += 1; });
         return { g, score };
       })
       .filter(x => x.score > 0)
       .sort((a,b) => b.score - a.score)
-      .slice(0, 8)
+      .slice(0, 12)
       .map(x => x.g);
 
     if (!scored.length) { sec.style.display='none'; return; }
@@ -469,28 +504,43 @@
   }
 
   // ── Последние просмотренные ──────────────────────────────────
-  function renderRecentGames(current) {
+  async function renderRecentGames(current) {
     const sec  = document.getElementById('gpRecentSection');
     const list = document.getElementById('gpRecentList');
-    const curTitle = (current.name || current.title || '').toLowerCase();
+    const curTitle = (current.title || current.name || '').toLowerCase();
 
-    // Берём историю из history.js (массив объектов или строк)
-    let history = [];
-    try {
-      const raw = JSON.parse(localStorage.getItem('pass_history') || '[]');
-      history = raw.filter(h => {
-        const t = typeof h === 'string' ? h : (h.name||h.title||'');
-        return t.toLowerCase() !== curTitle;
-      }).slice(0, 8);
-    } catch(e) {}
+    if (!window.ALL || !window.ALL.length) {
+      if (typeof fetchGames === 'function') {
+        try { window.ALL = await fetchGames(); } catch(e) {}
+      }
+    }
+    if (!window.ALL) { sec.style.display='none'; return; }
 
-    if (!history.length || !window.ALL) { sec.style.display='none'; return; }
+    // Пробуем несколько ключей — history.js может хранить по-разному
+    let rawHistory = [];
+    const keys = ['pass_history', 'history', 'gameHistory', 'viewHistory'];
+    for (const key of keys) {
+      try {
+        const raw = JSON.parse(localStorage.getItem(key) || 'null');
+        if (Array.isArray(raw) && raw.length) { rawHistory = raw; break; }
+      } catch(e) {}
+    }
 
-    // Матчим к играм в ALL
-    const games = history.map(h => {
-      const t = (typeof h === 'string' ? h : (h.name||h.title||'')).toLowerCase();
-      return window.ALL.find(g => (g.name||g.title||'').toLowerCase() === t);
-    }).filter(Boolean).slice(0, 8);
+    // Извлекаем названия из истории (строки или объекты)
+    const historyTitles = rawHistory
+      .map(h => typeof h === 'string' ? h : (h.title || h.name || ''))
+      .filter(t => t && t.toLowerCase() !== curTitle)
+      .slice(0, 12);
+
+    if (!historyTitles.length) { sec.style.display='none'; return; }
+
+    // Матчим к реальным играм в ALL
+    const games = historyTitles
+      .map(t => window.ALL.find(g =>
+        (g.title||g.name||'').toLowerCase() === t.toLowerCase()
+      ))
+      .filter(Boolean)
+      .slice(0, 10);
 
     if (!games.length) { sec.style.display='none'; return; }
 
@@ -503,17 +553,21 @@
 
   // ── Мини-карточка ────────────────────────────────────────────
   function gpMiniCard(g) {
-    const img = g.img || g.image || '';
-    const title = g.name || g.title || '';
+    const imgSrc = g.img || g.image || '';
+    const title  = g.title || g.name || '';
+    const group  = g.group || g.genre || '';
     return `
       <div class="gp-mini-card">
         <div class="gp-mini-img">
-          ${img
-            ? `<img src="${img}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+          ${imgSrc
+            ? `<img src="${imgSrc}" alt="${title}" loading="lazy"
+                onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
             : ''}
-          <div class="gp-mini-ph" style="${img?'display:none':''}">🎮</div>
+          <div class="gp-mini-ph" style="${imgSrc?'display:none':'display:flex'}">🎮</div>
+          ${g.isNew ? `<div class="gp-mini-new">✨ NEW</div>` : ''}
         </div>
         <div class="gp-mini-title">${title}</div>
+        ${group ? `<div class="gp-mini-group">${group}</div>` : ''}
       </div>`;
   }
 
