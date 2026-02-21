@@ -18,49 +18,89 @@
 
   <!-- ══════════ FULL-PAGE СТРАНИЦА ИГРЫ ══════════ -->
   <div class="game-page" id="gamePage">
-    <canvas class="game-page-canvas" id="gamePageCanvas"></canvas>
-    <div class="game-page-header">
+
+    <!-- Шапка -->
+    <div class="gp-topbar">
       <button class="game-back-btn" id="gameBackBtn">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M19 12H5M12 5l-7 7 7 7"/>
-        </svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
         Назад
       </button>
+      <div class="gp-topbar-title" id="gpTopbarTitle"></div>
       <button class="game-page-fav-btn" id="gamePageFavBtn">🤍</button>
     </div>
-    <div class="game-page-hero">
-      <div class="game-page-img-wrap">
-        <img id="gamePageImg" src="" alt="" style="display:none">
-        <div class="game-page-img-gradient"></div>
-        <div class="game-page-placeholder" id="gamePagePlaceholder">🎮</div>
-      </div>
-    </div>
-    <div class="game-page-body">
-      <div class="game-page-badges">
-        <span class="game-page-source" id="gamePageSource"></span>
-        <span class="game-page-new-badge" id="gamePageNewBadge" style="display:none">✨ Новинка</span>
-      </div>
-      <h1 class="game-page-title" id="gamePageTitle"></h1>
-      <div class="game-page-meta" id="gamePageMeta"></div>
 
-      <!-- Steam рейтинг -->
-      <div class="game-page-rating" id="gamePageRating" style="display:none">
-        <div class="gpr-icon">⭐</div>
-        <div class="gpr-info">
-          <div class="gpr-label">Обзоры Steam (рус.)</div>
-          <div class="gpr-value" id="gamePageRatingValue"></div>
-          <div class="gpr-count" id="gamePageRatingCount"></div>
+    <div class="gp-scroll">
+
+      <!-- Обложка -->
+      <div class="gp-hero">
+        <img id="gamePageImg" src="" alt="" style="display:none">
+        <div class="gp-hero-placeholder" id="gamePagePlaceholder">🎮</div>
+        <div class="gp-hero-gradient"></div>
+        <!-- Бейджи поверх обложки -->
+        <div class="gp-hero-badges">
+          <span class="game-page-source" id="gamePageSource"></span>
+          <span class="game-page-new-badge" id="gamePageNewBadge" style="display:none">✨ Новинка</span>
         </div>
       </div>
 
-      <!-- Теги -->
-      <div class="game-page-tags" id="gamePageTags"></div>
+      <!-- Основной контент: 2 колонки на широком, 1 на узком -->
+      <div class="gp-content">
 
-      <!-- Кнопки -->
-      <div class="game-page-actions">
-        <button class="gp-btn gp-btn-find" id="gamePageFind">🔍 Найти игру</button>
-        <button class="gp-btn gp-btn-share" id="gamePageShare">🔗 Поделиться</button>
+        <!-- ЛЕВАЯ КОЛОНКА: инфо -->
+        <div class="gp-left">
+          <h1 class="game-page-title" id="gamePageTitle"></h1>
+
+          <!-- Рейтинг Steam -->
+          <div class="gp-rating-row" id="gamePageRating" style="display:none">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="#60a5fa"><circle cx="12" cy="12" r="10"/></svg>
+            <span class="gpr-label">Оценки игроков:</span>
+            <span class="gpr-value" id="gamePageRatingValue"></span>
+            <span class="gpr-count" id="gamePageRatingCount"></span>
+          </div>
+
+          <!-- Мета: разработчик, жанр, год -->
+          <div class="gp-meta-rows" id="gamePageMeta"></div>
+
+          <!-- Теги -->
+          <div class="game-page-tags" id="gamePageTags"></div>
+        </div>
+
+        <!-- ПРАВАЯ КОЛОНКА: кнопки -->
+        <div class="gp-right">
+          <button class="gp-btn-main" id="gamePageFind">
+            🔍 Найти игру
+          </button>
+          <button class="gp-btn-secondary" id="gamePageShare">
+            🔗 Поделиться
+          </button>
+        </div>
+
       </div>
+
+      <!-- Последние просмотренные -->
+      <div class="gp-section" id="gpRecentSection" style="display:none">
+        <div class="gp-section-hdr">
+          <span class="gp-section-ico">🕐</span>
+          <div>
+            <div class="gp-section-title">Последние просмотренные</div>
+          </div>
+        </div>
+        <div class="gp-cards-row" id="gpRecentList"></div>
+      </div>
+
+      <!-- Похожие игры -->
+      <div class="gp-section" id="gpSimilarSection" style="display:none">
+        <div class="gp-section-hdr">
+          <span class="gp-section-ico">🎮</span>
+          <div>
+            <div class="gp-section-title">Похожие игры</div>
+            <div class="gp-section-sub" id="gpSimilarSub"></div>
+          </div>
+        </div>
+        <div class="gp-cards-row" id="gpSimilarList"></div>
+      </div>
+
+      <div style="height:40px"></div>
     </div>
   </div>
 
@@ -157,7 +197,7 @@
           <a href="faq.html"      class="sb-nav-link">❓ FAQ</a>
           <a href="reviews.html"  class="sb-nav-link">💬 Отзывы</a>
         </nav>
-        <div class="sb-nav-copy">© 2026 The Pass</div>
+        <div class="sb-nav-copy">© 2025 The Pass</div>
       </div>
 
     </aside>
@@ -277,8 +317,12 @@
   window.openGamePage = function(game) {
     const page = document.getElementById('gamePage');
     const main = document.getElementById('mainPage');
+    const title = game.name || game.title || '';
 
-    // Изображение
+    // Тайтл в топбаре
+    document.getElementById('gpTopbarTitle').textContent = title;
+
+    // Обложка
     const img = document.getElementById('gamePageImg');
     const ph  = document.getElementById('gamePagePlaceholder');
     const imgSrc = game.img || game.image || '';
@@ -290,10 +334,8 @@
       img.style.display = 'none'; ph.style.display = '';
     }
 
-    // Заголовок и мета
-    document.getElementById('gamePageTitle').textContent = game.name || game.title || '';
-    document.getElementById('gamePageMeta').textContent =
-      [game.studio || game.publisher, game.genre, game.year].filter(Boolean).join(' · ');
+    // Заголовок
+    document.getElementById('gamePageTitle').textContent = title;
 
     // Источник
     const srcEl = document.getElementById('gamePageSource');
@@ -312,20 +354,31 @@
       const rv = document.getElementById('gamePageRatingValue');
       rv.textContent = game.steamRating.label || '';
       document.getElementById('gamePageRatingCount').textContent =
-        game.steamRating.count ? `${(+game.steamRating.count).toLocaleString('ru')} обзоров` : '';
+        game.steamRating.count ? `(${(+game.steamRating.count).toLocaleString('ru')})` : '';
       const score = game.steamRating.score || 0;
       rv.style.color = score >= 80 ? '#34d399' : score >= 60 ? '#f59e0b' : '#f87171';
     } else {
       rBlock.style.display = 'none';
     }
 
+    // Мета-строки: разработчик, жанр, год
+    const metaEl = document.getElementById('gamePageMeta');
+    const metaRows = [
+      game.studio || game.publisher ? { label: 'Разработчик', val: game.studio || game.publisher } : null,
+      game.genre  ? { label: 'Жанр', val: game.genre } : null,
+      game.year   ? { label: 'Год релиза', val: game.year } : null,
+      game.hasRu  ? { label: 'Русский язык', val: 'Перевод текста' + (game.ruVoice ? ' + озвучка' : '') } : null,
+    ].filter(Boolean);
+    metaEl.innerHTML = metaRows.map(r =>
+      `<div class="gp-meta-row"><span class="gp-meta-label">${r.label}:</span><span class="gp-meta-val">${r.val}</span></div>`
+    ).join('');
+
     // Теги
     const tagsEl = document.getElementById('gamePageTags');
-    tagsEl.innerHTML =
-      (game.tags||[]).map(t => `<span class="gp-tag">${t}</span>`).join('') +
-      (game.hasDlc   ? `<span class="gp-tag dlc">🔖 DLC</span>` : '') +
-      (game.hasRu    ? `<span class="gp-tag ru">🇷🇺 RU</span>`  : '') +
-      (game.online   ? `<span class="gp-tag online">🌐 Online</span>` : '');
+    const tagsList = (game.tags||[]).map(t => `<span class="gp-tag">${t}</span>`);
+    if (game.hasDlc)  tagsList.push(`<span class="gp-tag dlc">🔖 DLC</span>`);
+    if (game.online)  tagsList.push(`<span class="gp-tag online">🌐 Online</span>`);
+    tagsEl.innerHTML = tagsList.join('');
 
     // Избранное
     const favBtn = document.getElementById('gamePageFavBtn');
@@ -340,50 +393,133 @@
     document.getElementById('gamePageFind').onclick = () => {
       if (window.openGameSearch) window.openGameSearch(game);
       else if (game.searchUrl)   window.open(game.searchUrl, '_blank');
-      else {
-        const q = encodeURIComponent(game.name || game.title || '');
-        window.open('https://www.google.com/search?q=' + q, '_blank');
-      }
+      else sendToBot(title, game);
     };
 
     // Поделиться
     document.getElementById('gamePageShare').onclick = () => {
-      const name = game.name || game.title || '';
-      const url  = game.steamUrl || (game.appid
-        ? `https://store.steampowered.com/app/${game.appid}` : '');
-      const text = url ? `${name}\n${url}` : name;
-      const copy = t => {
-        if (navigator.clipboard) navigator.clipboard.writeText(t).then(() => showToast('📋 Скопировано!'));
-        else {
-          const ta = document.createElement('textarea');
-          ta.value = t; document.body.appendChild(ta);
-          ta.select(); document.execCommand('copy'); ta.remove();
-          showToast('📋 Скопировано!');
-        }
-      };
-      copy(text);
+      const url  = game.steamUrl || (game.appid ? `https://store.steampowered.com/app/${game.appid}` : '');
+      const text = url ? `${title}\n${url}` : title;
+      if (navigator.clipboard) navigator.clipboard.writeText(text).then(() => showToast('📋 Скопировано!'));
+      else {
+        const ta = Object.assign(document.createElement('textarea'), {value: text});
+        document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+        showToast('📋 Скопировано!');
+      }
     };
+
+    // ── Похожие игры (тот же жанр или теги) ──
+    renderSimilarGames(game);
+
+    // ── Последние просмотренные ──
+    renderRecentGames(game);
 
     // Кнопка назад
     document.getElementById('gameBackBtn').onclick = closeGamePage;
 
-    // Свайп вниз на мобиле
-    let startY = 0;
-    page.ontouchstart = e => { startY = e.touches[0].clientY; };
-    page.ontouchend   = e => { if (e.changedTouches[0].clientY - startY > 90) closeGamePage(); };
+    // Свайп влево — назад
+    let startX = 0, startY2 = 0;
+    const scroll = document.querySelector('.gp-scroll');
+    page.ontouchstart = e => { startX = e.touches[0].clientX; startY2 = e.touches[0].clientY; };
+    page.ontouchend   = e => {
+      const dx = startX - e.changedTouches[0].clientX;
+      const dy = Math.abs(e.changedTouches[0].clientY - startY2);
+      if (dx < -80 && dy < 60 && (scroll ? scroll.scrollTop < 10 : true)) closeGamePage();
+    };
 
     // Открываем
     main.classList.add('page-hidden');
     page.classList.add('open');
-    page.scrollTop = 0;
-    startGameParticles();
+    document.querySelector('.gp-scroll').scrollTop = 0;
     if (window.addHistory) window.addHistory(game);
   };
+
+  // ── Похожие игры ────────────────────────────────────────────
+  function renderSimilarGames(current) {
+    const sec  = document.getElementById('gpSimilarSection');
+    const list = document.getElementById('gpSimilarList');
+    const sub  = document.getElementById('gpSimilarSub');
+    if (!window.ALL || !window.ALL.length) { sec.style.display='none'; return; }
+
+    const curTags  = new Set(current.tags || []);
+    const curTitle = (current.name || current.title || '').toLowerCase();
+
+    const scored = window.ALL
+      .filter(g => (g.name||g.title||'').toLowerCase() !== curTitle)
+      .map(g => {
+        let score = 0;
+        if (g.genre && g.genre === current.genre) score += 3;
+        (g.tags||[]).forEach(t => { if (curTags.has(t)) score += 1; });
+        if (g.group && g.group === current.group) score += 1;
+        return { g, score };
+      })
+      .filter(x => x.score > 0)
+      .sort((a,b) => b.score - a.score)
+      .slice(0, 8)
+      .map(x => x.g);
+
+    if (!scored.length) { sec.style.display='none'; return; }
+
+    sub.textContent = `${window.ALL.length} игр в каталоге`;
+    list.innerHTML = scored.map(g => gpMiniCard(g)).join('');
+    list.querySelectorAll('.gp-mini-card').forEach((el, i) => {
+      el.addEventListener('click', () => openGamePage(scored[i]));
+    });
+    sec.style.display = '';
+  }
+
+  // ── Последние просмотренные ──────────────────────────────────
+  function renderRecentGames(current) {
+    const sec  = document.getElementById('gpRecentSection');
+    const list = document.getElementById('gpRecentList');
+    const curTitle = (current.name || current.title || '').toLowerCase();
+
+    // Берём историю из history.js (массив объектов или строк)
+    let history = [];
+    try {
+      const raw = JSON.parse(localStorage.getItem('pass_history') || '[]');
+      history = raw.filter(h => {
+        const t = typeof h === 'string' ? h : (h.name||h.title||'');
+        return t.toLowerCase() !== curTitle;
+      }).slice(0, 8);
+    } catch(e) {}
+
+    if (!history.length || !window.ALL) { sec.style.display='none'; return; }
+
+    // Матчим к играм в ALL
+    const games = history.map(h => {
+      const t = (typeof h === 'string' ? h : (h.name||h.title||'')).toLowerCase();
+      return window.ALL.find(g => (g.name||g.title||'').toLowerCase() === t);
+    }).filter(Boolean).slice(0, 8);
+
+    if (!games.length) { sec.style.display='none'; return; }
+
+    list.innerHTML = games.map(g => gpMiniCard(g)).join('');
+    list.querySelectorAll('.gp-mini-card').forEach((el, i) => {
+      el.addEventListener('click', () => openGamePage(games[i]));
+    });
+    sec.style.display = '';
+  }
+
+  // ── Мини-карточка ────────────────────────────────────────────
+  function gpMiniCard(g) {
+    const img = g.img || g.image || '';
+    const title = g.name || g.title || '';
+    return `
+      <div class="gp-mini-card">
+        <div class="gp-mini-img">
+          ${img
+            ? `<img src="${img}" alt="" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+            : ''}
+          <div class="gp-mini-ph" style="${img?'display:none':''}">🎮</div>
+        </div>
+        <div class="gp-mini-title">${title}</div>
+      </div>`;
+  }
 
   window.closeGamePage = function() {
     document.getElementById('gamePage').classList.remove('open');
     document.getElementById('mainPage').classList.remove('page-hidden');
-    stopGameParticles();
   };
 
   document.addEventListener('keydown', e => {
@@ -585,40 +721,7 @@
   })();
   </script>
 
-  <!-- ══════════ ЧАСТИЦЫ НА СТРАНИЦЕ ИГРЫ ══════════ -->
-  <script>
-  let _gpAnimId = null;
-  function startGameParticles(){
-    const c = document.getElementById('gamePageCanvas');
-    if(!c) return;
-    const ctx = c.getContext('2d');
-    c.width = c.offsetWidth||window.innerWidth;
-    c.height = c.offsetHeight||300;
-    const W=c.width, H=c.height;
-    const P='rgba(192,132,252,';
-    const rnd=(a,b)=>Math.random()*(b-a)+a;
-    const pts=Array.from({length:50},()=>({
-      x:rnd(0,W),y:rnd(0,H),r:rnd(0.5,2.5),
-      a:rnd(0.1,0.5),vx:rnd(-0.4,0.4),vy:rnd(-0.4,0.4),ph:rnd(0,Math.PI*2)
-    }));
-    let t=0;
-    function loop(){
-      t+=0.016; ctx.clearRect(0,0,W,H);
-      pts.forEach(p=>{
-        p.x=(p.x+p.vx+W)%W; p.y=(p.y+p.vy+H)%H;
-        const a=p.a*(0.5+0.5*Math.sin(t*2+p.ph));
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
-        ctx.fillStyle=P+a+')'; ctx.fill();
-      });
-      _gpAnimId=requestAnimationFrame(loop);
-    }
-    if(_gpAnimId) cancelAnimationFrame(_gpAnimId);
-    loop();
-  }
-  function stopGameParticles(){
-    if(_gpAnimId){cancelAnimationFrame(_gpAnimId);_gpAnimId=null;}
-  }
-  </script>
+
 
 </body>
 </html>
