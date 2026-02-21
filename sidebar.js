@@ -298,7 +298,7 @@ function updateActiveFilters() {
 
   if (state.opts.has('dlc'))    addChip('🔖 DLC',        () => { state.opts.delete('dlc');    syncAndRender(); });
   if (state.opts.has('ru'))     addChip('🇷🇺 Русский',   () => { state.opts.delete('ru');     syncAndRender(); });
-  if (state.opts.has('online')) addChip('🌐 Онлайн',     () => { state.opts.delete('online'); syncAndRender(); });
+  if (state.opts.has('online')) addChip('🌐 Онлайн (бета)',     () => { state.opts.delete('online'); syncAndRender(); });
   if (state.source === 'local') addChip('⚡ Локальные',   () => { state.source = null; syncAndRender(); });
   if (state.source === 'steam') addChip('🔵 База данных', () => { state.source = null; syncAndRender(); });
 
