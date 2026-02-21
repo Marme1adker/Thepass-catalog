@@ -132,7 +132,7 @@ function renderList(grouped, query) {
 
       card.addEventListener('click', e => {
         if (e.target.closest('.fav-btn')) return;
-        openModal(game);
+        openGamePage(game);
       });
 
       card.querySelector('.fav-btn').addEventListener('click', e => {
@@ -196,7 +196,7 @@ function renderGrid(grouped, query) {
 
       card.addEventListener('click', e => {
         if (e.target.closest('.fav-btn')) return;
-        openModal(game);
+        openGamePage(game);
       });
       card.querySelector('.fav-btn').addEventListener('click', e => {
         e.stopPropagation();
