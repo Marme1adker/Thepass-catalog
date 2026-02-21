@@ -720,6 +720,28 @@ body::before {
   letter-spacing: .5px;
 }
 
+.grid-source-badge {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 700;
+  backdrop-filter: blur(4px);
+  border: 1px solid transparent;
+}
+.grid-source-badge.local {
+  background: #34d39925;
+  border-color: #34d39950;
+  color: #34d399;
+}
+.grid-source-badge.steam {
+  background: #60a5fa25;
+  border-color: #60a5fa50;
+  color: #60a5fa;
+}
+
 .grid-info  { padding: 7px 9px 9px; }
 .grid-title {
   font-family: 'Syne', sans-serif;
@@ -922,7 +944,73 @@ body::before {
 }
 .modal-btn-confirm:hover { box-shadow: 0 6px 24px #8b5cf660; }
 
-/* ══════════ РАЗНОЕ ══════════ */
+/* ══════════ ИСТОЧНИК ══════════ */
+.source-hint {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 500;
+  letter-spacing: .3px;
+  color: var(--dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1px 7px;
+  white-space: nowrap;
+  transition: background .15s, border-color .15s, color .15s;
+}
+
+#sourceLocal .source-hint { color: #34d399; border-color: #34d39930; background: #34d39910; }
+#sourceSteam .source-hint { color: #60a5fa; border-color: #60a5fa30; background: #60a5fa10; }
+
+#sourceLocal.active {
+  background: #34d39918;
+  color: #34d399;
+  border: 1px solid #34d39940;
+}
+#sourceLocal.active .tag-ico { opacity: 1; }
+#sourceLocal.active .source-hint {
+  background: #34d39930;
+  border-color: #34d39960;
+  color: #6ee7b7;
+}
+
+#sourceSteam.active {
+  background: #60a5fa18;
+  color: #60a5fa;
+  border: 1px solid #60a5fa40;
+}
+#sourceSteam.active .tag-ico { opacity: 1; }
+#sourceSteam.active .source-hint {
+  background: #60a5fa30;
+  border-color: #60a5fa60;
+  color: #93c5fd;
+}
+
+/* ══════════ КАРТОЧКИ — БЕЙДЖ ИСТОЧНИКА ══════════ */
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  flex-shrink: 0;
+  margin-left: 5px;
+}
+.source-badge.local {
+  background: #34d39912;
+  border: 1px solid #34d39940;
+  color: #34d399;
+}
+.source-badge.steam {
+  background: #60a5fa12;
+  border: 1px solid #60a5fa40;
+  color: #60a5fa;
+}
+
+
 #tagSearch:focus {
   border-color: var(--purple) !important;
   box-shadow: 0 0 0 2px #8b5cf618;
