@@ -7,7 +7,7 @@
 
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
@@ -101,6 +101,26 @@
             >
           </div>
           <div id="tag-list"></div>
+        </div>
+      </div>
+
+      <div class="sb-sep"></div>
+
+      <!-- Источник -->
+      <div class="sb-section" id="sec-source">
+        <div class="sb-section-hdr">
+          <span>Источник</span>
+          <span class="sb-chevron">▾</span>
+        </div>
+        <div class="sb-body">
+          <button class="tag-btn" id="sourceLocal" data-source="local">
+            <span class="tag-ico">⚡</span>Локальные
+            <span class="source-hint">мгновенно</span>
+          </button>
+          <button class="tag-btn" id="sourceSteam" data-source="steam">
+            <span class="tag-ico">🔵</span>SteamPass
+            <span class="source-hint">через сайт</span>
+          </button>
         </div>
       </div>
 
@@ -214,13 +234,13 @@
 
   <!-- ══════════ СКРИПТЫ ══════════ -->
   <!-- Порядок важен: сначала данные и утилиты, потом логика, потом инициализация -->
-  <script src="data.js"></script>
-  <script src="state.js"></script>
-  <script src="history.js"></script>
-  <script src="modal.js"></script>
-  <script src="sidebar.js"></script>
-  <script src="render.js"></script>
-  <script src="app.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/history.js"></script>
+  <script src="js/modal.js"></script>
+  <script src="js/sidebar.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/app.js"></script>
 
 </body>
 </html>
