@@ -464,5 +464,8 @@ async function fetchGames() {
     { title: 'РУСЫ ПРОТИВ ЯЩЕРОВ',                    short: 'Русы vs Ящеры',      group: 'Инди • Экшн',         img: steamImg(2532550),                tags: ['Экшн', 'Инди', 'Необычное'],                     opts: ['ru'],             source: 'local',  marme1adker: true },
     { title: 'Симулятор чушпана',                     short: 'Симулятор чушпана',  group: 'Инди • Симулятор',    img: steamImg(2755330),                tags: ['Симулятор', 'Инди', 'Необычное'],                opts: ['ru'],             source: 'local',  marme1adker: true },
 
+  
+    { title: 'Atomic Heart - Premium Edition',  short: 'Atomic Heart',  group: 'Mundfish',  img: steamImg(668580),  hasDlc: true, tags: ['Экшены', 'Приключенческие игры', 'Ролевые игры'],  opts: ['dlc', 'ru'],  source: 'steam', },
+
   ];
 }
