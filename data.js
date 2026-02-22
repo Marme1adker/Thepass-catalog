@@ -467,5 +467,8 @@ async function fetchGames() {
   
     { title: 'Atomic Heart - Premium Edition',  short: 'Atomic Heart',  group: 'Mundfish',  img: steamImg(668580),  hasDlc: true, tags: ['Экшены', 'Приключенческие игры', 'Ролевые игры'],  opts: ['dlc', 'ru'],  source: 'steam', },
 
+  
+    { title: 'Atomic Heart Premium Edition',  short: 'Atomic Heart',  group: 'Mundfish',  img: steamImg(668580),  hasDlc: true, tags: ['Экшены', 'Приключенческие игры', 'Ролевые игры'],  opts: ['dlc', 'ru'],  source: 'steam', },
+
   ];
 }
