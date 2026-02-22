@@ -55,6 +55,9 @@ function sendToBot(name, game) {
     renderFavorites();
     render();
 
+    // Скрываем загрузчик — данные готовы
+    if (typeof window._hideLoader === 'function') window._hideLoader();
+
     // Секции сворачиваем по умолчанию
     ['sec-studio', 'sec-genre', 'sec-tags'].forEach(id => {
       document.getElementById(id)?.classList.add('collapsed');
