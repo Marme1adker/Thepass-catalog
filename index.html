@@ -10,6 +10,141 @@
 </head>
 <body>
 
+  <!-- ══════════ PREMIUM LOADER ══════════ -->
+  <style>
+    :root {
+      --loader-bg: radial-gradient(circle at center, #220b42 0%, #0a0314 100%);
+      --loader-text: #e5d4ff;
+      --loader-outline: #9d4edd;
+      --loader-frame: #05010a;
+      --loader-corner: #b692eb;
+      --loader-speed: 25s;
+    }
+    #premium-loader {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: var(--loader-bg);
+      z-index: 99999;
+      overflow: hidden;
+      transition: opacity 1.2s cubic-bezier(0.8, 0, 0.2, 1), visibility 1.2s;
+    }
+    #premium-loader.loaded {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loader-frame {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      border: 24px solid var(--loader-frame);
+      box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+      pointer-events: none;
+      z-index: 10;
+    }
+    .ui-corner {
+      position: absolute;
+      color: var(--loader-corner);
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 13px;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      z-index: 20;
+      pointer-events: none;
+      opacity: 0.8;
+      text-shadow: 0 0 8px rgba(182,146,235,0.5);
+    }
+    .ui-corner.top-left     { top: 45px; left: 45px; }
+    .ui-corner.top-right    { top: 45px; right: 45px; text-align: right; }
+    .ui-corner.bottom-left  { bottom: 45px; left: 45px; }
+    .ui-corner.bottom-right { bottom: 45px; right: 45px; text-align: right; }
+    .ui-corner .hl {
+      color: #fff;
+      text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px var(--loader-outline);
+    }
+    .loader-diagonal {
+      position: absolute;
+      top: 50%; left: 50%;
+      width: 300vw; height: 300vh;
+      transform: translate(-50%, -50%) rotate(-35deg);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1;
+    }
+    .loader-row {
+      display: flex;
+      width: 100%;
+      overflow: hidden;
+      margin: -1vh 0;
+    }
+    .loader-track {
+      display: flex;
+      width: max-content;
+      will-change: transform;
+    }
+    .loader-word {
+      font-family: 'Arial Black', Impact, sans-serif;
+      font-size: 8vw;
+      font-weight: 900;
+      text-transform: uppercase;
+      white-space: nowrap;
+      padding-right: 2vw;
+      line-height: 1.1;
+    }
+    .loader-row.solid .loader-word {
+      color: var(--loader-text);
+      text-shadow: 0 0 20px rgba(157,78,221,0.4);
+    }
+    .loader-row.outline .loader-word {
+      color: transparent;
+      -webkit-text-stroke: 2px var(--loader-outline);
+    }
+    .loader-row.go-left  .loader-track { animation: loaderLeft var(--loader-speed) linear infinite; }
+    .loader-row.go-right .loader-track { animation: loaderRight calc(var(--loader-speed) * 1.1) linear infinite; transform: translate3d(-50%,0,0); }
+    @keyframes loaderLeft  { 0%{transform:translate3d(0,0,0)} 100%{transform:translate3d(-50%,0,0)} }
+    @keyframes loaderRight { 0%{transform:translate3d(-50%,0,0)} 100%{transform:translate3d(0,0,0)} }
+    @media (max-width: 768px) {
+      .loader-word { font-size: 14vw; }
+      .loader-frame { border-width: 12px; }
+      .ui-corner { font-size: 10px; }
+      .ui-corner.top-left    { top: 25px; left: 25px; }
+      .ui-corner.top-right   { top: 25px; right: 25px; }
+      .ui-corner.bottom-left { bottom: 25px; left: 25px; }
+      .ui-corner.bottom-right{ bottom: 25px; right: 25px; }
+    }
+  </style>
+
+  <div id="premium-loader">
+    <div class="loader-frame"></div>
+    <div class="ui-corner top-left"><span class="hl">ЗАГРУЗКА</span> // THE_PASS</div>
+    <div class="ui-corner top-right">V_2.0.26</div>
+    <div class="ui-corner bottom-left">STEAM_CATALOG // SECURE</div>
+    <div class="ui-corner bottom-right"><span class="hl">ЗАГРУЗКА</span>_ДАННЫХ...</div>
+    <div class="loader-diagonal">
+      <div class="loader-row solid go-left"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row outline go-right"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row solid go-left"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row outline go-right"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row solid go-left"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row outline go-right"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row solid go-left"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row outline go-right"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row solid go-left"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row outline go-right"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row solid go-left"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row outline go-right"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row solid go-left"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row outline go-right"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row solid go-left"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+      <div class="loader-row outline go-right"><div class="loader-track"><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div><div class="loader-word">ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА ЗАГРУЗКА</div></div></div>
+    </div>
+  </div>
+  <!-- ══════════ END LOADER ══════════ -->
+
   <!-- ══════════ ЖИВОЙ ФОН ══════════ -->
   <canvas id="bg-canvas"></canvas>
 
@@ -313,6 +448,25 @@
   <script src="stats.js"></script>
   <script src="sidebar.js"></script>
   <script src="render.js"></script>
+
+  <!-- ── Loader: фиксируем время старта, скрываем после загрузки ── -->
+  <script>
+    window._loaderStart = Date.now();
+
+    // Патчим fetchGames чтобы скрыть лоадер после успешной загрузки.
+    // app.js вызывает fetchGames() внутри async IIFE — перехватываем через Promise.
+    const _origFetch = window.fetchGames;
+    window._hideLoader = function() {
+      const el = document.getElementById('premium-loader');
+      if (!el || el.classList.contains('loaded')) return;
+      const elapsed = Date.now() - window._loaderStart;
+      const delay   = Math.max(0, 1200 - elapsed); // минимум 1.2 сек
+      setTimeout(() => el.classList.add('loaded'), delay);
+    };
+    // Fallback: если данные по какой-то причине не загрузились — всё равно скрыть через 6 сек
+    setTimeout(window._hideLoader, 6000);
+  </script>
+
   <script src="app.js"></script>
 
   <!-- ══════════ GAME PAGE ══════════ -->
