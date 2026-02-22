@@ -13,8 +13,8 @@ async function fetchGames() {
   return [
 
     // ── Rockstar ─────────────────────────────────────────────────
-    { title: 'Grand Theft Auto V',                    short: 'GTA V',              group: 'Rockstar',            img: steamImg(271590),   hasDlc: true,  tags: ['Открытый мир', 'Шутер', 'Экшн', 'Кооп'],          opts: ['dlc', 'online'],  source: 'local' },
-    { title: 'Red Dead Redemption 2',                 short: 'RDR2',               group: 'Rockstar',            img: steamImg(1174180),  hasDlc: true,  tags: ['Открытый мир', 'Сюжет', 'Вестерн'],               opts: ['dlc'],            source: 'local' },
+    { title: 'Grand Theft Auto V',                    short: 'GTA V',              group: 'Rockstar',            img: steamImg(271590),   hasDlc: true,  tags: ['Открытый мир', 'Шутер', 'Экшн', 'Кооп'],          opts: ['dlc', 'online'],  source: 'steam' },
+    { title: 'Red Dead Redemption 2',                 short: 'RDR2',               group: 'Rockstar',            img: steamImg(1174180),  hasDlc: true,  tags: ['Открытый мир', 'Сюжет', 'Вестерн'],               opts: ['dlc'],            source: 'steam' },
     { title: 'Red Dead Redemption',                   short: 'RDR1',               group: 'Rockstar',            img: steamImg(2668510),                tags: ['Открытый мир', 'Вестерн', 'Сюжет'],               opts: [],                 source: 'steam' },
     { title: 'Grand Theft Auto: San Andreas',         short: 'GTA SA',             group: 'Rockstar',            img: steamImg(12120),                  tags: ['Открытый мир', 'Экшн'],                           opts: [],                 source: 'steam' },
     { title: 'Grand Theft Auto: Vice City',           short: 'GTA Vice City',      group: 'Rockstar',            img: steamImg(12110),                  tags: ['Открытый мир', 'Экшн'],                           opts: [],                 source: 'steam' },
