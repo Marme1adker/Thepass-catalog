@@ -22,7 +22,7 @@ async function fetchGames() {
 
     // ── CD Projekt Red ───────────────────────────────────────────
     { title: 'Cyberpunk 2077',                        short: 'Cyberpunk',          group: 'CD Projekt Red',      img: steamImg(1091500),  hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Сюжет', 'Экшн'],           opts: ['dlc', 'ru'],      source: 'local' },
-    { title: 'The Witcher 3: Wild Hunt',              short: 'Witcher 3',          group: 'CD Projekt Red',      img: steamImg(292030),   hasDlc: true,  tags: ['Открытый мир', 'RPG', 'Сюжет', 'Фэнтези'],        opts: ['dlc', 'ru'],      source: 'local' },
+        { title: 'The Witcher 3: Wild Hunt',  short: 'Witcher 3',  group: 'CD Projekt Red',  img: steamImg(292030),  hasDlc: true, tags: ['Открытый мир', 'RPG', 'Сюжет', 'Фэнтези'],  opts: ['dlc', 'ru'],  source: 'local',  marme1adker: true, },
 
     // ── Ubisoft ──────────────────────────────────────────────────
     { title: "Assassin's Creed Shadows",              short: 'AC Shadows',         group: 'Ubisoft',             img: steamImg(3159330),  hasDlc: true,  tags: ['Открытый мир', 'Стелс', 'Экшн', 'Самурай'],       opts: ['dlc'],            source: 'steam' },
