@@ -8,14 +8,32 @@
 const HISTORY_KEY = 'thepass_history';
 const HISTORY_MAX = 10;
 
+const tgStorage = window.Telegram?.WebApp?.CloudStorage;
+
 function loadHistory() {
-  try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || '[]'); }
+  try { return JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]'); }
   catch { return []; }
 }
 
 function saveHistory(list) {
-  try { localStorage.setItem(HISTORY_KEY, JSON.stringify(list)); }
-  catch {}
+  try {
+    sessionStorage.setItem(HISTORY_KEY, JSON.stringify(list));
+    tgStorage?.setItem(HISTORY_KEY, JSON.stringify(list));
+  } catch {}
+}
+
+// При загрузке — восстанавливаем из CloudStorage если sessionStorage пуст
+if (tgStorage) {
+  tgStorage.getItem(HISTORY_KEY, (err, value) => {
+    if (!err && value) {
+      try {
+        if (!sessionStorage.getItem(HISTORY_KEY)) {
+          sessionStorage.setItem(HISTORY_KEY, value);
+          renderHistory();
+        }
+      } catch {}
+    }
+  });
 }
 
 function addToHistory(game) {
