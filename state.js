@@ -108,6 +108,7 @@ function matchesState(game, s = state) {
   if (s.opts.has('dlc')    && !game.hasDlc)                         return false;
   if (s.opts.has('ru')     && !(game.opts || []).includes('ru'))     return false;
   if (s.opts.has('online') && !(game.opts || []).includes('online')) return false;
+  if (s.opts.has('new')    && !game.isNew)                           return false;
 
   if (s.source === 'local' && game.source !== 'local') return false;
   if (s.source === 'steam' && game.source !== 'steam') return false;
