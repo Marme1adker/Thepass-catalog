@@ -9,7 +9,7 @@ const FAV_KEY = 'thepass_favorites';
 
 // Используем sessionStorage как основное хранилище,
 // с попыткой синхронизировать через Telegram CloudStorage если доступен
-const tgStorage = window.Telegram?.WebApp?.CloudStorage;
+const _tgStorageFav = window.Telegram?.WebApp?.CloudStorage;
 
 function loadFavorites() {
   try { return JSON.parse(sessionStorage.getItem(FAV_KEY) || '[]'); }
@@ -19,17 +19,15 @@ function loadFavorites() {
 function saveFavorites(list) {
   try {
     sessionStorage.setItem(FAV_KEY, JSON.stringify(list));
-    // Дублируем в CloudStorage если доступен (асинхронно, не блокирует UI)
-    tgStorage?.setItem(FAV_KEY, JSON.stringify(list));
+    _tgStorageFav?.setItem(FAV_KEY, JSON.stringify(list));
   } catch {}
 }
 
-// При загрузке страницы — пробуем восстановить из CloudStorage
-if (tgStorage) {
-  tgStorage.getItem(FAV_KEY, (err, value) => {
+// При загрузке — восстанавливаем из CloudStorage если sessionStorage пуст
+if (_tgStorageFav) {
+  _tgStorageFav.getItem(FAV_KEY, (err, value) => {
     if (!err && value) {
       try {
-        // Берём CloudStorage только если sessionStorage пуст
         if (!sessionStorage.getItem(FAV_KEY)) {
           sessionStorage.setItem(FAV_KEY, value);
           renderFavorites();
