@@ -8,7 +8,7 @@
 const HISTORY_KEY = 'thepass_history';
 const HISTORY_MAX = 10;
 
-const tgStorage = window.Telegram?.WebApp?.CloudStorage;
+const _tgStorageHist = window.Telegram?.WebApp?.CloudStorage;
 
 function loadHistory() {
   try { return JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]'); }
@@ -18,13 +18,13 @@ function loadHistory() {
 function saveHistory(list) {
   try {
     sessionStorage.setItem(HISTORY_KEY, JSON.stringify(list));
-    tgStorage?.setItem(HISTORY_KEY, JSON.stringify(list));
+    _tgStorageHist?.setItem(HISTORY_KEY, JSON.stringify(list));
   } catch {}
 }
 
 // При загрузке — восстанавливаем из CloudStorage если sessionStorage пуст
-if (tgStorage) {
-  tgStorage.getItem(HISTORY_KEY, (err, value) => {
+if (_tgStorageHist) {
+  _tgStorageHist.getItem(HISTORY_KEY, (err, value) => {
     if (!err && value) {
       try {
         if (!sessionStorage.getItem(HISTORY_KEY)) {
