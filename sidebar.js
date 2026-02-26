@@ -60,7 +60,7 @@ overlay.addEventListener('click', e => {
 });
 overlay.addEventListener('touchend', e => {
   if (!sidebar.classList.contains('open')) return;
-  if (e.target === overlay) { e.preventDefault(); closeDrawer(); }
+  if (!sidebar.contains(e.target)) { e.preventDefault(); closeDrawer(); }
 });
 
 // ── Swipe ────────────────────────────────────────────────────────
@@ -91,9 +91,8 @@ sidebar.addEventListener('touchend', () => {
 
 // ── Клики внутри сайдбара ────────────────────────────────────────
 sidebar.addEventListener('click', handleSidebarClick, true);
-sidebar.addEventListener('touchend', handleSidebarClick, true);
 
-['touchstart', 'mousedown', 'mouseup'].forEach(evt => {
+['touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(evt => {
   sidebar.addEventListener(evt, e => e.stopPropagation(), true);
 });
 
