@@ -64,20 +64,40 @@ overlay.addEventListener('touchend', e => {
 });
 
 // ── Swipe ────────────────────────────────────────────────────────
+// ── Swipe ────────────────────────────────────────────────────────
 let swipeStartX = 0;
+let swipeStartY = 0;
 let swipeCurX   = 0;
+let swipeCurY   = 0;
 let swipeActive = false;
+let isScrolling = false;
 
 sidebar.addEventListener('touchstart', e => {
   if (window.innerWidth > 700) return;
   swipeStartX = e.touches[0].clientX;
+  swipeStartY = e.touches[0].clientY;
   swipeCurX   = swipeStartX;
   swipeActive = true;
+  isScrolling = false;
 }, { passive: true });
 
 sidebar.addEventListener('touchmove', e => {
   if (!swipeActive) return;
   swipeCurX = e.touches[0].clientX;
+  swipeCurY = e.touches[0].clientY;
+
+  // Если движение по Y больше чем по X — это вертикальный скролл
+  if (!isScrolling) {
+    const diffX = Math.abs(swipeCurX - swipeStartX);
+    const diffY = Math.abs(swipeCurY - swipeStartY);
+    if (diffY > diffX && diffY > 5) {
+      isScrolling = true;
+      return; 
+    }
+  }
+
+  if (isScrolling) return; // Игнорируем логику сайдбара при скролле
+
   const diff = swipeCurX - swipeStartX;
   if (diff < 0) sidebar.style.transform = `translateX(${diff}px)`;
 }, { passive: true });
@@ -85,16 +105,13 @@ sidebar.addEventListener('touchmove', e => {
 sidebar.addEventListener('touchend', () => {
   if (!swipeActive) return;
   swipeActive = false;
-  if (swipeCurX - swipeStartX < -80) closeDrawer();
+  if (!isScrolling && (swipeCurX - swipeStartX < -80)) closeDrawer();
   sidebar.style.transform = '';
 });
 
 // ── Клики внутри сайдбара ────────────────────────────────────────
-sidebar.addEventListener('click', handleSidebarClick, true);
-
-['touchstart', 'touchend', 'mousedown', 'mouseup'].forEach(evt => {
-  sidebar.addEventListener(evt, e => e.stopPropagation(), true);
-});
+// ✅ ДОБАВИТЬ ЭТО
+sidebar.addEventListener('click', handleSidebarClick);
 
 function handleSidebarClick(e) {
   e.stopPropagation();

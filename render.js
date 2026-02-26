@@ -95,6 +95,7 @@ function renderList(grouped, query) {
     games.forEach(game => {
       const card = document.createElement('div');
       card.className = 'list-card';
+      card.dataset.title = game.title; // ✅ ВОТ ОНА, ПРАВИЛЬНАЯ ПОЗИЦИЯ
       card.style.animationDelay = `${Math.min(cardIndex, 20) * 30}ms`;
       cardIndex++;
 
@@ -130,21 +131,10 @@ function renderList(grouped, query) {
         <div class="list-arrow">›</div>
       `;
 
-      card.addEventListener('click', e => {
-        if (e.target.closest('.fav-btn')) return;
-        openModal(game);
-      });
-
-      card.querySelector('.fav-btn').addEventListener('click', e => {
-        e.stopPropagation();
-        toggleFavorite(game);
-      });
-
       listEl.appendChild(card);
     });
   });
 }
-
 // ── Рендер сеткой ────────────────────────────────────────────────
 
 function renderGrid(grouped, query) {
@@ -155,9 +145,10 @@ function renderGrid(grouped, query) {
     const row = document.createElement('div');
     row.className = 'grid-wrap';
 
-    games.forEach(game => {
-      const card = document.createElement('div');
+      games.forEach(game => {
+      const card = document.createElement('div'); // <--- ВЕРНУТЬ ЭТУ СТРОКУ
       card.className = `grid-card${game.hasDlc ? ' is-dlc' : ''}`;
+      card.dataset.title = game.title;
       card.dataset.source = game.source; // ← для hover-glow в CSS
       card.style.animationDelay = `${Math.min(cardIndex, 20) * 35}ms`;
       cardIndex++;
@@ -194,14 +185,6 @@ function renderGrid(grouped, query) {
         </button>
       `;
 
-      card.addEventListener('click', e => {
-        if (e.target.closest('.fav-btn')) return;
-        openModal(game);
-      });
-      card.querySelector('.fav-btn').addEventListener('click', e => {
-        e.stopPropagation();
-        toggleFavorite(game);
-      });
 
       row.appendChild(card);
     });
@@ -272,4 +255,22 @@ btnGrid.addEventListener('click', () => {
   btnGrid.classList.add('active');
   btnList.classList.remove('active');
   render();
+});
+// ✅ ДОБАВИТЬ В КОНЕЦ ФАЙЛА render.js
+listEl.addEventListener('click', e => {
+  // 1. Обработка клика по лайку
+  const favBtn = e.target.closest('.fav-btn');
+  if (favBtn) {
+    e.stopPropagation();
+    const game = ALL.find(g => g.title === favBtn.dataset.title);
+    if (game) toggleFavorite(game);
+    return;
+  }
+
+  // 2. Обработка клика по самой карточке
+  const card = e.target.closest('.list-card, .grid-card');
+  if (card) {
+    const game = ALL.find(g => g.title === card.dataset.title);
+    if (game) openGamePage(game);
+  }
 });
