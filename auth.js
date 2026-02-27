@@ -600,33 +600,6 @@ async function authViaTelegram() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  if (!AUTH_ENABLED) {
-    console.info('[Auth] API URL не настроен — авторизация отключена.');
-    return;
-  }
-
-  Auth.load();
-
-  // 1. Пробуем войти без пароля
-  if (!Auth.isLoggedIn()) await authViaTelegram();
-
-  // 2. Обновляем данные, если вошли
-  if (Auth.isLoggedIn()) await authRefreshUser();
-
-  // 3. Рисуем кнопки
-  renderAccountIcon();
-  if (typeof applySubscriptionUI === 'function') applySubscriptionUI();
-
-  // 4. Закрытие модалки по клику
-  const modal = document.getElementById('authModal');
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) AuthModal.close();
-    });
-  }
-});
-
 document.addEventListener('DOMContentLoaded', () => {
   // Если API не настроен — ничего не делаем
   if (!AUTH_ENABLED) {
@@ -647,9 +620,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const gamePage = document.getElementById('gamePage');
   if (gamePage) {
-    const observer = new MutationObserver(() => {
-      if (gamePage.classList.contains('open')) applySubscriptionUI();
-    });
-    observer.observe(gamePage, { attributes: true, attributeFilter: ['class'] });
+    applySubscriptionUI();
   }
 });
