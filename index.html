@@ -8,7 +8,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css?v=6">
   <link rel="stylesheet" href="auth.css?v=6">
-  <link rel="stylesheet" href="profile.css">
 </head>
 <body>
 
@@ -255,27 +254,20 @@
 
   <!-- ══════════ ОСНОВНАЯ СТРАНИЦА ══════════ -->
   <div class="page" id="mainPage">
-
-  <!-- Nav-rail оверлей (мобиль) -->
-  <div id="navRailOverlay"></div>
-
-  <nav class="nav-rail" id="navRail">
-    <button class="nav-item" data-page="profile" title="Профиль">
-      <span class="nav-icon">👤</span>
-      <span class="nav-label">Профиль</span>
-    </button>
-    <button class="nav-item active" data-page="catalog" title="Каталог">
-      <span class="nav-icon">🎮</span>
-      <span class="nav-label">Каталог</span>
-    </button>
-    <button class="nav-item" data-page="community" title="Комьюнити">
-      <span class="nav-icon">👥</span>
-      <span class="nav-label">Люди</span>
-    </button>
-  </nav>
-
-  <!-- ══════════ СТРАНИЦА КАТАЛОГА ══════════ -->
-  <div id="catalogPage" class="active">
+    <nav class="nav-rail" id="navRail">
+  <button class="nav-item" data-page="profile" title="Профиль">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">Профиль</span>
+  </button>
+  <button class="nav-item active" data-page="catalog" title="Каталог">
+    <span class="nav-icon">🎮</span>
+    <span class="nav-label">Каталог</span>
+  </button>
+  <button class="nav-item" data-page="community" title="Комьюнити">
+    <span class="nav-icon">👥</span>
+    <span class="nav-label">Люди</span>
+  </button>
+</nav>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <!-- ══════ САЙДБАР ══════ -->
     <aside class="sidebar" id="sidebar">
@@ -451,14 +443,6 @@
     </div>
   </div>
 
-  </div><!-- /#catalogPage -->
-
-  <!-- ══════════ СТРАНИЦА ПРОФИЛЯ ══════════ -->
-  <div id="profilePage"></div>
-
-  <!-- ══════════ СТРАНИЦА КОМЬЮНИТИ ══════════ -->
-  <div id="communityPage"></div>
-
   <!-- Тост -->
   <div class="toast" id="toast"></div>
 
@@ -478,7 +462,6 @@
   <script src="modal.js"></script>
   <script src="auth_config.js"></script>
   <script src="auth.js?v=6"></script>
-
 
   <!-- ── Loader: фиксируем время старта, скрываем после загрузки ── -->
   <script>
@@ -512,9 +495,6 @@
 
   // Открыть страницу игры
   window.openGamePage = function(game) {
-    // Сохраняем в last_games
-    if (typeof trackLastGame === 'function') trackLastGame(game);
-
     const page = document.getElementById('gamePage');
     const main = document.getElementById('mainPage');
     const title = game.name || game.title || '';
@@ -950,7 +930,8 @@
     requestAnimationFrame(frame);
   })();
   </script>
-  <script src="profile.js"></script>
+
+
 
 </body>
 </html>
