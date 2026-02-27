@@ -557,7 +557,11 @@ function openProfileModal() {
     <div class="auth-modal profile-modal">
       <button class="auth-modal-close" id="profileClose">✕</button>
 
-      <div class="profile-header">
+      <!-- Баннер -->
+      <div class="profile-banner"></div>
+
+      <!-- Аватар + имя, выступающие из баннера -->
+      <div class="profile-avatar-area">
         <div class="profile-avatar" id="profileAvatarWrap">
           ${avatarHtml}
           <div class="profile-avatar-edit" id="profileAvatarEdit" title="Изменить аватар">📷</div>
@@ -566,37 +570,41 @@ function openProfileModal() {
         <div class="profile-info">
           <div class="profile-username">${escapeHtml(u.username || u.login)}</div>
           <div class="profile-login">@${escapeHtml(u.login)}</div>
-          <div class="profile-badges-row">
-            <div class="profile-role-badge">${roleLabel}</div>
-            ${uidHtml}
+          <div class="profile-meta-row">
+            <span class="profile-role">${roleLabel}</span>
+            <span class="profile-uid">UID: ${u.id ?? '—'}</span>
           </div>
         </div>
       </div>
 
-      <div class="profile-sub-row ${subClass}">
-        <span class="profile-sub-ico">${Auth.isPremium() ? '💎' : '🔒'}</span>
-        <span class="profile-sub-text">Подписка: <b>${subText}</b></span>
-        ${!Auth.isPremium() ? `<button class="profile-sub-btn" id="profileBuyBtn">Купить</button>` : ''}
-      </div>
+      <div class="profile-divider"></div>
 
-      <div class="profile-stats-row">
-        <div class="profile-stat">
-          <div class="profile-stat-val">${regDate}</div>
-          <div class="profile-stat-lbl">Регистрация</div>
+      <div class="profile-body">
+        <div class="profile-sub-row ${subClass}">
+          <span class="profile-sub-ico">${Auth.isPremium() ? '💎' : '🔒'}</span>
+          <span class="profile-sub-text">Подписка: <b>${subText}</b></span>
+          ${!Auth.isPremium() ? `<button class="profile-sub-btn" id="profileBuyBtn">Купить</button>` : ''}
         </div>
-        <div class="profile-stat">
-          <div class="profile-stat-val">${u.credits ?? 0}</div>
-          <div class="profile-stat-lbl">Активаций</div>
+
+        <div class="profile-stats-row">
+          <div class="profile-stat">
+            <div class="profile-stat-val">${regDate}</div>
+            <div class="profile-stat-lbl">Регистрация</div>
+          </div>
+          <div class="profile-stat">
+            <div class="profile-stat-val">${u.credits ?? 0}</div>
+            <div class="profile-stat-lbl">Активаций</div>
+          </div>
         </div>
-      </div>
 
-      <div class="profile-actions">
-        <button class="profile-action-btn" id="profileChangeUsername">✏️ Изменить имя</button>
-        <button class="profile-action-btn" id="profileChangePassword">🔑 Сменить пароль</button>
-        <button class="profile-action-btn profile-action-btn--danger" id="profileLogout">🚪 Выйти</button>
-      </div>
+        <div class="profile-actions">
+          <button class="profile-action-btn" id="profileChangeUsername">✏️ Изменить имя</button>
+          <button class="profile-action-btn" id="profileChangePassword">🔑 Сменить пароль</button>
+          <button class="profile-action-btn profile-action-btn--danger" id="profileLogout">🚪 Выйти</button>
+        </div>
 
-      <div class="auth-error" id="profileError"></div>
+        <div class="auth-error" id="profileError"></div>
+      </div>
     </div>
   `;
 
