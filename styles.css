@@ -1921,3 +1921,43 @@ kbd {
   background: rgba(20, 20, 20, 0.6) !important;
   border-color: rgba(91, 33, 182, 0.5) !important;
 }
+/* ══════════ ФИКСЫ UI ДЛЯ МОБИЛОК ══════════ */
+
+/* 1. Спасаем шапку от вылезания за края на узких экранах */
+@media (max-width: 420px) {
+  .header { gap: 6px; padding: 14px 0 10px; }
+  .header-text h1 { font-size: 15px; }
+  .theme-toggle-btn, .random-btn, .stats-toggle-btn { 
+    padding: 6px 8px; 
+  }
+  .filter-toggle-btn {
+    padding: 6px 8px;
+    font-size: 0; /* Скрываем слово "Фильтры", оставляя только иконку */
+    gap: 4px;
+  }
+  .filter-badge {
+    font-size: 10px; /* Цифра выбранных фильтров остается видимой */
+  }
+}
+
+/* 2. Умный мобильный сайдбар (шторка) под разные темы */
+@media (max-width: 700px) {
+  /* Базовая (Тёмная) тема */
+  .sidebar {
+    background: rgba(26, 22, 40, 0.85) !important;
+    backdrop-filter: blur(24px) saturate(180%);
+    -webkit-backdrop-filter: blur(24px) saturate(180%);
+  }
+  
+  /* Светлая тема */
+  .light-theme .sidebar {
+    background: rgba(243, 244, 246, 0.85) !important; /* Мягкий светлый полупрозрачный фон */
+    border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
+  }
+  
+  /* OLED тема */
+  .oled-theme .sidebar {
+    background: rgba(5, 5, 5, 0.85) !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  }
+}
