@@ -922,7 +922,14 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 });
 
+// ══════════ УМНАЯ СИСТЕМА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК ══════════
 function switchPage(pageId) {
+  // АВТО-ЗАКРЫТИЕ ФИЛЬТРОВ ПРИ СМЕНЕ ВКЛАДКИ
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('open');
+
   // 1. Меняем активную кнопку
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
@@ -941,20 +948,28 @@ function switchPage(pageId) {
     if (!Auth.isLoggedIn()) {
       showToast("❌ Сначала войдите в аккаунт");
       if (typeof openLoginModal === 'function') openLoginModal();
+      // Если не вошел - возвращаем визуально на вкладку каталога
+      switchPage('catalog'); 
       return;
     }
+    
     // Заполняем данные пользователя
-    document.getElementById('profUsername').textContent = Auth.user.username || Auth.user.login;
-    document.getElementById('profAvatarText').textContent = (Auth.user.username || Auth.user.login)[0].toUpperCase();
-    document.getElementById('profRole').textContent = Auth.user.role === 'admin' ? '👑 ADMIN' : 'USER';
-    document.getElementById('profUid').textContent = `UID: ${Auth.user.num_id || '---'}`;
+    if (document.getElementById('profUsername')) {
+      document.getElementById('profUsername').textContent = Auth.user.username || Auth.user.login;
+      document.getElementById('profAvatarText').textContent = (Auth.user.username || Auth.user.login)[0].toUpperCase();
+      document.getElementById('profRole').textContent = Auth.user.role === 'admin' ? '👑 ADMIN' : 'USER';
+      document.getElementById('profUid').textContent = `UID: ${Auth.user.num_id || '---'}`;
+    }
     
     // Запускаем абстрактные линии
-    startProfileLines();
+    if (typeof startProfileLines === 'function') startProfileLines();
   } 
   else if (pageId === 'community') {
     // В будущем здесь будет запрос к API для получения списка юзеров
-    document.getElementById('communityList').innerHTML = '<p style="color: var(--muted); text-align: center;">База пользователей подключается...</p>';
+    const commList = document.getElementById('communityList');
+    if (commList) {
+      commList.innerHTML = '<p style="color: var(--muted); text-align: center;">База пользователей подключается...</p>';
+    }
   }
 }
 
