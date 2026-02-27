@@ -129,6 +129,27 @@ async function authUploadAvatar(file) {
   return data.avatar_url;
 }
 
+async function authUploadBanner(file) {
+  if (!AUTH_ENABLED) throw new Error('API не настроен');
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await fetch(AUTH_CONFIG.BASE_URL + '/api/auth/banner', {
+    method:  'POST',
+    headers: { 'Authorization': `Bearer ${Auth.token}` },
+    body:    formData,
+  });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.detail || 'Ошибка загрузки баннера');
+  Auth.user.banner_url = data.banner_url;
+  Auth.save();
+  return data.banner_url;
+}
+
+async function apiGetUsers() {
+  try { return await apiCall('GET', '/users'); }
+  catch { return []; }
+}
+
 async function authRefreshUser() {
   try {
     const data = await apiCall('GET', '/auth/me');
@@ -533,22 +554,42 @@ function openProfileModal() {
     ? (u.sub_until ? `до ${new Date(u.sub_until).toLocaleDateString('ru')}` : '∞ безлимит')
     : 'Нет подписки';
   const subClass  = Auth.isPremium() ? 'profile-sub--active' : 'profile-sub--none';
-  
-  // Здесь мы разделяем роль и UID для красивого отображения!
-  const roleLabel = Auth.isAdmin() ? '👑 Admin' : Auth.isPremium() ? '💎 Premium' : '👤 User';
-  const uidHtml   = u.num_id ? `<div class="profile-role-badge profile-uid-badge">🆔 UID: ${u.num_id}</div>` : '';
+
+  // Роль: admin = 👑 Admin, premium/sub = 💎 Customer, иначе 👤 User
+  const roleLabel = Auth.isAdmin()
+    ? '👑 Admin'
+    : Auth.isPremium()
+      ? '💎 Customer'
+      : '👤 User';
+  const uidHtml = u.num_id ? `<span class="profile-uid">UID: ${u.num_id}</span>` : '';
 
   const avatarSrc = u.avatar_url
     ? (u.avatar_url.startsWith('http') ? u.avatar_url : AUTH_CONFIG.BASE_URL + u.avatar_url)
     : null;
 
+  const bannerSrc = u.banner_url
+    ? (u.banner_url.startsWith('http') ? u.banner_url : AUTH_CONFIG.BASE_URL + u.banner_url)
+    : null;
+
+  const bannerStyle = bannerSrc
+    ? `background-image:url('${bannerSrc}');background-size:cover;background-position:center;`
+    : '';
+
   const avatarHtml = avatarSrc
     ? `<img src="${avatarSrc}" class="profile-avatar-img" alt="">`
     : `<div class="profile-avatar-placeholder">${(u.username || u.login || '?')[0].toUpperCase()}</div>`;
 
+  // 3D корона только для admin
+  const crownHtml = Auth.isAdmin()
+    ? `<div class="profile-crown" title="Admin">👑</div>`
+    : '';
+
   const regDate = u.created_at
     ? new Date(u.created_at).toLocaleDateString('ru', { day:'2-digit', month:'long', year:'numeric' })
     : '—';
+
+  // Реальное количество активаций из credits
+  const activations = u.credits ?? u.activations ?? 0;
 
   const modal = document.createElement('div');
   modal.id        = 'authProfileModal';
@@ -557,22 +598,28 @@ function openProfileModal() {
     <div class="auth-modal profile-modal">
       <button class="auth-modal-close" id="profileClose">✕</button>
 
-      <!-- Баннер -->
-      <div class="profile-banner"></div>
+      <!-- Баннер с кнопкой редактирования -->
+      <div class="profile-banner" id="profileBannerEl" style="${bannerStyle}">
+        <button class="profile-banner-edit-btn" id="profileBannerEditBtn" title="Сменить баннер">🖼️</button>
+        <input type="file" id="profileBannerInput" accept="image/*" style="display:none">
+      </div>
 
       <!-- Аватар + имя, выступающие из баннера -->
       <div class="profile-avatar-area">
-        <div class="profile-avatar" id="profileAvatarWrap">
-          ${avatarHtml}
-          <div class="profile-avatar-edit" id="profileAvatarEdit" title="Изменить аватар">📷</div>
-          <input type="file" id="profileAvatarInput" accept="image/*" style="display:none">
+        <div class="profile-avatar-wrap-outer">
+          ${crownHtml}
+          <div class="profile-avatar" id="profileAvatarWrap">
+            ${avatarHtml}
+            <div class="profile-avatar-edit" id="profileAvatarEdit" title="Изменить аватар">📷</div>
+            <input type="file" id="profileAvatarInput" accept="image/*" style="display:none">
+          </div>
         </div>
         <div class="profile-info">
           <div class="profile-username">${escapeHtml(u.username || u.login)}</div>
           <div class="profile-login">@${escapeHtml(u.login)}</div>
           <div class="profile-meta-row">
             <span class="profile-role">${roleLabel}</span>
-            <span class="profile-uid">UID: ${u.id ?? '—'}</span>
+            ${uidHtml}
           </div>
         </div>
       </div>
@@ -592,7 +639,7 @@ function openProfileModal() {
             <div class="profile-stat-lbl">Регистрация</div>
           </div>
           <div class="profile-stat">
-            <div class="profile-stat-val">${u.credits ?? 0}</div>
+            <div class="profile-stat-val">${activations}</div>
             <div class="profile-stat-lbl">Активаций</div>
           </div>
         </div>
@@ -631,6 +678,7 @@ function openProfileModal() {
   document.getElementById('profileChangeUsername').addEventListener('click', openChangeUsernameModal);
   document.getElementById('profileChangePassword').addEventListener('click', openChangePasswordModal);
 
+  // Аватар — редактирование
   document.getElementById('profileAvatarEdit').addEventListener('click', () => {
     document.getElementById('profileAvatarInput').click();
   });
@@ -643,19 +691,73 @@ function openProfileModal() {
     }
     try {
       const url = await authUploadAvatar(file);
+      const fullUrl = url.startsWith('http') ? url : AUTH_CONFIG.BASE_URL + url;
+      // Обновляем аватар в модалке
       const wrap = document.getElementById('profileAvatarWrap');
       const img  = wrap.querySelector('img, .profile-avatar-placeholder');
       if (img) img.remove();
       const newImg     = document.createElement('img');
-      newImg.src       = url.startsWith('http') ? url : AUTH_CONFIG.BASE_URL + url;
+      newImg.src       = fullUrl;
       newImg.className = 'profile-avatar-img';
       wrap.prepend(newImg);
+      // Синхронизируем аватар на странице профиля
+      _syncProfilePageAvatar(fullUrl, Auth.user.username || Auth.user.login);
       renderAccountIcon();
       showToast('✅ Аватар обновлён');
     } catch (err) {
       document.getElementById('profileError').textContent = err.message;
     }
   });
+
+  // Баннер — редактирование
+  document.getElementById('profileBannerEditBtn').addEventListener('click', () => {
+    document.getElementById('profileBannerInput').click();
+  });
+  document.getElementById('profileBannerInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 8 * 1024 * 1024) {
+      document.getElementById('profileError').textContent = 'Файл слишком большой (макс. 8 МБ)';
+      return;
+    }
+    try {
+      const url = await authUploadBanner(file);
+      const fullUrl = url.startsWith('http') ? url : AUTH_CONFIG.BASE_URL + url;
+      // Обновляем баннер в модалке
+      const bannerEl = document.getElementById('profileBannerEl');
+      if (bannerEl) {
+        bannerEl.style.backgroundImage = `url('${fullUrl}')`;
+        bannerEl.style.backgroundSize = 'cover';
+        bannerEl.style.backgroundPosition = 'center';
+      }
+      // Синхронизируем баннер на странице профиля
+      _syncProfilePageBanner(fullUrl);
+      showToast('✅ Баннер обновлён');
+    } catch (err) {
+      document.getElementById('profileError').textContent = err.message;
+    }
+  });
+}
+
+// ── Синхронизация аватара и баннера на странице профиля ──────────
+
+function _syncProfilePageAvatar(avatarUrl, fallbackName) {
+  const wrap = document.getElementById('profAvatarWrap');
+  if (wrap) {
+    wrap.innerHTML = avatarUrl
+      ? `<img src="${avatarUrl}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit;" alt="">`
+      : (fallbackName || '?')[0].toUpperCase();
+  }
+  const textEl = document.getElementById('profAvatarText');
+  if (textEl && !avatarUrl) textEl.textContent = (fallbackName || '?')[0].toUpperCase();
+}
+
+function _syncProfilePageBanner(bannerUrl) {
+  const bannerEl = document.getElementById('profPageBanner');
+  if (bannerEl) {
+    bannerEl.style.backgroundImage = bannerUrl ? `url('${bannerUrl}')` : '';
+    if (bannerUrl) { bannerEl.style.backgroundSize='cover'; bannerEl.style.backgroundPosition='center'; }
+  }
 }
 
 function openChangeUsernameModal() {
@@ -963,22 +1065,95 @@ function switchPage(pageId) {
     
     // Заполняем данные пользователя
     if (document.getElementById('profUsername')) {
-      document.getElementById('profUsername').textContent = Auth.user.username || Auth.user.login;
-      document.getElementById('profAvatarText').textContent = (Auth.user.username || Auth.user.login)[0].toUpperCase();
-      document.getElementById('profRole').textContent = Auth.user.role === 'admin' ? '👑 ADMIN' : 'USER';
-      document.getElementById('profUid').textContent = `UID: ${Auth.user.num_id || '---'}`;
+      const u = Auth.user;
+      document.getElementById('profUsername').textContent = u.username || u.login;
+
+      // Роль
+      const roleEl = document.getElementById('profRole');
+      if (roleEl) {
+        if (u.role === 'admin') {
+          roleEl.textContent = '👑 Admin';
+          roleEl.style.color = '#f59e0b';
+          roleEl.style.borderColor = '#f59e0b60';
+          roleEl.style.background = '#f59e0b18';
+        } else if (Auth.isPremium()) {
+          roleEl.textContent = '💎 Customer';
+          roleEl.style.color = '#a78bfa';
+          roleEl.style.borderColor = '#8b5cf640';
+        } else {
+          roleEl.textContent = '👤 User';
+        }
+      }
+      document.getElementById('profUid').textContent = `UID: ${u.num_id || u.id || '---'}`;
+
+      // Аватар
+      const avatarUrl = u.avatar_url
+        ? (u.avatar_url.startsWith('http') ? u.avatar_url : AUTH_CONFIG.BASE_URL + u.avatar_url)
+        : null;
+      _syncProfilePageAvatar(avatarUrl, u.username || u.login);
+
+      // Баннер
+      const bannerUrl = u.banner_url
+        ? (u.banner_url.startsWith('http') ? u.banner_url : AUTH_CONFIG.BASE_URL + u.banner_url)
+        : null;
+      _syncProfilePageBanner(bannerUrl);
+
+      // Статы
+      const regEl = document.getElementById('profRegDate');
+      if (regEl && u.created_at) {
+        regEl.textContent = new Date(u.created_at).toLocaleDateString('ru', { day:'2-digit', month:'2-digit', year:'numeric' });
+      }
+      const actEl = document.getElementById('profActivations');
+      if (actEl) actEl.textContent = u.credits ?? u.activations ?? 0;
+
+      // Корона над аватаром
+      const crownEl = document.getElementById('profCrown');
+      if (crownEl) crownEl.style.display = (u.role === 'admin') ? 'flex' : 'none';
     }
     
     // Запускаем абстрактные линии
     if (typeof startProfileLines === 'function') startProfileLines();
   } 
   else if (pageId === 'community') {
-    // В будущем здесь будет запрос к API для получения списка юзеров
     const commList = document.getElementById('communityList');
-    if (commList) {
-      commList.innerHTML = '<p style="color: var(--muted); text-align: center;">База пользователей подключается...</p>';
-    }
-  }
+    if (!commList) return;
+
+    // Показываем спиннер
+    commList.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;">⏳ Загрузка пользователей...</div>`;
+
+    apiGetUsers().then(users => {
+      if (!users || !users.length) {
+        commList.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;">Пользователи не найдены</div>`;
+        return;
+      }
+      commList.innerHTML = users.map((u, i) => {
+        const avatarSrc = u.avatar_url
+          ? (u.avatar_url.startsWith('http') ? u.avatar_url : AUTH_CONFIG.BASE_URL + u.avatar_url)
+          : null;
+        const initials = (u.username || u.login || '?')[0].toUpperCase();
+        const roleText = u.role === 'admin' ? '👑 Admin' : (u.role === 'premium' ? '💎 Customer' : '👤 User');
+        const roleColor = u.role === 'admin' ? '#f59e0b' : (u.role === 'premium' ? '#a78bfa' : '#9390b0');
+        const avatarHtml = avatarSrc
+          ? `<img src="${avatarSrc}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.parentNode.textContent='${initials}'" alt="">`
+          : initials;
+        return `
+          <div class="list-card comm-user-card" style="animation-delay:${i*40}ms">
+            <div class="comm-avatar" style="background:linear-gradient(135deg,var(--surface2),${roleColor}40);">
+              ${avatarHtml}
+            </div>
+            <div style="flex:1;min-width:0;">
+              <div style="font-family:'Syne';font-weight:700;font-size:14px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${escapeHtml(u.username || u.login)}</div>
+              <div style="display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;">
+                <span class="profile-role-badge" style="color:${roleColor};border-color:${roleColor}40;background:${roleColor}15;">${roleText}</span>
+                <span class="profile-uid-badge">UID: ${u.num_id || u.id || '?'}</span>
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }).catch(() => {
+      commList.innerHTML = `<div style="text-align:center;padding:40px 20px;color:var(--muted);font-size:13px;">⚠️ Ошибка загрузки</div>`;
+    });
 }
 
 // ══════════ АНИМАЦИЯ АБСТРАКТНЫХ ЛИНИЙ (ПРОФИЛЬ) ══════════
