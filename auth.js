@@ -923,25 +923,80 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function switchPage(pageId) {
-  // 1. Обновляем активную кнопку в меню
+  // 1. Меняем активную кнопку
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
   });
 
-  // 2. Логика смены контента
-  console.log(`Переключение на страницу: ${pageId}`);
-  
+  // 2. Скрываем всё, показываем нужную секцию
+  document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
+  const target = document.getElementById(`section-${pageId}`);
+  if (target) {
+    target.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // 3. Логика для конкретных страниц
   if (pageId === 'profile') {
-    // Пока что просто заглушка, скоро сделаем тут магию с линиями
-    showToast("👤 Открываем ваш профиль...");
-    // Скрываем каталог игр
-    document.getElementById('gameList').style.opacity = '0.3';
+    if (!Auth.isLoggedIn()) {
+      showToast("❌ Сначала войдите в аккаунт");
+      if (typeof openLoginModal === 'function') openLoginModal();
+      return;
+    }
+    // Заполняем данные пользователя
+    document.getElementById('profUsername').textContent = Auth.user.username || Auth.user.login;
+    document.getElementById('profAvatarText').textContent = (Auth.user.username || Auth.user.login)[0].toUpperCase();
+    document.getElementById('profRole').textContent = Auth.user.role === 'admin' ? '👑 ADMIN' : 'USER';
+    document.getElementById('profUid').textContent = `UID: ${Auth.user.num_id || '---'}`;
+    
+    // Запускаем абстрактные линии
+    startProfileLines();
   } 
-  else if (pageId === 'catalog') {
-    document.getElementById('gameList').style.opacity = '1';
-    showToast("🎮 Каталог игр");
-  }
   else if (pageId === 'community') {
-    showToast("👥 Комьюнити (Скоро!)");
+    // В будущем здесь будет запрос к API для получения списка юзеров
+    document.getElementById('communityList').innerHTML = '<p style="color: var(--muted); text-align: center;">База пользователей подключается...</p>';
   }
+}
+
+// ══════════ АНИМАЦИЯ АБСТРАКТНЫХ ЛИНИЙ (ПРОФИЛЬ) ══════════
+let profileAnimId = null;
+function startProfileLines() {
+  const canvas = document.getElementById('profileCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  
+  const lines = Array.from({ length: 15 }, () => ({
+    y: Math.random() * canvas.height,
+    speed: 0.5 + Math.random() * 1.5,
+    width: 2 + Math.random() * 4,
+    opacity: 0.1 + Math.random() * 0.4,
+    wave: Math.random() * 100
+  }));
+
+  let time = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    time += 0.02;
+    
+    lines.forEach(line => {
+      ctx.beginPath();
+      for (let x = 0; x < canvas.width; x += 20) {
+        const yOffset = Math.sin(x * 0.01 + time + line.wave) * 30;
+        ctx.lineTo(x, line.y + yOffset);
+      }
+      ctx.strokeStyle = `rgba(139, 92, 246, ${line.opacity})`;
+      ctx.lineWidth = line.width;
+      ctx.stroke();
+      
+      line.y -= line.speed;
+      if (line.y < -50) line.y = canvas.height + 50;
+    });
+    profileAnimId = requestAnimationFrame(draw);
+  }
+  
+  if (profileAnimId) cancelAnimationFrame(profileAnimId);
+  draw();
 }
