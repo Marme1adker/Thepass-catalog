@@ -1873,3 +1873,43 @@ kbd {
 }
 .theme-btn-option:hover { background: var(--surface2); color: var(--text); }
 .theme-btn-option.active { background: var(--purple3); color: #fff; }
+
+/* ══════════ ЭФФЕКТ СТЕКЛА ДЛЯ КАРТОЧЕК (Glassmorphism) ══════════ */
+
+/* Базовая (Тёмная) тема */
+.list-card, .grid-card {
+  background: rgba(26, 22, 40, 0.55) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); /* Для поддержки Safari */
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.2s ease;
+}
+.list-card:hover, .grid-card:hover {
+  background: rgba(35, 29, 54, 0.8) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important; /* Фиолетовое свечение при наведении */
+}
+
+/* Светлая тема */
+.light-theme .list-card,
+.light-theme .grid-card {
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
+}
+.light-theme .list-card:hover,
+.light-theme .grid-card:hover {
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(167, 139, 250, 0.4) !important;
+}
+
+/* OLED тема */
+.oled-theme .list-card,
+.oled-theme .grid-card {
+  background: rgba(6, 6, 6, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
+}
+.oled-theme .list-card:hover,
+.oled-theme .grid-card:hover {
+  background: rgba(16, 16, 16, 0.75) !important;
+  border-color: rgba(91, 33, 182, 0.4) !important;
+}
