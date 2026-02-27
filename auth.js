@@ -577,6 +577,10 @@ function applySubscriptionUI() {
 // Инициализация и Бесшовный вход (Zero-Click)
 // ══════════════════════════════════════════════════════════════════
 
+// ══════════════════════════════════════════════════════════════════
+// Инициализация и Бесшовный вход (Zero-Click)
+// ══════════════════════════════════════════════════════════════════
+
 async function authViaTelegram() {
   if (!AUTH_ENABLED || Auth.isLoggedIn()) return;
 
@@ -592,7 +596,10 @@ async function authViaTelegram() {
 
     if (res.ok) {
       const data = await res.json();
-      Auth.setSession(data.token, data.user);
+      // Правильное сохранение токена и юзера
+      Auth.token = data.token;
+      Auth.user  = data.user;
+      Auth.save();
       console.info(`[Auth] ⚡ Успешный вход через Telegram! Твой ID: #${data.user.num_id}`);
     }
   } catch (err) {
@@ -600,26 +607,40 @@ async function authViaTelegram() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Если API не настроен — ничего не делаем
+document.addEventListener('DOMContentLoaded', async () => {
   if (!AUTH_ENABLED) {
-    console.info('[Auth] API URL не настроен в auth_config.js — авторизация отключена.');
+    console.info('[Auth] API URL не настроен — авторизация отключена.');
     return;
   }
 
   Auth.load();
 
-  if (Auth.token) {
-    authRefreshUser().then(() => {
-      renderAccountIcon();
-      applySubscriptionUI();
-    });
-  } else {
-    renderAccountIcon();
-  }
+  // 1. Пробуем войти без пароля (Zero-Click)
+  if (!Auth.isLoggedIn()) await authViaTelegram();
 
+  // 2. Обновляем данные, если вошли
+  if (Auth.isLoggedIn()) await authRefreshUser();
+
+  // 3. Рисуем кнопки
+  renderAccountIcon();
+  if (typeof applySubscriptionUI === 'function') applySubscriptionUI();
+
+  // 4. Наблюдатель за страницей игры (чтобы кнопка менялась на "Купить подписку")
   const gamePage = document.getElementById('gamePage');
   if (gamePage) {
-    applySubscriptionUI();
+    const observer = new MutationObserver(() => {
+      if (gamePage.classList.contains('open')) applySubscriptionUI();
+    });
+    observer.observe(gamePage, { attributes: true, attributeFilter: ['class'] });
+  }
+
+  // 5. Закрытие модалки по клику
+  const modal = document.getElementById('authModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal && typeof AuthModal !== 'undefined') {
+        AuthModal.close();
+      }
+    });
   }
 });
