@@ -1961,3 +1961,40 @@ kbd {
     border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
   }
 }
+/* ══════════ НОВЫЕ КНОПКИ АВТОРИЗАЦИИ (Telegram) ══════════ */
+.auth-btn-tg {
+  width: 100%;
+  background: #2AABEE; /* Фирменный цвет Telegram */
+  color: #ffffff;
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  font-family: 'Syne', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 16px rgba(42, 171, 238, 0.3);
+  transition: all 0.15s ease;
+  margin-bottom: 4px;
+}
+.auth-btn-tg:hover { 
+  background: #229ED9; 
+  box-shadow: 0 6px 20px rgba(42, 171, 238, 0.5); 
+  transform: translateY(-2px); 
+}
+.auth-btn-tg:active { transform: scale(0.97); }
+
+.auth-switch-link {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 10px;
+  transition: color 0.15s;
+}
+.auth-switch-link:hover { color: var(--text); }
