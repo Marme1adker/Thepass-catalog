@@ -253,22 +253,52 @@
   </div>
 
   <!-- ══════════ ОСНОВНАЯ СТРАНИЦА ══════════ -->
-  <div class="page" id="mainPage">
-    <nav class="nav-rail" id="navRail">
-  <button class="nav-item" data-page="profile" title="Профиль">
-    <span class="nav-icon">👤</span>
-    <span class="nav-label">Профиль</span>
-  </button>
-  <button class="nav-item active" data-page="catalog" title="Каталог">
-    <span class="nav-icon">🎮</span>
-    <span class="nav-label">Каталог</span>
-  </button>
-  <button class="nav-item" data-page="community" title="Комьюнити">
-    <span class="nav-icon">👥</span>
-    <span class="nav-label">Люди</span>
-  </button>
-</nav>
-  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+<div id="section-profile" class="content-section" style="display: none; position: relative; overflow: hidden; min-height: 100vh;">
+        <canvas id="profileCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.6; pointer-events: none;"></canvas>
+        
+        <div style="position: relative; z-index: 1; padding: 40px 20px;">
+          <div class="profile-header-card list-card">
+            <div class="prof-avatar-wrap">
+              <div class="prof-avatar" id="profAvatarText">?</div>
+            </div>
+            <div class="prof-info">
+              <h2 id="profUsername">Загрузка...</h2>
+              <div class="prof-badges">
+                <span class="badge badge-role" id="profRole">USER</span>
+                <span class="badge badge-uid" id="profUid">UID: ---</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="profile-stats-grid" style="margin-top: 20px;">
+            <div class="profile-stat list-card">
+              <div class="profile-stat-val" id="profRegDate">--.--.----</div>
+              <div class="profile-stat-lbl">Дата регистрации</div>
+            </div>
+            <div class="profile-stat list-card">
+              <div class="profile-stat-val" id="profActivations">0</div>
+              <div class="profile-stat-lbl">Активаций</div>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 30px; font-family: 'Syne'; color: var(--purple2);">Последние игры</h3>
+          <div id="profLastGames" class="games-grid" style="margin-top: 15px;">
+            <p style="color: var(--muted); font-size: 13px;">Игры пока не найдены...</p>
+          </div>
+        </div>
+      </div>
+
+      <div id="section-community" class="content-section" style="display: none;">
+        <div style="padding: 40px 20px;">
+          <h2 style="font-family: 'Syne'; font-size: 26px; color: var(--purple2); margin-bottom: 20px;">Комьюнити</h2>
+          <div class="search-wrap" style="margin-bottom: 20px;">
+            <input class="search-input" id="commSearch" type="text" placeholder="Поиск по нику или UID...">
+          </div>
+          <div id="communityList" style="display: flex; flex-direction: column; gap: 10px;">
+            <p style="color: var(--muted); text-align: center; margin-top: 40px;">Загрузка списка пользователей...</p>
+          </div>
+        </div>
+      </div>
     <!-- ══════ САЙДБАР ══════ -->
     <aside class="sidebar" id="sidebar">
 
