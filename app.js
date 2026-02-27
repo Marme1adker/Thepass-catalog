@@ -196,6 +196,9 @@ function loadProfile() {
 
   // Запускаем красивые волны
   startProfileCanvas();
+  
+  // Загружаем последние просмотренные игры
+  renderProfileLastGames();
 }
 
 // ══════════ ЗАГРУЗКА КОМЬЮНИТИ ══════════
@@ -272,4 +275,63 @@ function startProfileCanvas() {
     requestAnimationFrame(animate);
   }
   animate();
+}
+// ══════════ ПОСЛЕДНИЕ ИГРЫ В ПРОФИЛЕ ══════════
+function renderProfileLastGames() {
+  const container = document.getElementById('profLastGames');
+  if (!container) return;
+
+  // Если база игр еще не загружена, ждем секунду и пробуем снова
+  if (!window.ALL || !window.ALL.length) {
+    setTimeout(renderProfileLastGames, 1000);
+    return;
+  }
+
+  // Пытаемся достать историю из разных ключей localStorage
+  let rawHistory = [];
+  const keys = ['pass_history', 'history', 'gameHistory', 'viewHistory'];
+  for (const key of keys) {
+    try {
+      const raw = JSON.parse(localStorage.getItem(key) || 'null');
+      if (Array.isArray(raw) && raw.length) { rawHistory = raw; break; }
+    } catch(e) {}
+  }
+
+  // Извлекаем только названия
+  const historyTitles = rawHistory
+    .map(h => typeof h === 'string' ? h : (h.title || h.name || ''))
+    .filter(Boolean)
+    .slice(0, 8); // Берем 8 последних игр
+
+  if (!historyTitles.length) {
+    container.innerHTML = '<p style="color: var(--muted); font-size: 13px;">Игры пока не найдены...</p>';
+    return;
+  }
+
+  // Находим полные объекты игр из базы ALL
+  const games = historyTitles
+    .map(t => window.ALL.find(g => (g.title || g.name || '').toLowerCase() === t.toLowerCase()))
+    .filter(Boolean);
+
+  if (!games.length) return;
+
+  // Очищаем контейнер и меняем его стиль на сетку для карточек
+  container.innerHTML = '';
+  container.style.display = 'flex';
+  container.style.flexWrap = 'wrap';
+  container.style.gap = '12px';
+
+  // Рисуем карточки (функция gpMiniCard берется из index.html)
+  if (typeof gpMiniCard === 'function') {
+    container.innerHTML = games.map(g => gpMiniCard(g)).join('');
+    
+    // Вешаем клики на карточки, чтобы открывалась страница игры
+    container.querySelectorAll('.gp-mini-card').forEach((el, i) => {
+      el.addEventListener('click', () => {
+        if (typeof window.openGamePage === 'function') {
+          window.openGamePage(games[i]);
+        }
+      });
+    });
+  }
 }
