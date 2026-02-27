@@ -149,7 +149,9 @@ body::after {
 .sidebar-overlay.open { opacity: 1; pointer-events: auto; }
 
 /* ══════════ ОСНОВНОЙ КОНТЕНТ ══════════ */
-.main { flex: 1; min-width: 0; padding: 0 14px 80px; }
+@media (min-width: 701px) { .main { margin-left: 72px; padding: 0 20px 80px; } }
+@media (max-width: 700px) { .main { margin-left: 0; padding: 0 14px 90px; } }
+.main { flex: 1; min-width: 0; transition: margin-left 0.3s ease; }
 
 /* ══════════ ШАПКА ══════════ */
 .header {
