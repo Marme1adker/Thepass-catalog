@@ -5,8 +5,8 @@
  * Это позволяет сайту на GitHub Pages работать с API на отдельном сервере.
  *
  * Подключи в index.html В ТАКОМ ПОРЯДКЕ:
- *   <script src="auth_config.js"></script>   ← сначала конфиг с адресом API
- *   <script src="auth.js"></script>           ← потом сама логика
+ * <script src="auth_config.js"></script>   ← сначала конфиг с адресом API
+ * <script src="auth.js"></script>           ← потом сама логика
  */
 
 // ══════════════════════════════════════════════════════════════════
@@ -30,7 +30,7 @@ const AUTH_ENABLED = !!AUTH_CONFIG.BASE_URL;
 // ══════════════════════════════════════════════════════════════════
 
 const Auth = {
-  user:  null,   // { id, login, username, role, sub_until, avatar_url, created_at }
+  user:  null,   // { id, login, username, role, sub_until, avatar_url, created_at, num_id }
   token: null,   // JWT токен
 
   load() {
@@ -327,6 +327,9 @@ function openProfileModal() {
   const regDate = u.created_at
     ? new Date(u.created_at).toLocaleDateString('ru', { day:'2-digit', month:'long', year:'numeric' })
     : '—';
+    
+  // Добавляем отображение ID, если он есть
+  const idBadge = u.num_id ? `<span class="profile-id-badge">#${u.num_id}</span>` : '';
 
   const modal = document.createElement('div');
   modal.id        = 'authProfileModal';
@@ -342,7 +345,7 @@ function openProfileModal() {
           <input type="file" id="profileAvatarInput" accept="image/*" style="display:none">
         </div>
         <div class="profile-info">
-          <div class="profile-username">${escapeHtml(u.username || u.login)}</div>
+          <div class="profile-username">${escapeHtml(u.username || u.login)} ${idBadge}</div>
           <div class="profile-login">@${escapeHtml(u.login)}</div>
           <div class="profile-role">${roleLabel}</div>
         </div>
@@ -571,13 +574,6 @@ function applySubscriptionUI() {
 }
 
 // ══════════════════════════════════════════════════════════════════
-// Инициализация при загрузке страницы
-// ══════════════════════════════════════════════════════════════════
-// ══════════════════════════════════════════════════════════════════
-// Инициализация и Бесшовный вход (Zero-Click)
-// ══════════════════════════════════════════════════════════════════
-
-// ══════════════════════════════════════════════════════════════════
 // Инициализация и Бесшовный вход (Zero-Click)
 // ══════════════════════════════════════════════════════════════════
 
@@ -596,7 +592,6 @@ async function authViaTelegram() {
 
     if (res.ok) {
       const data = await res.json();
-      // Правильное сохранение токена и юзера
       Auth.token = data.token;
       Auth.user  = data.user;
       Auth.save();
