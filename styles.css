@@ -1039,26 +1039,86 @@ kbd {
    НОВЫЕ СТИЛИ — The Pass v2
    ════════════════════════════════════════════════════════════ */
 
-/* ══════════ СВЕТЛАЯ ТЕМА ══════════ */
+/* ════════════════════════════════════════════════════════════
+   ТЕМЫ ОФОРМЛЕНИЯ — Светлая и OLED
+   ════════════════════════════════════════════════════════════ */
+
+/* ══════════ СВЕТЛАЯ ТЕМА (Чистая и премиальная) ══════════ */
 .light-theme {
-  --bg:       #f0edf8;
-  --surface:  #ffffff;
-  --surface2: #f5f2ff;
-  --border:   #ddd6fe;
-  --purple:   #7c3aed;
-  --purple2:  #8b5cf6;
+  --bg:       #f9fafb; /* Очень мягкий светло-серый фон */
+  --surface:  #ffffff; /* Чистый белый для карточек */
+  --surface2: #f3f4f6; /* Легкий серый для ховеров и кнопок */
+  --border:   #e5e7eb; /* Аккуратные тонкие границы */
+  
+  --purple:   #8b5cf6;
+  --purple2:  #7c3aed; /* Более темный фиолетовый для читаемости */
   --purple3:  #6d28d9;
-  --accent:   #6d28d9;
-  --text:     #1e1a2e;
-  --muted:    #6b5fa8;
-  --dim:      #9d88cc;
+  --accent:   #5b21b6;
+  
+  --text:     #111827; /* Глубокий темно-серый (почти черный) */
+  --muted:    #4b5563; /* Приятный серый для доп. текста */
+  --dim:      #9ca3af; /* Светло-серый для иконок */
+  
   --local:    #059669;
   --steam:    #2563eb;
 }
-.light-theme body { background: var(--bg); }
-.light-theme .sidebar { background: rgba(255,255,255,0.85); }
+
+/* Убираем агрессивные блики на светлой теме */
+.light-theme body::before,
+.light-theme body::after {
+  display: none;
+}
+
+/* Мягкие тени для светлой темы */
 .light-theme .list-card,
-.light-theme .grid-card { box-shadow: 0 1px 8px #7c3aed12; }
+.light-theme .grid-card { 
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05), 0 1px 2px rgba(0,0,0,0.03); 
+}
+.light-theme .search-input,
+.light-theme .sidebar {
+  box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+}
+
+/* ══════════ OLED ТЕМА (Pitch Black) ══════════ */
+.oled-theme {
+  --bg:       #000000; /* Идеально черный */
+  --surface:  #050505;
+  --surface2: #111111;
+  --border:   #1f1f1f;
+  
+  --purple:   #8b5cf6;
+  --purple2:  #a78bfa;
+  --purple3:  #5b21b6;
+  --accent:   #c4b5fd;
+  
+  --text:     #e5e5e5;
+  --muted:    #737373;
+  --dim:      #404040;
+}
+
+/* Делаем фоновые блики едва заметными, чтобы не портить черноту */
+.oled-theme body::before,
+.oled-theme body::after {
+  opacity: 0.15;
+}
+
+/* ══════════ СТИЛЬ ДЛЯ UID БЕЙДЖА ══════════ */
+.profile-uid-badge {
+  display: inline-flex; align-items: center;
+  background: var(--surface2); 
+  border: 1px solid var(--border);
+  border-radius: 6px; 
+  padding: 2px 6px;
+  font-family: 'Inter', monospace;
+  font-size: 10px; font-weight: 700; 
+  color: var(--muted);
+  margin-left: 8px; vertical-align: middle;
+  letter-spacing: 0.5px;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+}
+.profile-role {
+  display: flex; align-items: center;
+}
 
 /* ══════════ ТЕМА-КНОПКИ В ШАПКЕ ══════════ */
 .theme-toggle-btn,
