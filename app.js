@@ -196,9 +196,6 @@ function loadProfile() {
 
   // Запускаем красивые волны
   startProfileCanvas();
-  
-  // Загружаем последние просмотренные игры
-  renderProfileLastGames();
 }
 
 // ══════════ ЗАГРУЗКА КОМЬЮНИТИ ══════════
@@ -238,6 +235,7 @@ function loadCommunity() {
 
 // ══════════ АНИМАЦИЯ ВОЛН (Слева направо) ══════════
 let profileCanvasRunning = false;
+let profileCanvasRafId = null;
 function startProfileCanvas() {
   if (profileCanvasRunning) return;
   const canvas = document.getElementById('profileCanvas');
@@ -255,83 +253,32 @@ function startProfileCanvas() {
 
   let time = 0;
   function animate() {
+    // Останавливаем если вкладка скрыта
+    if (document.hidden) { profileCanvasRafId = null; return; }
     ctx.clearRect(0, 0, w, h);
-    time += 0.015; // Скорость течения волн
+    time += 0.015;
 
     // Рисуем 4 плавные волны
     for (let i = 0; i < 4; i++) {
       ctx.beginPath();
-      // Линии идут сверху вниз (y от 0 до h), но изгибаются и движутся вправо (по оси X)
       for (let y = 0; y <= h; y += 20) {
-        // Формула плавного смещения по X
         const x = (w * 0.1) + Math.sin(y * 0.003 + time + i * 1.5) * (w * 0.4) + (i * w * 0.2);
         if (y === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
       }
       ctx.lineWidth = 2 + i;
-      ctx.strokeStyle = `rgba(139, 92, 246, ${0.1 + i * 0.08})`; // Фиолетовые оттенки
+      ctx.strokeStyle = `rgba(139, 92, 246, ${0.1 + i * 0.08})`;
       ctx.stroke();
     }
-    requestAnimationFrame(animate);
-  }
-  animate();
-}
-// ══════════ ПОСЛЕДНИЕ ИГРЫ В ПРОФИЛЕ ══════════
-function renderProfileLastGames() {
-  const container = document.getElementById('profLastGames');
-  if (!container) return;
-
-  // Если база игр еще не загружена, ждем секунду и пробуем снова
-  if (!window.ALL || !window.ALL.length) {
-    setTimeout(renderProfileLastGames, 1000);
-    return;
+    profileCanvasRafId = requestAnimationFrame(animate);
   }
 
-  // Пытаемся достать историю из разных ключей localStorage
-  let rawHistory = [];
-  const keys = ['pass_history', 'history', 'gameHistory', 'viewHistory'];
-  for (const key of keys) {
-    try {
-      const raw = JSON.parse(localStorage.getItem(key) || 'null');
-      if (Array.isArray(raw) && raw.length) { rawHistory = raw; break; }
-    } catch(e) {}
-  }
+  profileCanvasRafId = requestAnimationFrame(animate);
 
-  // Извлекаем только названия
-  const historyTitles = rawHistory
-    .map(h => typeof h === 'string' ? h : (h.title || h.name || ''))
-    .filter(Boolean)
-    .slice(0, 8); // Берем 8 последних игр
-
-  if (!historyTitles.length) {
-    container.innerHTML = '<p style="color: var(--muted); font-size: 13px;">Игры пока не найдены...</p>';
-    return;
-  }
-
-  // Находим полные объекты игр из базы ALL
-  const games = historyTitles
-    .map(t => window.ALL.find(g => (g.title || g.name || '').toLowerCase() === t.toLowerCase()))
-    .filter(Boolean);
-
-  if (!games.length) return;
-
-  // Очищаем контейнер и меняем его стиль на сетку для карточек
-  container.innerHTML = '';
-  container.style.display = 'flex';
-  container.style.flexWrap = 'wrap';
-  container.style.gap = '12px';
-
-  // Рисуем карточки (функция gpMiniCard берется из index.html)
-  if (typeof gpMiniCard === 'function') {
-    container.innerHTML = games.map(g => gpMiniCard(g)).join('');
-    
-    // Вешаем клики на карточки, чтобы открывалась страница игры
-    container.querySelectorAll('.gp-mini-card').forEach((el, i) => {
-      el.addEventListener('click', () => {
-        if (typeof window.openGamePage === 'function') {
-          window.openGamePage(games[i]);
-        }
-      });
-    });
-  }
+  // Пауза когда вкладка скрыта
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden && !profileCanvasRafId && profileCanvasRunning) {
+      profileCanvasRafId = requestAnimationFrame(animate);
+    }
+  });
 }
