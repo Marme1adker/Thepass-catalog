@@ -34,16 +34,12 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-body {
+html, body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   min-height: 100vh;
-  overflow-x: hidden;
-}
-/* Убиваем горизонтальный скролл на телефонах */
-html, body {
   max-width: 100vw;
   overflow-x: hidden !important;
 }
