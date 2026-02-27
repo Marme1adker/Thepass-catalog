@@ -510,3 +510,39 @@
   0%, 100% { box-shadow: 0 4px 20px #8b5cf640; }
   50%       { box-shadow: 0 4px 30px #8b5cf680; }
 }
+
+/* ══════════ СТИЛИ ВКЛАДОК ПРОФИЛЯ И КОМЬЮНИТИ ══════════ */
+.profile-header-card {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px !important;
+  border-radius: 20px;
+}
+.prof-avatar-wrap {
+  width: 70px; height: 70px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple), var(--purple3));
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+.prof-avatar {
+  font-size: 30px; color: #fff; font-family: 'Syne'; font-weight: 700;
+}
+.prof-badges {
+  display: flex; gap: 8px; margin-top: 8px;
+}
+.badge {
+  padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px;
+}
+.badge-role { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
+.badge-uid { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); }
+
+.profile-stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
+}
+.profile-stat {
+  padding: 15px !important; text-align: center; border-radius: 16px;
+}
+.profile-stat-val { font-size: 24px; font-family: 'Syne'; font-weight: 700; color: #fff; }
+.profile-stat-lbl { font-size: 11px; color: var(--muted); margin-top: 5px; text-transform: uppercase; }
