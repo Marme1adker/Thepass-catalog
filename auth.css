@@ -62,16 +62,16 @@
 .auth-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.65);
-  backdrop-filter: blur(6px);
-  -webkit-backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   z-index: 9000;
   display: flex;
-  align-items: flex-end;          /* Снизу вверх на мобиле */
+  align-items: flex-end;
   justify-content: center;
   padding: 0;
   opacity: 0;
-  transition: opacity .2s ease;
+  transition: opacity .22s ease;
 }
 
 .auth-modal-overlay.open {
@@ -83,17 +83,15 @@
 .auth-modal {
   background: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 20px 20px 0 0;
-  padding: 24px 20px 32px;
+  border-radius: 24px 24px 0 0;
+  padding: 24px 20px 36px;
   width: 100%;
   max-width: 480px;
   max-height: 92vh;
   overflow-y: auto;
   position: relative;
   transform: translateY(30px);
-  transition: transform .25s cubic-bezier(.22, 1, .36, 1);
-
-  /* Скрываем скроллбар */
+  transition: transform .28s cubic-bezier(.22, 1, .36, 1);
   scrollbar-width: none;
 }
 .auth-modal::-webkit-scrollbar { display: none; }
@@ -102,14 +100,13 @@
   transform: translateY(0);
 }
 
-/* На десктопе — по центру */
 @media (min-width: 600px) {
   .auth-modal-overlay {
     align-items: center;
     padding: 20px;
   }
   .auth-modal {
-    border-radius: 20px;
+    border-radius: 24px;
     transform: scale(.96) translateY(8px);
   }
   .auth-modal-overlay.open .auth-modal {
@@ -132,6 +129,7 @@
   padding: 4px 8px;
   transition: color .15s, background .15s;
   line-height: 1;
+  z-index: 2;
 }
 .auth-modal-close:hover { color: var(--text); background: var(--border); }
 
@@ -190,6 +188,7 @@
   font-size: 14px;
   outline: none;
   transition: border-color .15s, box-shadow .15s;
+  box-sizing: border-box;
 }
 
 .auth-input:focus {
@@ -295,33 +294,93 @@
 .auth-modal-hint a:hover { text-decoration: underline; }
 
 /* ══════════════════════════════════════════════════════════════
-   ПРОФИЛЬ
+   ПРОФИЛЬ — ПЕРЕРАБОТАННЫЙ ДИЗАЙН
 ══════════════════════════════════════════════════════════════ */
 
+/* Профильная модалка — расширенные отступы */
 .profile-modal {
-  padding-top: 20px;
+  padding: 0 0 28px;
+  overflow: hidden;
 }
 
-/* Шапка профиля */
-.profile-header {
+/* ── Баннер профиля ── */
+.profile-banner {
+  position: relative;
+  width: 100%;
+  height: 110px;
+  background: linear-gradient(135deg, #2d1b69 0%, #1e0f4a 40%, #3b1f7a 70%, #5b21b6 100%);
+  overflow: visible;
+  flex-shrink: 0;
+}
+
+.profile-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 80% at 80% 30%, rgba(139,92,246,0.35) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 60% at 20% 70%, rgba(192,132,252,0.20) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.profile-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 40px,
+    rgba(255,255,255,0.015) 40px,
+    rgba(255,255,255,0.015) 41px
+  ),
+  repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 40px,
+    rgba(255,255,255,0.015) 40px,
+    rgba(255,255,255,0.015) 41px
+  );
+  pointer-events: none;
+}
+
+/* Кнопка закрыть — поверх баннера */
+.profile-modal .auth-modal-close {
+  top: 12px;
+  right: 12px;
+  background: rgba(0,0,0,0.35);
+  border-color: rgba(255,255,255,0.15);
+  color: rgba(255,255,255,0.8);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+.profile-modal .auth-modal-close:hover {
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+}
+
+/* ── Область аватара (выступает из баннера) ── */
+.profile-avatar-area {
+  position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 14px;
-  margin-bottom: 18px;
-  padding-bottom: 18px;
-  border-bottom: 1px solid var(--border);
+  margin-top: -44px;
+  padding: 0 20px 0;
+  z-index: 2;
 }
 
-/* Аватар */
+/* ── Аватар ── */
 .profile-avatar {
-  width: 64px;
-  height: 64px;
-  border-radius: 16px;
+  width: 88px;
+  height: 88px;
+  border-radius: 22px;
   overflow: hidden;
   position: relative;
   flex-shrink: 0;
-  border: 2px solid var(--border);
+  border: 3px solid var(--surface);
   background: var(--surface2);
+  box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 0 0 1px rgba(139,92,246,0.3);
 }
 
 .profile-avatar-img {
@@ -337,165 +396,237 @@
   align-items: center;
   justify-content: center;
   font-family: 'Syne', sans-serif;
-  font-size: 24px;
+  font-size: 34px;
   font-weight: 800;
   color: var(--purple2);
+  background: linear-gradient(135deg, #1e0f4a, #2d1b69);
 }
 
 .profile-avatar-edit {
   position: absolute;
   inset: 0;
-  background: rgba(0,0,0,.55);
+  background: rgba(0,0,0,0.60);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
+  font-size: 22px;
   opacity: 0;
-  transition: opacity .15s;
+  transition: opacity .18s;
   cursor: pointer;
+  border-radius: 19px;
 }
 .profile-avatar:hover .profile-avatar-edit { opacity: 1; }
 
-/* Инфо */
-.profile-info { flex: 1; min-width: 0; }
+/* ── Имя и мета под аватаром ── */
+.profile-info {
+  width: 100%;
+  text-align: center;
+  margin-top: 12px;
+  padding: 0 8px;
+}
 
 .profile-username {
   font-family: 'Syne', sans-serif;
-  font-size: 17px;
+  font-size: 20px;
   font-weight: 800;
   color: var(--text);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
 }
 
 .profile-login {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
-  margin-top: 2px;
+  margin-top: 3px;
+}
+
+/* Строка мета: роль + ID */
+.profile-meta-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+  flex-wrap: wrap;
 }
 
 .profile-role {
-  display: inline-block;
-  margin-top: 5px;
-  font-size: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
   font-weight: 700;
   color: var(--purple2);
   background: #8b5cf615;
-  border: 1px solid #8b5cf630;
-  border-radius: 6px;
-  padding: 2px 8px;
+  border: 1px solid #8b5cf635;
+  border-radius: 8px;
+  padding: 3px 10px;
   font-family: 'Syne', sans-serif;
   letter-spacing: .3px;
   text-transform: uppercase;
 }
 
-/* Строка подписки */
+.profile-uid {
+  display: inline-flex;
+  align-items: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--dim);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px 10px;
+  font-family: 'Syne', sans-serif;
+  letter-spacing: .3px;
+}
+
+/* ── Разделитель ── */
+.profile-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 18px 20px;
+  opacity: 0.6;
+}
+
+/* ── Основной контент (паддинги) ── */
+.profile-body {
+  padding: 0 20px;
+}
+
+/* ── Строка подписки ── */
 .profile-sub-row {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 14px;
+  border-radius: 14px;
+  padding: 12px 16px;
   margin-bottom: 14px;
+  transition: border-color .15s;
 }
 
 .profile-sub-row.profile-sub--active {
   border-color: #8b5cf640;
-  background: #8b5cf608;
+  background: linear-gradient(135deg, #8b5cf608, #7c3aed05);
 }
 
 .profile-sub-row.profile-sub--none {
   border-color: var(--border);
 }
 
-.profile-sub-ico { font-size: 18px; flex-shrink: 0; }
+.profile-sub-ico { font-size: 20px; flex-shrink: 0; }
 
 .profile-sub-text {
   flex: 1;
-  font-size: 12px;
+  font-size: 13px;
   color: var(--muted);
+  line-height: 1.4;
 }
 .profile-sub-text b { color: var(--text); }
 
 .profile-sub-btn {
   background: linear-gradient(135deg, var(--purple3), var(--purple));
   border: none;
-  border-radius: 8px;
-  padding: 5px 12px;
+  border-radius: 9px;
+  padding: 6px 14px;
   color: #fff;
   font-family: 'Syne', sans-serif;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   flex-shrink: 0;
-  transition: opacity .15s;
+  transition: opacity .15s, transform .1s;
 }
-.profile-sub-btn:hover { opacity: .85; }
+.profile-sub-btn:hover   { opacity: .85; }
+.profile-sub-btn:active  { transform: scale(.96); }
 
-/* Статы */
+/* ── Статы (2 карточки) ── */
 .profile-stats-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
+  gap: 10px;
   margin-bottom: 16px;
 }
 
 .profile-stat {
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 10px 12px;
+  border-radius: 14px;
+  padding: 14px 12px;
   text-align: center;
+  transition: border-color .15s;
+}
+
+.profile-stat:hover {
+  border-color: rgba(139,92,246,0.25);
 }
 
 .profile-stat-val {
   font-family: 'Syne', sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
+  line-height: 1.2;
 }
 
 .profile-stat-lbl {
   font-size: 10px;
   color: var(--muted);
-  margin-top: 2px;
+  margin-top: 4px;
+  text-transform: uppercase;
+  letter-spacing: .4px;
 }
 
-/* Кнопки действий */
+/* ── Кнопки действий ── */
 .profile-actions {
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin-bottom: 4px;
 }
 
 .profile-action-btn {
   background: var(--surface2);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 11px 16px;
+  border-radius: 13px;
+  padding: 12px 16px;
   color: var(--text);
   font-family: 'Inter', sans-serif;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   text-align: left;
-  transition: border-color .15s, background .15s;
+  transition: border-color .15s, background .15s, transform .1s;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 .profile-action-btn:hover {
-  border-color: var(--purple);
+  border-color: rgba(139,92,246,0.4);
   background: var(--border);
+}
+.profile-action-btn:active {
+  transform: scale(.99);
 }
 
 .profile-action-btn--danger {
   color: #f87171;
-  border-color: #f8717120;
+  border-color: rgba(248,113,113,0.18);
 }
 .profile-action-btn--danger:hover {
-  border-color: #f87171;
-  background: #f8717108;
+  border-color: rgba(248,113,113,0.5);
+  background: rgba(248,113,113,0.06);
+}
+
+/* Старые стили (оставляем для совместимости) */
+.profile-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 18px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--border);
 }
 
 /* ══════════ КНОПКА КУПИТЬ ПОДПИСКУ НА СТРАНИЦЕ ИГРЫ ══════════ */
@@ -510,39 +641,3 @@
   0%, 100% { box-shadow: 0 4px 20px #8b5cf640; }
   50%       { box-shadow: 0 4px 30px #8b5cf680; }
 }
-
-/* ══════════ СТИЛИ ВКЛАДОК ПРОФИЛЯ И КОМЬЮНИТИ ══════════ */
-.profile-header-card {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  padding: 20px !important;
-  border-radius: 20px;
-}
-.prof-avatar-wrap {
-  width: 70px; height: 70px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--purple), var(--purple3));
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
-}
-.prof-avatar {
-  font-size: 30px; color: #fff; font-family: 'Syne'; font-weight: 700;
-}
-.prof-badges {
-  display: flex; gap: 8px; margin-top: 8px;
-}
-.badge {
-  padding: 4px 10px; border-radius: 8px; font-size: 11px; font-weight: 800; letter-spacing: 0.5px;
-}
-.badge-role { background: rgba(245, 158, 11, 0.2); color: #fcd34d; border: 1px solid rgba(245, 158, 11, 0.4); }
-.badge-uid { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; border: 1px solid rgba(139, 92, 246, 0.4); }
-
-.profile-stats-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 15px;
-}
-.profile-stat {
-  padding: 15px !important; text-align: center; border-radius: 16px;
-}
-.profile-stat-val { font-size: 24px; font-family: 'Syne'; font-weight: 700; color: #fff; }
-.profile-stat-lbl { font-size: 11px; color: var(--muted); margin-top: 5px; text-transform: uppercase; }
