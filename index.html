@@ -6,15 +6,11 @@
   <title>The Pass — Каталог</title>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=6">
-  <link rel="stylesheet" href="auth.css?v=6">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="auth.css">
 </head>
 <body>
-  <nav class="nav-rail" id="navRail">
-    <button class="nav-item" data-page="profile" title="Профиль"><span class="nav-icon">👤</span><span class="nav-label">Профиль</span></button>
-    <button class="nav-item active" data-page="catalog" title="Каталог"><span class="nav-icon">🎮</span><span class="nav-label">Каталог</span></button>
-    <button class="nav-item" data-page="community" title="Комьюнити"><span class="nav-icon">👥</span><span class="nav-label">Люди</span></button>
-  </nav>
+
   <!-- ══════════ PREMIUM LOADER ══════════ -->
   <style>
     :root {
@@ -257,55 +253,8 @@
   </div>
 
   <!-- ══════════ ОСНОВНАЯ СТРАНИЦА ══════════ -->
-    <div id="section-profile" class="content-section" style="display: none; position: relative; overflow: hidden; min-height: 100vh;">
-        <canvas id="profileCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.6; pointer-events: none;"></canvas>
-        
-        <div style="position: relative; z-index: 1;">
-          <div class="profile-banner"></div> <div style="padding: 0 20px 40px;">
-            <div class="profile-header-card">
-              <div class="prof-avatar-wrap-centered">
-                <div class="prof-avatar" id="profAvatarText">?</div>
-              </div>
-              <div class="prof-info-centered">
-                <h2 id="profUsername">Загрузка...</h2>
-                <div class="prof-badges">
-                  <span class="profile-role-badge" id="profRole">USER</span>
-                  <span class="profile-uid-badge" id="profUid">UID: ---</span>
-                </div>
-              </div>
-            </div>
-
-          <div class="profile-stats-grid" style="margin-top: 20px;">
-            <div class="profile-stat list-card">
-              <div class="profile-stat-val" id="profRegDate">--.--.----</div>
-              <div class="profile-stat-lbl">Дата регистрации</div>
-            </div>
-            <div class="profile-stat list-card">
-              <div class="profile-stat-val" id="profActivations">0</div>
-              <div class="profile-stat-lbl">Активаций</div>
-            </div>
-          </div>
-
-          <h3 style="margin-top: 30px; font-family: 'Syne'; color: var(--purple2);">Последние игры</h3>
-          <div id="profLastGames" class="games-grid" style="margin-top: 15px;">
-            <p style="color: var(--muted); font-size: 13px;">Игры пока не найдены...</p>
-          </div>
-        </div>
-      </div>
-    </div> <div id="section-community" class="content-section" style="display: none;">
-        <div style="padding: 40px 20px;">
-          <h2 style="font-family: 'Syne'; font-size: 26px; color: var(--purple2); margin-bottom: 20px;">Комьюнити</h2>
-          <div class="search-wrap" style="margin-bottom: 20px;">
-            <input class="search-input" id="commSearch" type="text" placeholder="Поиск по нику или UID...">
-          </div>
-          <div id="communityList" style="display: flex; flex-direction: column; gap: 10px;">
-            <p style="color: var(--muted); text-align: center; margin-top: 40px;">Загрузка списка пользователей...</p>
-          </div>
-        </div>
-      </div>
-
-    <div class="page" id="mainPage">
-      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+  <div class="page" id="mainPage">
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <!-- ══════ САЙДБАР ══════ -->
     <aside class="sidebar" id="sidebar">
 
@@ -414,7 +363,13 @@
         <button class="theme-toggle-btn" id="themeBtn" title="Тема">🌙</button>
         <button class="random-btn"       id="randomBtn" title="Случайная игра">🎲</button>
         <button class="stats-toggle-btn" id="statsBtn"  title="Статистика">📊</button>
-        <button class="filter-toggle-btn" id="filterToggleBtn">🔍 Фильтры <span class="filter-badge" id="filterBadge">0</span></button>
+        <button class="filter-toggle-btn" id="filterToggleBtn">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
+            <path d="M1 3h14v1.5L9 10v5l-2-1V10L1 4.5V3z"/>
+          </svg>
+          Фильтры
+          <span class="filter-badge" id="filterBadge">0</span>
+        </button>
       </div>
 
       <div class="stats-panel" id="statsPanel"></div>
@@ -496,7 +451,7 @@
   <script src="render.js"></script>
   <script src="modal.js"></script>
   <script src="auth_config.js"></script>
-  <script src="auth.js?v=6"></script>
+  <script src="auth.js"></script>
 
   <!-- ── Loader: фиксируем время старта, скрываем после загрузки ── -->
   <script>
@@ -621,7 +576,7 @@
     document.getElementById('gamePageFind').onclick = () => {
       if (window.openGameSearch) window.openGameSearch(game);
       else if (game.searchUrl)   window.open(game.searchUrl, '_blank');
-      else window.open('https://store.steampowered.com/search/?term=' + encodeURIComponent(title), '_blank');
+      else sendToBot(title, game);
     };
 
     // Поделиться
@@ -788,7 +743,19 @@
   });
   </script>
 
-
+  <!-- ══════════ ТЕМА ══════════ -->
+  <script>
+  (function(){
+    const btn  = document.getElementById('themeBtn');
+    let light  = localStorage.getItem('pass-theme') === 'light';
+    function apply() {
+      document.documentElement.classList.toggle('light-theme', light);
+      btn.textContent = light ? '☀️' : '🌙';
+    }
+    apply();
+    btn.addEventListener('click', () => { light = !light; localStorage.setItem('pass-theme', light?'light':'dark'); apply(); });
+  })();
+  </script>
 
   <!-- ══════════ СЛУЧАЙНАЯ ИГРА ══════════ -->
   <script>
@@ -955,14 +922,41 @@
     }
 
     let st=null;
+    let rafId=null;
+    let paused=false;
+
     function frame(ts){
+      if(paused){rafId=null;return;}
       if(!st)st=ts; const t=(ts-st)/1000;
       ctx.clearRect(0,0,W,H);
       drawPulse(t); drawDots(t); drawGlows(t);
       drawSpecials(); drawScrollWave(t); maybeSpawn();
-      requestAnimationFrame(frame);
+      rafId=requestAnimationFrame(frame);
     }
-    requestAnimationFrame(frame);
+
+    function startLoop(){
+      if(!rafId&&!paused){ st=null; rafId=requestAnimationFrame(frame); }
+    }
+    function stopLoop(){
+      if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
+    }
+
+    // Пауза когда вкладка/приложение скрыто — предотвращает крэш в Telegram
+    document.addEventListener('visibilitychange',()=>{
+      if(document.hidden){ paused=true; stopLoop(); }
+      else { paused=false; startLoop(); }
+    });
+    // Telegram WebApp события
+    if(window.Telegram?.WebApp){
+      try{
+        Telegram.WebApp.onEvent('viewportChanged',()=>{
+          if(Telegram.WebApp.isExpanded===false){ paused=true; stopLoop(); }
+          else{ paused=false; startLoop(); }
+        });
+      }catch(e){}
+    }
+
+    startLoop();
   })();
   </script>
 
