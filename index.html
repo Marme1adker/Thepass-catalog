@@ -256,19 +256,20 @@
     <div id="section-profile" class="content-section" style="display: none; position: relative; overflow: hidden; min-height: 100vh;">
         <canvas id="profileCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.6; pointer-events: none;"></canvas>
         
-        <div style="position: relative; z-index: 1; padding: 40px 20px;">
-          <div class="profile-header-card list-card">
-            <div class="prof-avatar-wrap">
-              <div class="prof-avatar" id="profAvatarText">?</div>
-            </div>
-            <div class="prof-info">
-              <h2 id="profUsername">Загрузка...</h2>
-              <div class="prof-badges">
-                <span class="badge badge-role" id="profRole">USER</span>
-                <span class="badge badge-uid" id="profUid">UID: ---</span>
+        <div style="position: relative; z-index: 1;">
+          <div class="profile-banner"></div> <div style="padding: 0 20px 40px;">
+            <div class="profile-header-card">
+              <div class="prof-avatar-wrap-centered">
+                <div class="prof-avatar" id="profAvatarText">?</div>
+              </div>
+              <div class="prof-info-centered">
+                <h2 id="profUsername">Загрузка...</h2>
+                <div class="prof-badges">
+                  <span class="profile-role-badge" id="profRole">USER</span>
+                  <span class="profile-uid-badge" id="profUid">UID: ---</span>
+                </div>
               </div>
             </div>
-          </div>
 
           <div class="profile-stats-grid" style="margin-top: 20px;">
             <div class="profile-stat list-card">
@@ -280,13 +281,6 @@
               <div class="profile-stat-lbl">Активаций</div>
             </div>
           </div>
-
-          <h3 style="margin-top: 30px; font-family: 'Syne'; color: var(--purple2);">Последние игры</h3>
-          <div id="profLastGames" class="games-grid" style="margin-top: 15px;">
-            <p style="color: var(--muted); font-size: 13px;">Игры пока не найдены...</p>
-          </div>
-        </div>
-      </div>
 
           <h3 style="margin-top: 30px; font-family: 'Syne'; color: var(--purple2);">Последние игры</h3>
           <div id="profLastGames" class="games-grid" style="margin-top: 15px;">
@@ -642,7 +636,7 @@
     document.getElementById('gamePageFind').onclick = () => {
       if (window.openGameSearch) window.openGameSearch(game);
       else if (game.searchUrl)   window.open(game.searchUrl, '_blank');
-      else sendToBot(title, game);
+      else window.open('https://store.steampowered.com/search/?term=' + encodeURIComponent(title), '_blank');
     };
 
     // Поделиться
