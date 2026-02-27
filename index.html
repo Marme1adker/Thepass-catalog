@@ -261,13 +261,17 @@
         <canvas id="profileCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; opacity: 0.5; pointer-events: none;"></canvas>
 
         <div style="position: relative; z-index: 1;">
-          <!-- Баннер -->
-          <div class="profile-page-banner"></div>
+          <!-- Баннер с id для синхронизации -->
+          <div class="profile-page-banner" id="profPageBanner"></div>
 
-          <!-- Аватар блок, выступающий из баннера -->
+          <!-- Аватар-блок, выступающий из баннера -->
           <div class="profile-page-avatar-block">
-            <div class="prof-avatar-wrap-centered">
-              <div class="prof-avatar" id="profAvatarText">?</div>
+            <div style="position:relative;display:inline-block;">
+              <!-- Корона над аватаром (только для admin) -->
+              <div id="profCrown" class="profile-page-crown" style="display:none;">👑</div>
+              <div class="prof-avatar-wrap-centered" id="profAvatarWrap">
+                <div class="prof-avatar" id="profAvatarText">?</div>
+              </div>
             </div>
             <div class="prof-info-centered">
               <h2 id="profUsername">Загрузка...</h2>
@@ -281,7 +285,7 @@
           <div class="profile-page-divider"></div>
 
           <!-- Статы -->
-          <div style="padding: 20px 20px 0;">
+          <div style="padding: 0 20px;">
             <div class="profile-stats-grid">
               <div class="profile-stat-card">
                 <div class="profile-stat-val" id="profRegDate">--.--.----</div>
@@ -965,41 +969,33 @@
     }
 
     let st=null;
-    let rafId=null;
-    let paused=false;
+    let _rafId=null;
+    let _rafPaused=false;
 
     function frame(ts){
-      if(paused){rafId=null;return;}
+      if(_rafPaused){_rafId=null;return;}
       if(!st)st=ts; const t=(ts-st)/1000;
       ctx.clearRect(0,0,W,H);
       drawPulse(t); drawDots(t); drawGlows(t);
       drawSpecials(); drawScrollWave(t); maybeSpawn();
-      rafId=requestAnimationFrame(frame);
+      _rafId=requestAnimationFrame(frame);
     }
+    function _startRaf(){ if(!_rafId&&!_rafPaused){st=null;_rafId=requestAnimationFrame(frame);} }
+    function _stopRaf(){ if(_rafId){cancelAnimationFrame(_rafId);_rafId=null;} }
 
-    function startLoop(){
-      if(!rafId&&!paused){ st=null; rafId=requestAnimationFrame(frame); }
-    }
-    function stopLoop(){
-      if(rafId){ cancelAnimationFrame(rafId); rafId=null; }
-    }
-
-    // Пауза когда вкладка/приложение скрыто — предотвращает крэш в Telegram
+    // Пауза когда вкладка скрыта — главная причина краша в Telegram
     document.addEventListener('visibilitychange',()=>{
-      if(document.hidden){ paused=true; stopLoop(); }
-      else { paused=false; startLoop(); }
+      if(document.hidden){_rafPaused=true;_stopRaf();}
+      else{_rafPaused=false;_startRaf();}
     });
-    // Telegram WebApp события
     if(window.Telegram?.WebApp){
-      try{
-        Telegram.WebApp.onEvent('viewportChanged',()=>{
-          if(Telegram.WebApp.isExpanded===false){ paused=true; stopLoop(); }
-          else{ paused=false; startLoop(); }
-        });
-      }catch(e){}
+      try{Telegram.WebApp.onEvent('viewportChanged',()=>{
+        if(Telegram.WebApp.isExpanded===false){_rafPaused=true;_stopRaf();}
+        else{_rafPaused=false;_startRaf();}
+      });}catch(e){}
     }
 
-    startLoop();
+    _startRaf();
   })();
   </script>
 
