@@ -910,3 +910,38 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 });
+// ══════════ СИСТЕМА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК ══════════
+document.addEventListener('DOMContentLoaded', () => {
+  const navItems = document.querySelectorAll('.nav-item');
+  
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const page = item.getAttribute('data-page');
+      switchPage(page);
+    });
+  });
+});
+
+function switchPage(pageId) {
+  // 1. Обновляем активную кнопку в меню
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
+  });
+
+  // 2. Логика смены контента
+  console.log(`Переключение на страницу: ${pageId}`);
+  
+  if (pageId === 'profile') {
+    // Пока что просто заглушка, скоро сделаем тут магию с линиями
+    showToast("👤 Открываем ваш профиль...");
+    // Скрываем каталог игр
+    document.getElementById('gameList').style.opacity = '0.3';
+  } 
+  else if (pageId === 'catalog') {
+    document.getElementById('gameList').style.opacity = '1';
+    showToast("🎮 Каталог игр");
+  }
+  else if (pageId === 'community') {
+    showToast("👥 Комьюнити (Скоро!)");
+  }
+}
