@@ -15,7 +15,7 @@
  * тогда кнопки аккаунта будут скрыты автоматически.
  */
 
-const THEPASS_API_URL = 'https://thepass-catalog-production.up.railway.app';
+const THEPASS_API_URL = 'https://thepass-api.up.railway.app';
 // Замени на реальный адрес своего сервера ↑
 // Пример: 'https://thepass-api.railway.app'
 // Пример: 'http://localhost:8000'  (для теста локально)
