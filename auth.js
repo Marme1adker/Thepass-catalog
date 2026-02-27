@@ -787,7 +787,12 @@ async function authViaTelegram() {
   if (!AUTH_ENABLED || Auth.isLoggedIn()) return;
 
   const tg = window.Telegram?.WebApp;
-  if (!tg || !tg.initData) return; 
+  
+  // Проверка: видит ли скрипт Telegram вообще?
+  if (!tg || !tg.initData) {
+    console.warn('[Auth] Telegram initData не найден. Если вы в браузере — это нормально.');
+    return; 
+  }
 
   try {
     const res = await fetch(`${AUTH_CONFIG.BASE_URL}/api/auth/telegram`, {
@@ -796,15 +801,19 @@ async function authViaTelegram() {
       body: JSON.stringify({ init_data: tg.initData })
     });
 
+    const data = await res.json();
+
     if (res.ok) {
-      const data = await res.json();
       Auth.token = data.token;
       Auth.user  = data.user;
       Auth.save();
-      console.info(`[Auth] ⚡ Успешный вход через Telegram! Твой ID: #${data.user.num_id}`);
+      console.info(`[Auth] ⚡ Успешный вход! ID: #${data.user.num_id}`);
+      renderAccountIcon(); // Сразу перерисовываем иконку
+    } else {
+      console.error('[Auth] Сервер отклонил данные:', data.detail || data.error);
     }
   } catch (err) {
-    console.error('[Auth] ❌ Ошибка бесшовного входа:', err);
+    console.error('[Auth] Ошибка подключения к API:', err);
   }
 }
 
