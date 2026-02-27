@@ -478,7 +478,7 @@
   <script src="modal.js"></script>
   <script src="auth_config.js"></script>
   <script src="auth.js?v=6"></script>
-  <script src="profile.js"></script>
+
 
   <!-- ── Loader: фиксируем время старта, скрываем после загрузки ── -->
   <script>
@@ -512,6 +512,9 @@
 
   // Открыть страницу игры
   window.openGamePage = function(game) {
+    // Сохраняем в last_games
+    if (typeof trackLastGame === 'function') trackLastGame(game);
+
     const page = document.getElementById('gamePage');
     const main = document.getElementById('mainPage');
     const title = game.name || game.title || '';
@@ -947,8 +950,7 @@
     requestAnimationFrame(frame);
   })();
   </script>
-
-
+  <script src="profile.js"></script>
 
 </body>
 </html>
