@@ -743,19 +743,7 @@
   });
   </script>
 
-  <!-- ══════════ ТЕМА ══════════ -->
-  <script>
-  (function(){
-    const btn  = document.getElementById('themeBtn');
-    let light  = localStorage.getItem('pass-theme') === 'light';
-    function apply() {
-      document.documentElement.classList.toggle('light-theme', light);
-      btn.textContent = light ? '☀️' : '🌙';
-    }
-    apply();
-    btn.addEventListener('click', () => { light = !light; localStorage.setItem('pass-theme', light?'light':'dark'); apply(); });
-  })();
-  </script>
+
 
   <!-- ══════════ СЛУЧАЙНАЯ ИГРА ══════════ -->
   <script>
