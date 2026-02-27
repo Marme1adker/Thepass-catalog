@@ -10,7 +10,11 @@
   <link rel="stylesheet" href="auth.css?v=6">
 </head>
 <body>
-
+  <nav class="nav-rail" id="navRail">
+    <button class="nav-item" data-page="profile" title="Профиль"><span class="nav-icon">👤</span><span class="nav-label">Профиль</span></button>
+    <button class="nav-item active" data-page="catalog" title="Каталог"><span class="nav-icon">🎮</span><span class="nav-label">Каталог</span></button>
+    <button class="nav-item" data-page="community" title="Комьюнити"><span class="nav-icon">👥</span><span class="nav-label">Люди</span></button>
+  </nav>
   <!-- ══════════ PREMIUM LOADER ══════════ -->
   <style>
     :root {
@@ -301,13 +305,6 @@
       </div>
 
     <div class="page" id="mainPage">
-    
-      <nav class="nav-rail" id="navRail">
-        <button class="nav-item" data-page="profile" title="Профиль"><span class="nav-icon">👤</span><span class="nav-label">Профиль</span></button>
-        <button class="nav-item active" data-page="catalog" title="Каталог"><span class="nav-icon">🎮</span><span class="nav-label">Каталог</span></button>
-        <button class="nav-item" data-page="community" title="Комьюнити"><span class="nav-icon">👥</span><span class="nav-label">Люди</span></button>
-      </nav>
-
       <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <!-- ══════ САЙДБАР ══════ -->
     <aside class="sidebar" id="sidebar">
