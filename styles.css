@@ -1750,3 +1750,14 @@ kbd {
   border-radius: 4px;
   padding: 2px 5px;
 }
+
+.profile-id-badge {
+  background: var(--purple-bg, rgba(139, 92, 246, 0.15));
+  color: var(--purple, #a78bfa);
+  font-size: 0.75em;
+  padding: 2px 6px;
+  border-radius: 6px;
+  margin-left: 6px;
+  vertical-align: middle;
+  font-family: monospace;
+}
