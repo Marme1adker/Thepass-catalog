@@ -109,57 +109,44 @@ body::after {
   min-height: 100vh;
 }
 
-/* ══════════ САЙДБАР ══════════ */
+/* ══════════ ВЫЕЗДНОЙ САЙДБАР (Скрыт по умолчанию) ══════════ */
 .sidebar {
-  width: var(--sidebar);
-  flex-shrink: 0;
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  padding: 20px 14px 40px;
-  position: sticky;
-  top: 0;
-  height: 100vh;
+  position: fixed; top: 0; bottom: 0;
+  width: 300px; height: 100vh;
+  background: rgba(26, 22, 40, 0.98) !important;
+  backdrop-filter: blur(20px);
+  z-index: 2000; /* Ниже вкладок, но выше контента */
   overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  z-index: 1001;
+  
+  /* Изначально полностью скрыт за левым краем */
+  transform: translateX(-100%);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 10px 0 30px rgba(0,0,0,0.5);
 }
-.sidebar::-webkit-scrollbar       { width: 3px; }
-.sidebar::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+.sidebar.open { transform: translateX(0); } /* Выезжает при добавлении класса .open */
 
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: #00000070;
-  z-index: 1000;
-}
-.sidebar-overlay.open { display: block; }
-
-@media (max-width: 700px) {
+/* Позиция сайдбара на ПК */
+@media (min-width: 701px) {
   .sidebar {
-    position: fixed; left: 0; top: 0;
-    height: 100vh; z-index: 1001;
-    transform: translateX(-100%);
-    transition: transform .55s cubic-bezier(.32, 1.25, .23, 1), box-shadow .4s;
-    background: rgba(26, 22, 40, 0.82);
-    backdrop-filter: blur(18px) saturate(160%);
-    -webkit-backdrop-filter: blur(18px) saturate(160%);
-    touch-action: pan-y;
+    left: 72px; /* Появляется сразу ПОСЛЕ вертикальных вкладок */
+    transform: translateX(-110%); /* Глубже прячем */
   }
-  .sidebar.open { transform: translateX(0); box-shadow: 20px 0 60px rgba(0,0,0,.6); }
-
-  .sidebar-overlay {
-    display: block; position: fixed; inset: 0;
-    background: rgba(0,0,0,.5);
-    opacity: 0; visibility: hidden;
-    transition: opacity .35s ease;
-    z-index: 1000; pointer-events: none; touch-action: none;
-  }
-  .sidebar-overlay.open { opacity: 1; visibility: visible; pointer-events: auto; }
-  body.drawer-open { overflow: hidden; }
+  .sidebar.open { transform: translateX(0); }
 }
+
+/* Позиция на мобилках шторкой от края */
+@media (max-width: 700px) {
+  .sidebar { left: 0; width: 80vw; max-width: 320px; }
+}
+
+/* Затемнение фона при открытии (Оверлей) */
+.sidebar-overlay {
+  position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.7); opacity: 0; pointer-events: none;
+  z-index: 1900; /* Между сайдбаром и контентом */
+  transition: opacity 0.3s;
+}
+.sidebar-overlay.open { opacity: 1; pointer-events: auto; }
 
 /* ══════════ ОСНОВНОЙ КОНТЕНТ ══════════ */
 .main { flex: 1; min-width: 0; padding: 0 14px 80px; }
@@ -1998,54 +1985,40 @@ kbd {
   transition: color 0.15s;
 }
 .auth-switch-link:hover { color: var(--text); }
-/* ══════════ NAVIGATION RAIL (Левая панель) ══════════ */
+/* ══════════ VERICAL NAV RAIL (Стиль Vivaldi) ══════════ */
 .nav-rail {
   width: 72px; height: 100vh;
-  background: rgba(15, 13, 23, 0.85);
-  backdrop-filter: blur(20px);
+  background: rgba(15, 13, 23, 0.92); /* Плотный фон */
+  backdrop-filter: blur(24px);
   border-right: 1px solid var(--border);
   display: flex; flex-direction: column; align-items: center;
-  padding: 20px 0; gap: 20px;
-  position: sticky; top: 0; z-index: 1100;
+  padding: 30px 0; gap: 30px;
+  position: fixed; top: 0; left: 0;
+  z-index: 2500; /* Самый высокий z-index! Всегда сверху */
+  box-shadow: 5px 0 20px rgba(0,0,0,0.3);
 }
 
 .nav-item {
-  background: none; border: none;
-  display: flex; flex-direction: column; align-items: center;
-  gap: 4px; cursor: pointer; color: var(--muted);
-  transition: all 0.2s ease; width: 100%;
+  background: none; border: none; color: var(--muted);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; cursor: pointer; width: 100%; transition: all 0.25s ease;
+  padding: 10px 0;
 }
-
-.nav-icon { font-size: 22px; transition: transform 0.2s; }
-.nav-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.nav-icon { font-size: 26px; }
+.nav-label { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.8; }
 
 .nav-item:hover { color: var(--purple2); }
-.nav-item.active { color: var(--purple); }
-.nav-item.active .nav-icon { transform: scale(1.2); filter: drop-shadow(0 0 8px var(--purple)); }
+.nav-item.active { color: var(--purple); background: rgba(139, 92, 246, 0.1); }
+.nav-item.active .nav-icon { transform: scale(1.15); filter: drop-shadow(0 0 10px var(--purple)); }
 
-/* ══════════ ОБНОВЛЕННЫЙ САЙДБАР (Теперь выездной для всех) ══════════ */
-@media (min-width: 701px) {
-  .sidebar {
-    position: fixed; left: 72px; top: 0; /* Выезжает СРАЗУ ПОСЛЕ nav-rail */
-    height: 100vh; width: 280px;
-    z-index: 1050;
-    transform: translateX(-110%); /* Спрятан */
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(26, 22, 40, 0.95) !important;
-    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-  }
-  .sidebar.open { transform: translateX(0); }
-  
-  .filter-toggle-btn { display: flex !important; } /* Показываем кнопку фильтров на ПК */
-}
-
-/* Прячем навигационную панель на очень маленьких экранах (опционально) или делаем её горизонтальной снизу */
+/* Адаптив: меню вниз ТОЛЬКО на очень узких экранах */
 @media (max-width: 500px) {
   .nav-rail {
-    position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 65px; top: auto;
     flex-direction: row; justify-content: space-around; padding: 0;
     border-right: none; border-top: 1px solid var(--border);
-    z-index: 2000;
+    z-index: 2500;
   }
-  .main { padding-bottom: 80px; } /* Место под нижнюю панель */
+  .nav-item { flex-direction: row; gap: 6px; }
+  .nav-label { font-size: 11px; }
 }
