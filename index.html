@@ -254,6 +254,20 @@
 
   <!-- ══════════ ОСНОВНАЯ СТРАНИЦА ══════════ -->
   <div class="page" id="mainPage">
+    <nav class="nav-rail" id="navRail">
+  <button class="nav-item" data-page="profile" title="Профиль">
+    <span class="nav-icon">👤</span>
+    <span class="nav-label">Профиль</span>
+  </button>
+  <button class="nav-item active" data-page="catalog" title="Каталог">
+    <span class="nav-icon">🎮</span>
+    <span class="nav-label">Каталог</span>
+  </button>
+  <button class="nav-item" data-page="community" title="Комьюнити">
+    <span class="nav-icon">👥</span>
+    <span class="nav-label">Люди</span>
+  </button>
+</nav>
   <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <!-- ══════ САЙДБАР ══════ -->
     <aside class="sidebar" id="sidebar">
@@ -363,12 +377,8 @@
         <button class="theme-toggle-btn" id="themeBtn" title="Тема">🌙</button>
         <button class="random-btn"       id="randomBtn" title="Случайная игра">🎲</button>
         <button class="stats-toggle-btn" id="statsBtn"  title="Статистика">📊</button>
-        <button class="filter-toggle-btn" id="filterToggleBtn">
-          <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M1 3h14v1.5L9 10v5l-2-1V10L1 4.5V3z"/>
-          </svg>
-          Фильтры
-          <span class="filter-badge" id="filterBadge">0</span>
+        <button class="filter-toggle-btn" id="filterToggle">
+          <span>🔍</span> Фильтры <span class="filter-badge" id="filterBadge">0</span>
         </button>
       </div>
 
