@@ -306,6 +306,16 @@
           </div>
         </div>
       </div>
+
+    <div class="page" id="mainPage">
+    
+      <nav class="nav-rail" id="navRail">
+        <button class="nav-item" data-page="profile" title="Профиль"><span class="nav-icon">👤</span><span class="nav-label">Профиль</span></button>
+        <button class="nav-item active" data-page="catalog" title="Каталог"><span class="nav-icon">🎮</span><span class="nav-label">Каталог</span></button>
+        <button class="nav-item" data-page="community" title="Комьюнити"><span class="nav-icon">👥</span><span class="nav-label">Люди</span></button>
+      </nav>
+
+      <div class="sidebar-overlay" id="sidebarOverlay"></div>
     <!-- ══════ САЙДБАР ══════ -->
     <aside class="sidebar" id="sidebar">
 
@@ -473,6 +483,17 @@
         <div class="empty-icon">🔍</div>
         <div class="empty-text">Игра не найдена</div>
         <div class="empty-sub">Попробуйте изменить фильтры или запрос</div>
+      </div>
+      </div> <div id="section-community" class="content-section" style="display: none;">
+        <div style="padding: 40px 20px;">
+          <h2 style="font-family: 'Syne'; font-size: 26px; color: var(--purple2); margin-bottom: 20px;">Комьюнити</h2>
+          <div class="search-wrap" style="margin-bottom: 20px;">
+            <input class="search-input" id="commSearch" type="text" placeholder="Поиск по нику или UID...">
+          </div>
+          <div id="communityList" style="display: flex; flex-direction: column; gap: 10px;">
+            <p style="color: var(--muted); text-align: center; margin-top: 40px;">Загрузка списка пользователей...</p>
+          </div>
+        </div>
       </div>
 
     </div>
