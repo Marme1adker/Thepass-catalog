@@ -5,8 +5,8 @@
  * Это позволяет сайту на GitHub Pages работать с API на отдельном сервере.
  *
  * Подключи в index.html В ТАКОМ ПОРЯДКЕ:
- *   <script src="auth_config.js"></script>   ← сначала конфиг с адресом API
- *   <script src="auth.js"></script>           ← потом сама логика
+ * <script src="auth_config.js"></script>   ← сначала конфиг с адресом API
+ * <script src="auth.js"></script>           ← потом сама логика
  */
 
 // ══════════════════════════════════════════════════════════════════
@@ -14,15 +14,12 @@
 // ══════════════════════════════════════════════════════════════════
 
 const AUTH_CONFIG = {
-  // THEPASS_API_URL задаётся в auth_config.js
-  // Если файл не подключён или URL пустой — авторизация отключается
   BASE_URL:    (typeof THEPASS_API_URL !== 'undefined' && THEPASS_API_URL)
-                 ? THEPASS_API_URL.replace(/\/$/, '')  // убираем trailing slash
+                 ? THEPASS_API_URL.replace(/\/$/, '')
                  : '',
   SESSION_KEY: 'thepass_session',
 };
 
-// Если API не настроен — не показываем кнопку аккаунта вообще
 const AUTH_ENABLED = !!AUTH_CONFIG.BASE_URL;
 
 // ══════════════════════════════════════════════════════════════════
@@ -30,8 +27,8 @@ const AUTH_ENABLED = !!AUTH_CONFIG.BASE_URL;
 // ══════════════════════════════════════════════════════════════════
 
 const Auth = {
-  user:  null,   // { id, login, username, role, sub_until, avatar_url, created_at }
-  token: null,   // JWT токен
+  user:  null,
+  token: null,
 
   load() {
     try {
@@ -94,10 +91,6 @@ async function apiCall(method, path, body = null) {
   return data;
 }
 
-// ══════════════════════════════════════════════════════════════════
-// Действия авторизации
-// ══════════════════════════════════════════════════════════════════
-
 async function authLogin(login, password) {
   const data = await apiCall('POST', '/auth/login', { login, password });
   Auth.user  = data.user;
@@ -154,7 +147,6 @@ function renderAccountIcon() {
   const existing = document.getElementById('accountBtn');
   if (existing) existing.remove();
 
-  // Если API не настроен — кнопку не показываем
   if (!AUTH_ENABLED) return;
 
   const btn = document.createElement('button');
@@ -197,10 +189,6 @@ function renderAccountIcon() {
   }
 }
 
-// ══════════════════════════════════════════════════════════════════
-// UI — Модалка входа
-// ══════════════════════════════════════════════════════════════════
-
 function openLoginModal() {
   closeAllAuthModals();
 
@@ -215,30 +203,44 @@ function openLoginModal() {
       <div class="auth-modal-title">The Pass</div>
       <div class="auth-modal-sub">Войдите в свой аккаунт</div>
 
-      <div class="auth-field">
-        <label class="auth-label">Логин</label>
-        <input class="auth-input" id="authLoginField" type="text"
-          placeholder="Ваш логин" autocomplete="username" autocorrect="off" spellcheck="false">
+      <div id="authTgView">
+        <button class="auth-btn-tg" id="authTgBtn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 2L2 9.5L8.5 12.5L13 9L9.5 13.5L18 19.5L22 2Z" fill="currentColor"/>
+          </svg>
+          Войти через Telegram
+        </button>
+        <div class="auth-switch-link" id="showPwdBtn">Войти по логину и паролю</div>
       </div>
 
-      <div class="auth-field">
-        <label class="auth-label">Пароль</label>
-        <div class="auth-input-wrap">
-          <input class="auth-input" id="authPasswordField" type="password"
-            placeholder="Ваш пароль" autocomplete="current-password">
-          <button class="auth-eye" id="authEyeBtn" type="button">👁</button>
+      <div id="authPwdView" style="display: none;">
+        <div class="auth-field">
+          <label class="auth-label">Логин</label>
+          <input class="auth-input" id="authLoginField" type="text"
+            placeholder="Ваш логин" autocomplete="username" autocorrect="off" spellcheck="false">
         </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Пароль</label>
+          <div class="auth-input-wrap">
+            <input class="auth-input" id="authPasswordField" type="password"
+              placeholder="Ваш пароль" autocomplete="current-password">
+            <button class="auth-eye" id="authEyeBtn" type="button">👁</button>
+          </div>
+        </div>
+
+        <div class="auth-error" id="authLoginError"></div>
+
+        <button class="auth-btn-primary" id="authSubmitBtn">
+          <span id="authSubmitText">Войти</span>
+          <span id="authSubmitSpinner" class="auth-spinner" style="display:none"></span>
+        </button>
+        
+        <div class="auth-switch-link" id="showTgBtn">← Назад</div>
       </div>
 
-      <div class="auth-error" id="authLoginError"></div>
-
-      <button class="auth-btn-primary" id="authSubmitBtn">
-        <span id="authSubmitText">Войти</span>
-        <span id="authSubmitSpinner" class="auth-spinner" style="display:none"></span>
-      </button>
-
-      <div class="auth-modal-hint">
-        Аккаунт выдаётся администратором.<br>
+      <div class="auth-modal-hint" style="margin-top: 16px;">
+        Возникли проблемы?<br>
         Обратитесь в <a href="https://t.me/marme1adochka" target="_blank">поддержку</a>.
       </div>
     </div>
@@ -246,6 +248,13 @@ function openLoginModal() {
 
   document.body.appendChild(modal);
   requestAnimationFrame(() => modal.classList.add('open'));
+
+  // Элементы
+  const tgView      = document.getElementById('authTgView');
+  const pwdView     = document.getElementById('authPwdView');
+  const showPwdBtn  = document.getElementById('showPwdBtn');
+  const showTgBtn   = document.getElementById('showTgBtn');
+  const tgBtn       = document.getElementById('authTgBtn');
 
   const loginField    = document.getElementById('authLoginField');
   const passwordField = document.getElementById('authPasswordField');
@@ -255,6 +264,51 @@ function openLoginModal() {
   const submitSpinner = document.getElementById('authSubmitSpinner');
   const eyeBtn        = document.getElementById('authEyeBtn');
 
+  // Переключение экранов
+  showPwdBtn.onclick = () => { tgView.style.display = 'none'; pwdView.style.display = 'block'; };
+  showTgBtn.onclick  = () => { pwdView.style.display = 'none'; tgView.style.display = 'block'; errorEl.textContent=''; };
+
+  // Логика кнопки Telegram
+  tgBtn.onclick = async () => {
+    const tg = window.Telegram?.WebApp;
+    if (!tg || !tg.initData) {
+      showToast('❌ Ошибка: Откройте каталог внутри Telegram-бота!');
+      return;
+    }
+
+    const originalText = tgBtn.innerHTML;
+    tgBtn.innerHTML = '<span class="auth-spinner" style="display:inline-block"></span> Загрузка...';
+    tgBtn.disabled = true;
+
+    try {
+      const res = await fetch(`${AUTH_CONFIG.BASE_URL}/api/auth/telegram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ init_data: tg.initData })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        Auth.token = data.token;
+        Auth.user  = data.user;
+        Auth.save();
+        closeAllAuthModals();
+        renderAccountIcon();
+        if (typeof applySubscriptionUI === 'function') applySubscriptionUI();
+        showToast(`⚡ Добро пожаловать, ${Auth.user.username || Auth.user.login}!`);
+      } else {
+        showToast('❌ Ошибка авторизации');
+        tgBtn.innerHTML = originalText;
+        tgBtn.disabled = false;
+      }
+    } catch (err) {
+      showToast('❌ Ошибка сервера');
+      tgBtn.innerHTML = originalText;
+      tgBtn.disabled = false;
+    }
+  };
+
+  // Логика обычного пароля
   eyeBtn.addEventListener('click', () => {
     const isHidden = passwordField.type === 'password';
     passwordField.type = isHidden ? 'text' : 'password';
@@ -269,7 +323,172 @@ function openLoginModal() {
   modal.addEventListener('click', e => { if (e.target === modal) closeAllAuthModals(); });
   submitBtn.addEventListener('click', doLogin);
 
-  loginField.focus();
+  async function doLogin() {
+    const login    = loginField.value.trim();
+    const password = passwordField.value;
+    errorEl.textContent = '';
+
+    if (!login || !password) {
+      errorEl.textContent = 'Заполните все поля.';
+      return;
+    }
+
+    submitText.style.display    = 'none';
+    submitSpinner.style.display = 'inline-block';
+    submitBtn.disabled = true;
+
+    try {
+      await authLogin(login, password);
+      closeAllAuthModals();
+      renderAccountIcon();
+      applySubscriptionUI();
+      showToast(`✅ Добро пожаловать, ${Auth.user.username || Auth.user.login}!`);
+    } catch (err) {
+      errorEl.textContent = err.message || 'Неверный логин или пароль.';
+      submitText.style.display    = 'inline';
+      submitSpinner.style.display = 'none';
+      submitBtn.disabled = false;
+      passwordField.value = '';
+      passwordField.focus();
+    }
+  }
+}
+// ══════════════════════════════════════════════════════════════════
+// Модалка входа
+// ══════════════════════════════════════════════════════════════════
+function openLoginModal() {
+  closeAllAuthModals();
+
+  const modal = document.createElement('div');
+  modal.id        = 'authLoginModal';
+  modal.className = 'auth-modal-overlay';
+  modal.innerHTML = `
+    <div class="auth-modal">
+      <button class="auth-modal-close" id="authLoginClose">✕</button>
+
+      <div class="auth-modal-logo">🎮</div>
+      <div class="auth-modal-title">The Pass</div>
+      <div class="auth-modal-sub">Войдите в свой аккаунт</div>
+
+      <div id="authTgView">
+        <button class="auth-btn-tg" id="authTgBtn">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M22 2L2 9.5L8.5 12.5L13 9L9.5 13.5L18 19.5L22 2Z" fill="currentColor"/>
+          </svg>
+          Войти через Telegram
+        </button>
+        <div class="auth-switch-link" id="showPwdBtn">Войти по логину и паролю</div>
+      </div>
+
+      <div id="authPwdView" style="display: none;">
+        <div class="auth-field">
+          <label class="auth-label">Логин</label>
+          <input class="auth-input" id="authLoginField" type="text"
+            placeholder="Ваш логин" autocomplete="username" autocorrect="off" spellcheck="false">
+        </div>
+
+        <div class="auth-field">
+          <label class="auth-label">Пароль</label>
+          <div class="auth-input-wrap">
+            <input class="auth-input" id="authPasswordField" type="password"
+              placeholder="Ваш пароль" autocomplete="current-password">
+            <button class="auth-eye" id="authEyeBtn" type="button">👁</button>
+          </div>
+        </div>
+
+        <div class="auth-error" id="authLoginError"></div>
+
+        <button class="auth-btn-primary" id="authSubmitBtn">
+          <span id="authSubmitText">Войти</span>
+          <span id="authSubmitSpinner" class="auth-spinner" style="display:none"></span>
+        </button>
+        
+        <div class="auth-switch-link" id="showTgBtn">← Назад</div>
+      </div>
+
+      <div class="auth-modal-hint" style="margin-top: 16px;">
+        Возникли проблемы?<br>
+        Обратитесь в <a href="https://t.me/marme1adochka" target="_blank">поддержку</a>.
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+  requestAnimationFrame(() => modal.classList.add('open'));
+
+  // Элементы
+  const tgView      = document.getElementById('authTgView');
+  const pwdView     = document.getElementById('authPwdView');
+  const showPwdBtn  = document.getElementById('showPwdBtn');
+  const showTgBtn   = document.getElementById('showTgBtn');
+  const tgBtn       = document.getElementById('authTgBtn');
+
+  const loginField    = document.getElementById('authLoginField');
+  const passwordField = document.getElementById('authPasswordField');
+  const errorEl       = document.getElementById('authLoginError');
+  const submitBtn     = document.getElementById('authSubmitBtn');
+  const submitText    = document.getElementById('authSubmitText');
+  const submitSpinner = document.getElementById('authSubmitSpinner');
+  const eyeBtn        = document.getElementById('authEyeBtn');
+
+  // Переключение экранов
+  showPwdBtn.onclick = () => { tgView.style.display = 'none'; pwdView.style.display = 'block'; };
+  showTgBtn.onclick  = () => { pwdView.style.display = 'none'; tgView.style.display = 'block'; errorEl.textContent=''; };
+
+  // Логика кнопки Telegram
+  tgBtn.onclick = async () => {
+    const tg = window.Telegram?.WebApp;
+    if (!tg || !tg.initData) {
+      showToast('❌ Ошибка: Откройте каталог внутри Telegram-бота!');
+      return;
+    }
+
+    const originalText = tgBtn.innerHTML;
+    tgBtn.innerHTML = '<span class="auth-spinner" style="display:inline-block"></span> Загрузка...';
+    tgBtn.disabled = true;
+
+    try {
+      const res = await fetch(`${AUTH_CONFIG.BASE_URL}/api/auth/telegram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ init_data: tg.initData })
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        Auth.token = data.token;
+        Auth.user  = data.user;
+        Auth.save();
+        closeAllAuthModals();
+        renderAccountIcon();
+        if (typeof applySubscriptionUI === 'function') applySubscriptionUI();
+        showToast(`⚡ Добро пожаловать, ${Auth.user.username || Auth.user.login}!`);
+      } else {
+        showToast('❌ Ошибка авторизации');
+        tgBtn.innerHTML = originalText;
+        tgBtn.disabled = false;
+      }
+    } catch (err) {
+      showToast('❌ Ошибка сервера');
+      tgBtn.innerHTML = originalText;
+      tgBtn.disabled = false;
+    }
+  };
+
+  // Логика обычного пароля
+  eyeBtn.addEventListener('click', () => {
+    const isHidden = passwordField.type === 'password';
+    passwordField.type = isHidden ? 'text' : 'password';
+    eyeBtn.textContent  = isHidden ? '🙈' : '👁';
+  });
+
+  [loginField, passwordField].forEach(el => {
+    el.addEventListener('keydown', e => { if (e.key === 'Enter') doLogin(); });
+  });
+
+  document.getElementById('authLoginClose').addEventListener('click', closeAllAuthModals);
+  modal.addEventListener('click', e => { if (e.target === modal) closeAllAuthModals(); });
+  submitBtn.addEventListener('click', doLogin);
 
   async function doLogin() {
     const login    = loginField.value.trim();
@@ -314,7 +533,10 @@ function openProfileModal() {
     ? (u.sub_until ? `до ${new Date(u.sub_until).toLocaleDateString('ru')}` : '∞ безлимит')
     : 'Нет подписки';
   const subClass  = Auth.isPremium() ? 'profile-sub--active' : 'profile-sub--none';
+  
+  // Здесь мы разделяем роль и UID для красивого отображения!
   const roleLabel = Auth.isAdmin() ? '👑 Admin' : Auth.isPremium() ? '💎 Premium' : '👤 User';
+  const uidHtml   = u.num_id ? `<div class="profile-role-badge profile-uid-badge">🆔 UID: ${u.num_id}</div>` : '';
 
   const avatarSrc = u.avatar_url
     ? (u.avatar_url.startsWith('http') ? u.avatar_url : AUTH_CONFIG.BASE_URL + u.avatar_url)
@@ -335,11 +557,7 @@ function openProfileModal() {
     <div class="auth-modal profile-modal">
       <button class="auth-modal-close" id="profileClose">✕</button>
 
-      <!-- Баннер -->
-      <div class="profile-banner"></div>
-
-      <!-- Аватар + имя (выступает из баннера) -->
-      <div class="profile-avatar-area">
+      <div class="profile-header">
         <div class="profile-avatar" id="profileAvatarWrap">
           ${avatarHtml}
           <div class="profile-avatar-edit" id="profileAvatarEdit" title="Изменить аватар">📷</div>
@@ -348,41 +566,37 @@ function openProfileModal() {
         <div class="profile-info">
           <div class="profile-username">${escapeHtml(u.username || u.login)}</div>
           <div class="profile-login">@${escapeHtml(u.login)}</div>
-          <div class="profile-meta-row">
-            <span class="profile-role">${roleLabel}</span>
-            <span class="profile-uid">UID: ${u.id ?? '—'}</span>
+          <div class="profile-badges-row">
+            <div class="profile-role-badge">${roleLabel}</div>
+            ${uidHtml}
           </div>
         </div>
       </div>
 
-      <div class="profile-divider"></div>
-
-      <div class="profile-body">
-        <div class="profile-sub-row ${subClass}">
-          <span class="profile-sub-ico">${Auth.isPremium() ? '💎' : '🔒'}</span>
-          <span class="profile-sub-text">Подписка: <b>${subText}</b></span>
-          ${!Auth.isPremium() ? `<button class="profile-sub-btn" id="profileBuyBtn">Купить</button>` : ''}
-        </div>
-
-        <div class="profile-stats-row">
-          <div class="profile-stat">
-            <div class="profile-stat-val">${regDate}</div>
-            <div class="profile-stat-lbl">Регистрация</div>
-          </div>
-          <div class="profile-stat">
-            <div class="profile-stat-val">${u.credits ?? 0}</div>
-            <div class="profile-stat-lbl">Активаций</div>
-          </div>
-        </div>
-
-        <div class="profile-actions">
-          <button class="profile-action-btn" id="profileChangeUsername">✏️ Изменить имя</button>
-          <button class="profile-action-btn" id="profileChangePassword">🔑 Сменить пароль</button>
-          <button class="profile-action-btn profile-action-btn--danger" id="profileLogout">🚪 Выйти</button>
-        </div>
-
-        <div class="auth-error" id="profileError"></div>
+      <div class="profile-sub-row ${subClass}">
+        <span class="profile-sub-ico">${Auth.isPremium() ? '💎' : '🔒'}</span>
+        <span class="profile-sub-text">Подписка: <b>${subText}</b></span>
+        ${!Auth.isPremium() ? `<button class="profile-sub-btn" id="profileBuyBtn">Купить</button>` : ''}
       </div>
+
+      <div class="profile-stats-row">
+        <div class="profile-stat">
+          <div class="profile-stat-val">${regDate}</div>
+          <div class="profile-stat-lbl">Регистрация</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val">${u.credits ?? 0}</div>
+          <div class="profile-stat-lbl">Активаций</div>
+        </div>
+      </div>
+
+      <div class="profile-actions">
+        <button class="profile-action-btn" id="profileChangeUsername">✏️ Изменить имя</button>
+        <button class="profile-action-btn" id="profileChangePassword">🔑 Сменить пароль</button>
+        <button class="profile-action-btn profile-action-btn--danger" id="profileLogout">🚪 Выйти</button>
+      </div>
+
+      <div class="auth-error" id="profileError"></div>
     </div>
   `;
 
@@ -436,11 +650,8 @@ function openProfileModal() {
   });
 }
 
-// ── Модалка смены юзернейма ───────────────────────────────────────
-
 function openChangeUsernameModal() {
   closeAllAuthModals();
-
   const modal = document.createElement('div');
   modal.id        = 'authChangeUsernameModal';
   modal.className = 'auth-modal-overlay';
@@ -487,11 +698,8 @@ function openChangeUsernameModal() {
   }
 }
 
-// ── Модалка смены пароля ─────────────────────────────────────────
-
 function openChangePasswordModal() {
   closeAllAuthModals();
-
   const modal = document.createElement('div');
   modal.id        = 'authChangePasswordModal';
   modal.className = 'auth-modal-overlay';
@@ -546,8 +754,6 @@ function openChangePasswordModal() {
   }
 }
 
-// ── Закрыть все модалки авторизации ──────────────────────────────
-
 function closeAllAuthModals() {
   ['authLoginModal', 'authProfileModal', 'authChangeUsernameModal',
    'authChangePasswordModal'].forEach(id => {
@@ -557,10 +763,6 @@ function closeAllAuthModals() {
     setTimeout(() => el.remove(), 250);
   });
 }
-
-// ══════════════════════════════════════════════════════════════════
-// Логика подписки
-// ══════════════════════════════════════════════════════════════════
 
 function applySubscriptionUI() {
   const findBtn = document.getElementById('gamePageFind');
@@ -581,27 +783,115 @@ function applySubscriptionUI() {
   }
 }
 
+async function authViaTelegram() {
+  if (!AUTH_ENABLED || Auth.isLoggedIn()) return;
+
+  const tg = window.Telegram?.WebApp;
+  
+  // Проверка: видит ли скрипт Telegram вообще?
+  if (!tg || !tg.initData) {
+    console.warn('[Auth] Telegram initData не найден. Если вы в браузере — это нормально.');
+    return; 
+  }
+
+  try {
+    const res = await fetch(`${AUTH_CONFIG.BASE_URL}/api/auth/telegram`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ init_data: tg.initData })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      Auth.token = data.token;
+      Auth.user  = data.user;
+      Auth.save();
+      console.info(`[Auth] ⚡ Успешный вход! ID: #${data.user.num_id}`);
+      renderAccountIcon(); // Сразу перерисовываем иконку
+    } else {
+      console.error('[Auth] Сервер отклонил данные:', data.detail || data.error);
+    }
+  } catch (err) {
+    console.error('[Auth] Ошибка подключения к API:', err);
+  }
+}
+
 // ══════════════════════════════════════════════════════════════════
-// Инициализация при загрузке страницы
+// Меню выбора тем оформления
 // ══════════════════════════════════════════════════════════════════
 
-document.addEventListener('DOMContentLoaded', () => {
-  // Если API не настроен — ничего не делаем
+function initThemeMenu() {
+  let currentTheme = localStorage.getItem('theme') || 'dark';
+  document.body.classList.remove('light-theme', 'oled-theme');
+  if (currentTheme !== 'dark') document.body.classList.add(`${currentTheme}-theme`);
+
+  let themeBtn = document.getElementById('themeBtn');
+  if (!themeBtn) return;
+
+  const icons = { 'dark': '🌙', 'light': '☀️', 'oled': '🌌' };
+  themeBtn.textContent = icons[currentTheme] || '🌙';
+
+  let dropdown = document.createElement('div');
+  dropdown.className = 'theme-dropdown';
+  dropdown.innerHTML = `
+    <button class="theme-btn-option ${currentTheme==='dark'?'active':''}" data-theme="dark">🌙 Тёмная</button>
+    <button class="theme-btn-option ${currentTheme==='light'?'active':''}" data-theme="light">☀️ Светлая</button>
+    <button class="theme-btn-option ${currentTheme==='oled'?'active':''}" data-theme="oled">🌌 OLED Black</button>
+  `;
+  document.body.appendChild(dropdown);
+
+  themeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const rect = themeBtn.getBoundingClientRect();
+    dropdown.style.top = (rect.bottom + 8) + 'px';
+    dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+    dropdown.classList.toggle('open');
+  });
+
+  dropdown.querySelectorAll('.theme-btn-option').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const theme = e.target.getAttribute('data-theme');
+      currentTheme = theme;
+      localStorage.setItem('theme', theme);
+
+      document.body.classList.remove('light-theme', 'oled-theme');
+      if (theme !== 'dark') document.body.classList.add(`${theme}-theme`);
+
+      themeBtn.textContent = icons[theme];
+      dropdown.querySelectorAll('.theme-btn-option').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      dropdown.classList.remove('open');
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target) && e.target !== themeBtn) {
+      dropdown.classList.remove('open');
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Запуск
+// ══════════════════════════════════════════════════════════════════
+
+document.addEventListener('DOMContentLoaded', async () => {
   if (!AUTH_ENABLED) {
-    console.info('[Auth] API URL не настроен в auth_config.js — авторизация отключена.');
+    console.info('[Auth] API URL не настроен — авторизация отключена.');
     return;
   }
 
+  // Запускаем красивое меню тем
+  initThemeMenu();
+
   Auth.load();
 
-  if (Auth.token) {
-    authRefreshUser().then(() => {
-      renderAccountIcon();
-      applySubscriptionUI();
-    });
-  } else {
-    renderAccountIcon();
-  }
+  if (!Auth.isLoggedIn()) await authViaTelegram();
+  if (Auth.isLoggedIn()) await authRefreshUser();
+
+  renderAccountIcon();
+  if (typeof applySubscriptionUI === 'function') applySubscriptionUI();
 
   const gamePage = document.getElementById('gamePage');
   if (gamePage) {
@@ -610,4 +900,118 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     observer.observe(gamePage, { attributes: true, attributeFilter: ['class'] });
   }
+
+  const modal = document.getElementById('authModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal && typeof AuthModal !== 'undefined') {
+        AuthModal.close();
+      }
+    });
+  }
 });
+// ══════════ СИСТЕМА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК ══════════
+document.addEventListener('DOMContentLoaded', () => {
+  const navItems = document.querySelectorAll('.nav-item');
+  
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const page = item.getAttribute('data-page');
+      switchPage(page);
+    });
+  });
+});
+
+// ══════════ УМНАЯ СИСТЕМА ПЕРЕКЛЮЧЕНИЯ ВКЛАДОК ══════════
+function switchPage(pageId) {
+  // АВТО-ЗАКРЫТИЕ ФИЛЬТРОВ ПРИ СМЕНЕ ВКЛАДКИ
+  const sidebar = document.getElementById('sidebar');
+  const overlay = document.getElementById('sidebarOverlay');
+  if (sidebar) sidebar.classList.remove('open');
+  if (overlay) overlay.classList.remove('open');
+
+  // 1. Меняем активную кнопку
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.classList.toggle('active', btn.getAttribute('data-page') === pageId);
+  });
+
+  // 2. Скрываем всё, показываем нужную секцию
+  document.querySelectorAll('.content-section').forEach(sec => sec.style.display = 'none');
+  const target = document.getElementById(`section-${pageId}`);
+  if (target) {
+    target.style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // 3. Логика для конкретных страниц
+  if (pageId === 'profile') {
+    if (!Auth.isLoggedIn()) {
+      showToast("❌ Сначала войдите в аккаунт");
+      if (typeof openLoginModal === 'function') openLoginModal();
+      // Если не вошел - возвращаем визуально на вкладку каталога
+      switchPage('catalog'); 
+      return;
+    }
+    
+    // Заполняем данные пользователя
+    if (document.getElementById('profUsername')) {
+      document.getElementById('profUsername').textContent = Auth.user.username || Auth.user.login;
+      document.getElementById('profAvatarText').textContent = (Auth.user.username || Auth.user.login)[0].toUpperCase();
+      document.getElementById('profRole').textContent = Auth.user.role === 'admin' ? '👑 ADMIN' : 'USER';
+      document.getElementById('profUid').textContent = `UID: ${Auth.user.num_id || '---'}`;
+    }
+    
+    // Запускаем абстрактные линии
+    if (typeof startProfileLines === 'function') startProfileLines();
+  } 
+  else if (pageId === 'community') {
+    // В будущем здесь будет запрос к API для получения списка юзеров
+    const commList = document.getElementById('communityList');
+    if (commList) {
+      commList.innerHTML = '<p style="color: var(--muted); text-align: center;">База пользователей подключается...</p>';
+    }
+  }
+}
+
+// ══════════ АНИМАЦИЯ АБСТРАКТНЫХ ЛИНИЙ (ПРОФИЛЬ) ══════════
+let profileAnimId = null;
+function startProfileLines() {
+  const canvas = document.getElementById('profileCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  canvas.width = canvas.offsetWidth;
+  canvas.height = canvas.offsetHeight;
+  
+  const lines = Array.from({ length: 15 }, () => ({
+    y: Math.random() * canvas.height,
+    speed: 0.5 + Math.random() * 1.5,
+    width: 2 + Math.random() * 4,
+    opacity: 0.1 + Math.random() * 0.4,
+    wave: Math.random() * 100
+  }));
+
+  let time = 0;
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    time += 0.02;
+    
+    lines.forEach(line => {
+      ctx.beginPath();
+      for (let x = 0; x < canvas.width; x += 20) {
+        const yOffset = Math.sin(x * 0.01 + time + line.wave) * 30;
+        ctx.lineTo(x, line.y + yOffset);
+      }
+      ctx.strokeStyle = `rgba(139, 92, 246, ${line.opacity})`;
+      ctx.lineWidth = line.width;
+      ctx.stroke();
+      
+      line.y -= line.speed;
+      if (line.y < -50) line.y = canvas.height + 50;
+    });
+    profileAnimId = requestAnimationFrame(draw);
+  }
+  
+  if (profileAnimId) cancelAnimationFrame(profileAnimId);
+  draw();
+}
