@@ -573,6 +573,59 @@ function applySubscriptionUI() {
 // ══════════════════════════════════════════════════════════════════
 // Инициализация при загрузке страницы
 // ══════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════
+// Инициализация и Бесшовный вход (Zero-Click)
+// ══════════════════════════════════════════════════════════════════
+
+async function authViaTelegram() {
+  if (!AUTH_ENABLED || Auth.isLoggedIn()) return;
+
+  const tg = window.Telegram?.WebApp;
+  if (!tg || !tg.initData) return; 
+
+  try {
+    const res = await fetch(`${AUTH_CONFIG.BASE_URL}/api/auth/telegram`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ init_data: tg.initData })
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      Auth.setSession(data.token, data.user);
+      console.info(`[Auth] ⚡ Успешный вход через Telegram! Твой ID: #${data.user.num_id}`);
+    }
+  } catch (err) {
+    console.error('[Auth] ❌ Ошибка бесшовного входа:', err);
+  }
+}
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!AUTH_ENABLED) {
+    console.info('[Auth] API URL не настроен — авторизация отключена.');
+    return;
+  }
+
+  Auth.load();
+
+  // 1. Пробуем войти без пароля
+  if (!Auth.isLoggedIn()) await authViaTelegram();
+
+  // 2. Обновляем данные, если вошли
+  if (Auth.isLoggedIn()) await authRefreshUser();
+
+  // 3. Рисуем кнопки
+  renderAccountIcon();
+  if (typeof applySubscriptionUI === 'function') applySubscriptionUI();
+
+  // 4. Закрытие модалки по клику
+  const modal = document.getElementById('authModal');
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) AuthModal.close();
+    });
+  }
+});
 
 document.addEventListener('DOMContentLoaded', () => {
   // Если API не настроен — ничего не делаем
