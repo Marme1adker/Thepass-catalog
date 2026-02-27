@@ -2033,3 +2033,36 @@ kbd {
   .nav-label { font-size: 11px; }
 }
 }
+/* ══════════ НОВЫЙ ПРОФИЛЬ (БАННЕР И АВАТАР) ══════════ */
+.profile-banner {
+  width: 100%; height: 160px;
+  background: linear-gradient(135deg, var(--surface2), #4c1d95);
+  border-bottom: 1px solid var(--border);
+  position: relative;
+}
+.profile-header-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 16px; 
+  margin-top: -50px; /* Накладываем карточку на баннер */
+  padding: 0 20px 20px; text-align: center;
+  position: relative; z-index: 2;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+}
+.prof-avatar-wrap-centered {
+  width: 86px; height: 86px; 
+  margin: -43px auto 12px; /* Аватар вылезает вверх ровно на половину */
+  border-radius: 50%; padding: 4px;
+  background: var(--surface); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+}
+.prof-avatar {
+  width: 100%; height: 100%; border-radius: 50%;
+  background: linear-gradient(135deg, var(--purple3), var(--purple2));
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif; font-size: 34px; font-weight: 800; color: #fff;
+}
+.prof-info-centered h2 {
+  font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800;
+  color: var(--text); margin-bottom: 10px;
+}
+.prof-badges { display: flex; gap: 8px; justify-content: center; }
