@@ -309,12 +309,17 @@ function openLoginModal() {
 function openProfileModal() {
   closeAllAuthModals();
 
-  const u        = Auth.user;
+const u        = Auth.user;
   const subText  = Auth.isPremium()
     ? (u.sub_until ? `до ${new Date(u.sub_until).toLocaleDateString('ru')}` : '∞ безлимит')
     : 'Нет подписки';
   const subClass  = Auth.isPremium() ? 'profile-sub--active' : 'profile-sub--none';
-  const roleLabel = Auth.isAdmin() ? '👑 Admin' : Auth.isPremium() ? '💎 Premium' : '👤 User';
+  
+  // Создаем плашку роли + красиво добавляем UID рядом
+  let roleLabel = Auth.isAdmin() ? '👑 Admin' : Auth.isPremium() ? '💎 Premium' : '👤 User';
+  if (u.num_id) {
+    roleLabel += `<span class="profile-uid-badge">🆔 UID: ${u.num_id}</span>`;
+  }
 
   const avatarSrc = u.avatar_url
     ? (u.avatar_url.startsWith('http') ? u.avatar_url : AUTH_CONFIG.BASE_URL + u.avatar_url)
