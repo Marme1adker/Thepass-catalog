@@ -34,15 +34,15 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
+body {
   background: var(--bg);
   color: var(--text);
   font-family: 'Inter', sans-serif;
   font-size: 14px;
   min-height: 100vh;
-  max-width: 100vw;
-  overflow-x: hidden !important;
+  overflow-x: hidden;
 }
+
 /* ══════════ ФОН — ЖИВОЙ ФИОЛЕТОВЫЙ БЛИК ══════════ */
 body::before {
   content: '';
@@ -1874,178 +1874,42 @@ kbd {
 .theme-btn-option:hover { background: var(--surface2); color: var(--text); }
 .theme-btn-option.active { background: var(--purple3); color: #fff; }
 
-/* ══════════ МАКСИМАЛЬНОЕ ЖИДКОЕ СТЕКЛО (Premium Glassmorphism) ══════════ */
+/* ══════════ ЭФФЕКТ СТЕКЛА ДЛЯ КАРТОЧЕК (Glassmorphism) ══════════ */
 
 /* Базовая (Тёмная) тема */
 .list-card, .grid-card {
-  background: rgba(26, 22, 40, 0.35) !important; /* Делаем фон прозрачнее */
-  backdrop-filter: blur(24px) saturate(180%); /* Сильный блюр + насыщенность фона под ним */
-  -webkit-backdrop-filter: blur(24px) saturate(180%); /* Для Safari/iOS */
-  border: 1px solid rgba(255, 255, 255, 0.04) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.12) !important; /* Блик света сверху */
-  border-left: 1px solid rgba(255, 255, 255, 0.08) !important; /* Блик света слева */
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2) !important; /* Глубокая мягкая тень */
-  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+  background: rgba(26, 22, 40, 0.55) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px); /* Для поддержки Safari */
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  transition: all 0.2s ease;
 }
 .list-card:hover, .grid-card:hover {
-  background: rgba(35, 29, 54, 0.5) !important;
-  border-color: rgba(139, 92, 246, 0.4) !important;
-  box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2) !important; /* Фиолетовое свечение */
-  transform: translateY(-3px);
+  background: rgba(35, 29, 54, 0.8) !important;
+  border-color: rgba(139, 92, 246, 0.3) !important; /* Фиолетовое свечение при наведении */
 }
 
 /* Светлая тема */
 .light-theme .list-card,
 .light-theme .grid-card {
-  background: rgba(255, 255, 255, 0.45) !important;
-  border: 1px solid rgba(255, 255, 255, 0.8) !important;
-  border-top: 1px solid #ffffff !important;
-  box-shadow: 0 8px 32px rgba(31, 38, 135, 0.07) !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.6) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.03) !important;
 }
 .light-theme .list-card:hover,
 .light-theme .grid-card:hover {
-  background: rgba(255, 255, 255, 0.75) !important;
-  border-color: rgba(167, 139, 250, 0.6) !important;
+  background: rgba(255, 255, 255, 0.9) !important;
+  border-color: rgba(167, 139, 250, 0.4) !important;
 }
 
 /* OLED тема */
 .oled-theme .list-card,
 .oled-theme .grid-card {
-  background: rgba(10, 10, 10, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.02) !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.06) !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+  background: rgba(6, 6, 6, 0.5) !important;
+  border: 1px solid rgba(255, 255, 255, 0.03) !important;
 }
 .oled-theme .list-card:hover,
 .oled-theme .grid-card:hover {
-  background: rgba(20, 20, 20, 0.6) !important;
-  border-color: rgba(91, 33, 182, 0.5) !important;
-}
-/* ══════════ ФИКСЫ UI ДЛЯ МОБИЛОК ══════════ */
-
-/* 1. Спасаем шапку от вылезания за края на узких экранах */
-@media (max-width: 420px) {
-  .header { gap: 6px; padding: 14px 0 10px; }
-  .header-text h1 { font-size: 15px; }
-  .theme-toggle-btn, .random-btn, .stats-toggle-btn { 
-    padding: 6px 8px; 
-  }
-  .filter-toggle-btn {
-    padding: 6px 8px;
-    font-size: 0; /* Скрываем слово "Фильтры", оставляя только иконку */
-    gap: 4px;
-  }
-  .filter-badge {
-    font-size: 10px; /* Цифра выбранных фильтров остается видимой */
-  }
-}
-
-/* 2. Умный мобильный сайдбар (шторка) под разные темы */
-@media (max-width: 700px) {
-  /* Базовая (Тёмная) тема */
-  .sidebar {
-    background: rgba(26, 22, 40, 0.85) !important;
-    backdrop-filter: blur(24px) saturate(180%);
-    -webkit-backdrop-filter: blur(24px) saturate(180%);
-  }
-  
-  /* Светлая тема */
-  .light-theme .sidebar {
-    background: rgba(243, 244, 246, 0.85) !important; /* Мягкий светлый полупрозрачный фон */
-    border-right: 1px solid rgba(0, 0, 0, 0.08) !important;
-  }
-  
-  /* OLED тема */
-  .oled-theme .sidebar {
-    background: rgba(5, 5, 5, 0.85) !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
-  }
-}
-/* ══════════ НОВЫЕ КНОПКИ АВТОРИЗАЦИИ (Telegram) ══════════ */
-.auth-btn-tg {
-  width: 100%;
-  background: #2AABEE; /* Фирменный цвет Telegram */
-  color: #ffffff;
-  border: none;
-  border-radius: 12px;
-  padding: 14px;
-  font-family: 'Syne', sans-serif;
-  font-size: 15px;
-  font-weight: 700;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  box-shadow: 0 4px 16px rgba(42, 171, 238, 0.3);
-  transition: all 0.15s ease;
-  margin-bottom: 4px;
-}
-.auth-btn-tg:hover { 
-  background: #229ED9; 
-  box-shadow: 0 6px 20px rgba(42, 171, 238, 0.5); 
-  transform: translateY(-2px); 
-}
-.auth-btn-tg:active { transform: scale(0.97); }
-
-.auth-switch-link {
-  text-align: center;
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--muted);
-  cursor: pointer;
-  padding: 10px;
-  transition: color 0.15s;
-}
-.auth-switch-link:hover { color: var(--text); }
-/* ══════════ NAVIGATION RAIL (Левая панель) ══════════ */
-.nav-rail {
-  width: 72px; height: 100vh;
-  background: rgba(15, 13, 23, 0.85);
-  backdrop-filter: blur(20px);
-  border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; align-items: center;
-  padding: 20px 0; gap: 20px;
-  position: sticky; top: 0; z-index: 1100;
-}
-
-.nav-item {
-  background: none; border: none;
-  display: flex; flex-direction: column; align-items: center;
-  gap: 4px; cursor: pointer; color: var(--muted);
-  transition: all 0.2s ease; width: 100%;
-}
-
-.nav-icon { font-size: 22px; transition: transform 0.2s; }
-.nav-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
-.nav-item:hover { color: var(--purple2); }
-.nav-item.active { color: var(--purple); }
-.nav-item.active .nav-icon { transform: scale(1.2); filter: drop-shadow(0 0 8px var(--purple)); }
-
-/* ══════════ ОБНОВЛЕННЫЙ САЙДБАР (Теперь выездной для всех) ══════════ */
-@media (min-width: 701px) {
-  .sidebar {
-    position: fixed; left: 72px; top: 0; /* Выезжает СРАЗУ ПОСЛЕ nav-rail */
-    height: 100vh; width: 280px;
-    z-index: 1050;
-    transform: translateX(-110%); /* Спрятан */
-    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    background: rgba(26, 22, 40, 0.95) !important;
-    box-shadow: 10px 0 30px rgba(0,0,0,0.5);
-  }
-  .sidebar.open { transform: translateX(0); }
-  
-  .filter-toggle-btn { display: flex !important; } /* Показываем кнопку фильтров на ПК */
-}
-
-/* Прячем навигационную панель на очень маленьких экранах (опционально) или делаем её горизонтальной снизу */
-@media (max-width: 500px) {
-  .nav-rail {
-    position: fixed; bottom: 0; left: 0; width: 100%; height: 60px;
-    flex-direction: row; justify-content: space-around; padding: 0;
-    border-right: none; border-top: 1px solid var(--border);
-    z-index: 2000;
-  }
-  .main { padding-bottom: 80px; } /* Место под нижнюю панель */
+  background: rgba(16, 16, 16, 0.75) !important;
+  border-color: rgba(91, 33, 182, 0.4) !important;
 }
