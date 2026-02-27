@@ -1,49 +1,56 @@
 /**
  * modal.js — модальное окно подтверждения поиска
  *
- * Изменения:
- *  - анимация закрытия (.closing класс)
- *  - кнопка «Поделиться» (копирует название в буфер)
- *  - addToHistory вызывается ДО tg.sendData()
+ * ФИКС: все getElementById и addEventListener перенесены внутрь
+ *       DOMContentLoaded — элементы гарантированно существуют
+ * ФИКС: null-проверки перед каждым .addEventListener
  */
 
 let pendingGame = null;
 
-const modalOverlay = document.getElementById('modalOverlay');
-const modalImg     = document.getElementById('modalImg');
-const modalTitle   = document.getElementById('modalTitle');
-const modalMeta    = document.getElementById('modalMeta');
-const modalTags    = document.getElementById('modalTags');
-const modalSource  = document.getElementById('modalSource');
-const modalCancel  = document.getElementById('modalCancel');
-const modalConfirm = document.getElementById('modalConfirm');
-const modalFavBtn  = document.getElementById('modalFavBtn');
+// Геттеры — вызываем только когда DOM уже готов
+function _el(id) { return document.getElementById(id); }
 
 function openModal(game) {
+  const modalOverlay = _el('modalOverlay');
+  const modalImg     = _el('modalImg');
+  const modalTitle   = _el('modalTitle');
+  const modalMeta    = _el('modalMeta');
+  const modalTags    = _el('modalTags');
+  const modalSource  = _el('modalSource');
+  const modalFavBtn  = _el('modalFavBtn');
+  const modalCancel  = _el('modalCancel');
+
+  if (!modalOverlay) return;
+
   pendingGame = game;
 
   // Убираем класс закрытия если остался
   modalOverlay.classList.remove('closing');
 
   // Обложка
-  modalImg.style.display = 'block';
-  modalImg.src = game.img || '';
-  modalImg.alt = escapeHtml(game.title);
+  if (modalImg) {
+    modalImg.style.display = 'block';
+    modalImg.src = game.img || '';
+    modalImg.alt = escapeHtml(game.title);
 
-  const ph = modalImg.parentNode.querySelector('.modal-img-placeholder');
-  if (ph) ph.style.display = 'none';
+    const ph = modalImg.parentNode?.querySelector('.modal-img-placeholder');
+    if (ph) ph.style.display = 'none';
 
-  modalImg.onerror = function () {
-    this.style.display = 'none';
-    const ph2 = this.parentNode.querySelector('.modal-img-placeholder');
-    if (ph2) ph2.style.display = 'flex';
-  };
+    modalImg.onerror = function () {
+      this.style.display = 'none';
+      const ph2 = this.parentNode?.querySelector('.modal-img-placeholder');
+      if (ph2) ph2.style.display = 'flex';
+    };
+  }
 
   // Заголовок + студия + DLC
-  modalTitle.textContent = game.title;
-  modalMeta.innerHTML =
-    `<span>📁 ${escapeHtml(game.group)}</span>` +
-    (game.hasDlc ? ' <span class="modal-dlc">DLC</span>' : '');
+  if (modalTitle) modalTitle.textContent = game.title;
+  if (modalMeta) {
+    modalMeta.innerHTML =
+      `<span>📁 ${escapeHtml(game.group)}</span>` +
+      (game.hasDlc ? ' <span class="modal-dlc">DLC</span>' : '');
+  }
 
   // Источник
   if (modalSource) {
@@ -53,12 +60,14 @@ function openModal(game) {
   }
 
   // Теги
-  const tags = game.tags || [];
-  const opts = game.opts || [];
-  const tagItems = tags.map(t => `<span class="modal-tag">${escapeHtml(t)}</span>`);
-  if (opts.includes('ru'))     tagItems.push('<span class="modal-tag">🇷🇺 Русский</span>');
-  if (opts.includes('online')) tagItems.push('<span class="modal-tag">🌐 Онлайн</span>');
-  modalTags.innerHTML = tagItems.join('');
+  if (modalTags) {
+    const tags = game.tags || [];
+    const opts = game.opts || [];
+    const tagItems = tags.map(t => `<span class="modal-tag">${escapeHtml(t)}</span>`);
+    if (opts.includes('ru'))     tagItems.push('<span class="modal-tag">🇷🇺 Русский</span>');
+    if (opts.includes('online')) tagItems.push('<span class="modal-tag">🌐 Онлайн</span>');
+    modalTags.innerHTML = tagItems.join('');
+  }
 
   // Кнопка избранного
   if (modalFavBtn) {
@@ -84,10 +93,9 @@ function openModal(game) {
         setTimeout(() => { shareBtn.textContent = '📋'; }, 1500);
       }).catch(() => showToast('❌ Ошибка копирования'));
     });
-    // Вставляем перед кнопкой Отмена
-    actionsEl.insertBefore(shareBtn, modalCancel);
+    if (modalCancel) actionsEl.insertBefore(shareBtn, modalCancel);
+    else actionsEl.appendChild(shareBtn);
   } else if (actionsEl) {
-    // Обновляем обработчик для новой игры
     const existing = actionsEl.querySelector('.modal-btn-share');
     if (existing) {
       existing.onclick = e => {
@@ -106,9 +114,9 @@ function openModal(game) {
 }
 
 function closeModal() {
-  if (!modalOverlay.classList.contains('open')) return;
+  const modalOverlay = _el('modalOverlay');
+  if (!modalOverlay || !modalOverlay.classList.contains('open')) return;
 
-  // Запускаем анимацию закрытия
   modalOverlay.classList.add('closing');
 
   setTimeout(() => {
@@ -119,30 +127,40 @@ function closeModal() {
   }, 200);
 }
 
-// Избранное в модалке
-if (modalFavBtn) {
-  modalFavBtn.addEventListener('click', e => {
+// ── Навешиваем слушатели только когда DOM готов ──────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  const modalOverlay = _el('modalOverlay');
+  const modalCancel  = _el('modalCancel');
+  const modalConfirm = _el('modalConfirm');
+  const modalFavBtn  = _el('modalFavBtn');
+
+  // Избранное в модалке
+  modalFavBtn?.addEventListener('click', e => {
     e.stopPropagation();
     if (pendingGame) toggleFavorite(pendingGame);
   });
-}
 
-modalCancel.addEventListener('click', closeModal);
+  // Отмена
+  modalCancel?.addEventListener('click', closeModal);
 
-modalOverlay.addEventListener('click', e => {
-  if (e.target === modalOverlay) closeModal();
+  // Клик по оверлею
+  modalOverlay?.addEventListener('click', e => {
+    if (e.target === modalOverlay) closeModal();
+  });
+
+  // Подтверждение — отправить в бот
+  modalConfirm?.addEventListener('click', () => {
+    if (!pendingGame) return;
+    addToHistory(pendingGame);
+    sendToBot(pendingGame.title, pendingGame);
+    closeModal();
+  });
 });
 
+// Escape — глобально
 document.addEventListener('keydown', e => {
   if (e.key !== 'Escape') return;
-  if (modalOverlay.classList.contains('open')) closeModal();
+  const modalOverlay = _el('modalOverlay');
+  if (modalOverlay?.classList.contains('open')) closeModal();
   else if (typeof closeDrawer === 'function') closeDrawer();
-});
-
-// ФИХ: addToHistory ДО sendData
-modalConfirm.addEventListener('click', () => {
-  if (!pendingGame) return;
-  addToHistory(pendingGame);
-  sendToBot(pendingGame.title, pendingGame);
-  closeModal();
 });

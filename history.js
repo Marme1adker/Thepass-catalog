@@ -1,14 +1,18 @@
 /**
- * history.js — история просмотров (localStorage)
+ * history.js — история просмотров (sessionStorage)
  *
- * Исправления:
- *  - ФИХ #1: historyClear?.addEventListener — защита от null
+ * ФИКС: переименован tgStorage → _histTgStorage чтобы не конфликтовать с favorites.js
+ * ФИКС: CloudStorage вызов обёрнут в try/catch (не поддерживается в TG v6.0)
  */
 
 const HISTORY_KEY = 'thepass_history';
 const HISTORY_MAX = 10;
 
-const _tgStorageHist = window.Telegram?.WebApp?.CloudStorage;
+// ФИКС: уникальное имя + защита от ошибки "не поддерживается"
+const _histTgStorage = (() => {
+  try { return window.Telegram?.WebApp?.CloudStorage || null; }
+  catch { return null; }
+})();
 
 function loadHistory() {
   try { return JSON.parse(sessionStorage.getItem(HISTORY_KEY) || '[]'); }
@@ -18,22 +22,24 @@ function loadHistory() {
 function saveHistory(list) {
   try {
     sessionStorage.setItem(HISTORY_KEY, JSON.stringify(list));
-    _tgStorageHist?.setItem(HISTORY_KEY, JSON.stringify(list));
+    try { _histTgStorage?.setItem(HISTORY_KEY, JSON.stringify(list)); } catch {}
   } catch {}
 }
 
 // При загрузке — восстанавливаем из CloudStorage если sessionStorage пуст
-if (_tgStorageHist) {
-  _tgStorageHist.getItem(HISTORY_KEY, (err, value) => {
-    if (!err && value) {
-      try {
-        if (!sessionStorage.getItem(HISTORY_KEY)) {
-          sessionStorage.setItem(HISTORY_KEY, value);
-          renderHistory();
-        }
-      } catch {}
-    }
-  });
+if (_histTgStorage) {
+  try {
+    _histTgStorage.getItem(HISTORY_KEY, (err, value) => {
+      if (!err && value) {
+        try {
+          if (!sessionStorage.getItem(HISTORY_KEY)) {
+            sessionStorage.setItem(HISTORY_KEY, value);
+            if (typeof renderHistory === 'function') renderHistory();
+          }
+        } catch {}
+      }
+    });
+  } catch {}
 }
 
 function addToHistory(game) {
@@ -76,7 +82,7 @@ function renderHistory() {
   });
 }
 
-// ФИХ #1: используем ?. чтобы не падать если элемент не найден
+// ФИКС: используем ?. чтобы не падать если элемент не найден
 document.getElementById('historyClear')?.addEventListener('click', () => {
   saveHistory([]);
   renderHistory();

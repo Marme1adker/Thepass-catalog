@@ -3,13 +3,18 @@
  *
  * Хранит игры добавленные в избранное.
  * Кнопка ❤️ на карточках и в модалке.
+ *
+ * ФИКС: переименован tgStorage → _favTgStorage чтобы не конфликтовать с history.js
+ * ФИКС: CloudStorage вызов обёрнут в try/catch (не поддерживается в TG v6.0)
  */
 
 const FAV_KEY = 'thepass_favorites';
 
-// Используем sessionStorage как основное хранилище,
-// с попыткой синхронизировать через Telegram CloudStorage если доступен
-const _tgStorageFav = window.Telegram?.WebApp?.CloudStorage;
+// ФИКС: уникальное имя + защита от ошибки "не поддерживается"
+const _favTgStorage = (() => {
+  try { return window.Telegram?.WebApp?.CloudStorage || null; }
+  catch { return null; }
+})();
 
 function loadFavorites() {
   try { return JSON.parse(sessionStorage.getItem(FAV_KEY) || '[]'); }
@@ -19,22 +24,25 @@ function loadFavorites() {
 function saveFavorites(list) {
   try {
     sessionStorage.setItem(FAV_KEY, JSON.stringify(list));
-    _tgStorageFav?.setItem(FAV_KEY, JSON.stringify(list));
+    // Дублируем в CloudStorage если доступен (асинхронно, не блокирует UI)
+    try { _favTgStorage?.setItem(FAV_KEY, JSON.stringify(list)); } catch {}
   } catch {}
 }
 
-// При загрузке — восстанавливаем из CloudStorage если sessionStorage пуст
-if (_tgStorageFav) {
-  _tgStorageFav.getItem(FAV_KEY, (err, value) => {
-    if (!err && value) {
-      try {
-        if (!sessionStorage.getItem(FAV_KEY)) {
-          sessionStorage.setItem(FAV_KEY, value);
-          renderFavorites();
-        }
-      } catch {}
-    }
-  });
+// При загрузке страницы — пробуем восстановить из CloudStorage
+if (_favTgStorage) {
+  try {
+    _favTgStorage.getItem(FAV_KEY, (err, value) => {
+      if (!err && value) {
+        try {
+          if (!sessionStorage.getItem(FAV_KEY)) {
+            sessionStorage.setItem(FAV_KEY, value);
+            if (typeof renderFavorites === 'function') renderFavorites();
+          }
+        } catch {}
+      }
+    });
+  } catch {}
 }
 
 function isFavorite(title) {
