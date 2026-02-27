@@ -14,15 +14,12 @@
 // ══════════════════════════════════════════════════════════════════
 
 const AUTH_CONFIG = {
-  // THEPASS_API_URL задаётся в auth_config.js
-  // Если файл не подключён или URL пустой — авторизация отключается
   BASE_URL:    (typeof THEPASS_API_URL !== 'undefined' && THEPASS_API_URL)
-                 ? THEPASS_API_URL.replace(/\/$/, '')  // убираем trailing slash
+                 ? THEPASS_API_URL.replace(/\/$/, '')
                  : '',
   SESSION_KEY: 'thepass_session',
 };
 
-// Если API не настроен — не показываем кнопку аккаунта вообще
 const AUTH_ENABLED = !!AUTH_CONFIG.BASE_URL;
 
 // ══════════════════════════════════════════════════════════════════
@@ -30,8 +27,8 @@ const AUTH_ENABLED = !!AUTH_CONFIG.BASE_URL;
 // ══════════════════════════════════════════════════════════════════
 
 const Auth = {
-  user:  null,   // { id, login, username, role, sub_until, avatar_url, created_at, num_id }
-  token: null,   // JWT токен
+  user:  null,
+  token: null,
 
   load() {
     try {
@@ -94,10 +91,6 @@ async function apiCall(method, path, body = null) {
   return data;
 }
 
-// ══════════════════════════════════════════════════════════════════
-// Действия авторизации
-// ══════════════════════════════════════════════════════════════════
-
 async function authLogin(login, password) {
   const data = await apiCall('POST', '/auth/login', { login, password });
   Auth.user  = data.user;
@@ -154,7 +147,6 @@ function renderAccountIcon() {
   const existing = document.getElementById('accountBtn');
   if (existing) existing.remove();
 
-  // Если API не настроен — кнопку не показываем
   if (!AUTH_ENABLED) return;
 
   const btn = document.createElement('button');
@@ -309,17 +301,15 @@ function openLoginModal() {
 function openProfileModal() {
   closeAllAuthModals();
 
-const u        = Auth.user;
+  const u        = Auth.user;
   const subText  = Auth.isPremium()
     ? (u.sub_until ? `до ${new Date(u.sub_until).toLocaleDateString('ru')}` : '∞ безлимит')
     : 'Нет подписки';
   const subClass  = Auth.isPremium() ? 'profile-sub--active' : 'profile-sub--none';
   
-  // Создаем плашку роли + красиво добавляем UID рядом
-  let roleLabel = Auth.isAdmin() ? '👑 Admin' : Auth.isPremium() ? '💎 Premium' : '👤 User';
-  if (u.num_id) {
-    roleLabel += `<span class="profile-uid-badge">🆔 UID: ${u.num_id}</span>`;
-  }
+  // Здесь мы разделяем роль и UID для красивого отображения!
+  const roleLabel = Auth.isAdmin() ? '👑 Admin' : Auth.isPremium() ? '💎 Premium' : '👤 User';
+  const uidHtml   = u.num_id ? `<div class="profile-role-badge profile-uid-badge">🆔 UID: ${u.num_id}</div>` : '';
 
   const avatarSrc = u.avatar_url
     ? (u.avatar_url.startsWith('http') ? u.avatar_url : AUTH_CONFIG.BASE_URL + u.avatar_url)
@@ -332,9 +322,6 @@ const u        = Auth.user;
   const regDate = u.created_at
     ? new Date(u.created_at).toLocaleDateString('ru', { day:'2-digit', month:'long', year:'numeric' })
     : '—';
-    
-  // Добавляем отображение ID, если он есть
-  const idBadge = u.num_id ? `<span class="profile-id-badge">#${u.num_id}</span>` : '';
 
   const modal = document.createElement('div');
   modal.id        = 'authProfileModal';
@@ -349,10 +336,13 @@ const u        = Auth.user;
           <div class="profile-avatar-edit" id="profileAvatarEdit" title="Изменить аватар">📷</div>
           <input type="file" id="profileAvatarInput" accept="image/*" style="display:none">
         </div>
-          <div class="profile-info">
+        <div class="profile-info">
           <div class="profile-username">${escapeHtml(u.username || u.login)}</div>
           <div class="profile-login">@${escapeHtml(u.login)}</div>
-          <div class="profile-role">${roleLabel}</div>
+          <div class="profile-badges-row">
+            <div class="profile-role-badge">${roleLabel}</div>
+            ${uidHtml}
+          </div>
         </div>
       </div>
 
@@ -433,11 +423,8 @@ const u        = Auth.user;
   });
 }
 
-// ── Модалка смены юзернейма ───────────────────────────────────────
-
 function openChangeUsernameModal() {
   closeAllAuthModals();
-
   const modal = document.createElement('div');
   modal.id        = 'authChangeUsernameModal';
   modal.className = 'auth-modal-overlay';
@@ -484,11 +471,8 @@ function openChangeUsernameModal() {
   }
 }
 
-// ── Модалка смены пароля ─────────────────────────────────────────
-
 function openChangePasswordModal() {
   closeAllAuthModals();
-
   const modal = document.createElement('div');
   modal.id        = 'authChangePasswordModal';
   modal.className = 'auth-modal-overlay';
@@ -543,8 +527,6 @@ function openChangePasswordModal() {
   }
 }
 
-// ── Закрыть все модалки авторизации ──────────────────────────────
-
 function closeAllAuthModals() {
   ['authLoginModal', 'authProfileModal', 'authChangeUsernameModal',
    'authChangePasswordModal'].forEach(id => {
@@ -554,10 +536,6 @@ function closeAllAuthModals() {
     setTimeout(() => el.remove(), 250);
   });
 }
-
-// ══════════════════════════════════════════════════════════════════
-// Логика подписки
-// ══════════════════════════════════════════════════════════════════
 
 function applySubscriptionUI() {
   const findBtn = document.getElementById('gamePageFind');
@@ -577,10 +555,6 @@ function applySubscriptionUI() {
     findBtn.onclick = null;
   }
 }
-
-// ══════════════════════════════════════════════════════════════════
-// Инициализация и Бесшовный вход (Zero-Click)
-// ══════════════════════════════════════════════════════════════════
 
 async function authViaTelegram() {
   if (!AUTH_ENABLED || Auth.isLoggedIn()) return;
@@ -607,25 +581,82 @@ async function authViaTelegram() {
   }
 }
 
+// ══════════════════════════════════════════════════════════════════
+// Меню выбора тем оформления
+// ══════════════════════════════════════════════════════════════════
+
+function initThemeMenu() {
+  let currentTheme = localStorage.getItem('theme') || 'dark';
+  document.body.classList.remove('light-theme', 'oled-theme');
+  if (currentTheme !== 'dark') document.body.classList.add(`${currentTheme}-theme`);
+
+  let themeBtn = document.getElementById('themeBtn');
+  if (!themeBtn) return;
+
+  const icons = { 'dark': '🌙', 'light': '☀️', 'oled': '🌌' };
+  themeBtn.textContent = icons[currentTheme] || '🌙';
+
+  let dropdown = document.createElement('div');
+  dropdown.className = 'theme-dropdown';
+  dropdown.innerHTML = `
+    <button class="theme-btn-option ${currentTheme==='dark'?'active':''}" data-theme="dark">🌙 Тёмная</button>
+    <button class="theme-btn-option ${currentTheme==='light'?'active':''}" data-theme="light">☀️ Светлая</button>
+    <button class="theme-btn-option ${currentTheme==='oled'?'active':''}" data-theme="oled">🌌 OLED Black</button>
+  `;
+  document.body.appendChild(dropdown);
+
+  themeBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const rect = themeBtn.getBoundingClientRect();
+    dropdown.style.top = (rect.bottom + 8) + 'px';
+    dropdown.style.right = (window.innerWidth - rect.right) + 'px';
+    dropdown.classList.toggle('open');
+  });
+
+  dropdown.querySelectorAll('.theme-btn-option').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const theme = e.target.getAttribute('data-theme');
+      currentTheme = theme;
+      localStorage.setItem('theme', theme);
+
+      document.body.classList.remove('light-theme', 'oled-theme');
+      if (theme !== 'dark') document.body.classList.add(`${theme}-theme`);
+
+      themeBtn.textContent = icons[theme];
+      dropdown.querySelectorAll('.theme-btn-option').forEach(b => b.classList.remove('active'));
+      e.target.classList.add('active');
+      dropdown.classList.remove('open');
+    });
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!dropdown.contains(e.target) && e.target !== themeBtn) {
+      dropdown.classList.remove('open');
+    }
+  });
+}
+
+// ══════════════════════════════════════════════════════════════════
+// Запуск
+// ══════════════════════════════════════════════════════════════════
+
 document.addEventListener('DOMContentLoaded', async () => {
   if (!AUTH_ENABLED) {
     console.info('[Auth] API URL не настроен — авторизация отключена.');
     return;
   }
 
+  // Запускаем красивое меню тем
+  initThemeMenu();
+
   Auth.load();
 
-  // 1. Пробуем войти без пароля (Zero-Click)
   if (!Auth.isLoggedIn()) await authViaTelegram();
-
-  // 2. Обновляем данные, если вошли
   if (Auth.isLoggedIn()) await authRefreshUser();
 
-  // 3. Рисуем кнопки
   renderAccountIcon();
   if (typeof applySubscriptionUI === 'function') applySubscriptionUI();
 
-  // 4. Наблюдатель за страницей игры (чтобы кнопка менялась на "Купить подписку")
   const gamePage = document.getElementById('gamePage');
   if (gamePage) {
     const observer = new MutationObserver(() => {
@@ -634,7 +665,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     observer.observe(gamePage, { attributes: true, attributeFilter: ['class'] });
   }
 
-  // 5. Закрытие модалки по клику
   const modal = document.getElementById('authModal');
   if (modal) {
     modal.addEventListener('click', (e) => {
