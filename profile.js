@@ -634,11 +634,4 @@ function _formatLastSeen(isoStr) {
 
 document.addEventListener('DOMContentLoaded', () => {
   initNavRail();
-
-  // Патчим openGamePage чтобы автоматически трекать last_games
-  const _origOpenGamePage = window.openGamePage;
-  window.openGamePage = function(game) {
-    trackLastGame(game);
-    if (_origOpenGamePage) _origOpenGamePage(game);
-  };
 });
