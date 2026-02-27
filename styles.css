@@ -130,8 +130,9 @@ body::after {
   .sidebar {
     left: 50%; top: 50%;
     transform: translate(-50%, -50%) scale(0.95);
-    width: 420px;
-    height: auto; max-height: 85vh;
+    width: 580px; /* Сделали значительно шире */
+    height: auto; max-height: 90vh; /* Сделали чуть выше */
+    padding: 10px 4px; /* Дали немного воздуха внутри */
     border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.08);
     opacity: 0; visibility: hidden;
@@ -2063,19 +2064,19 @@ kbd {
   position: relative;
 }
 .profile-header-card {
-  background: var(--surface); border: 1px solid var(--border);
-  border-radius: 16px; 
-  margin-top: -50px; /* Накладываем карточку на баннер */
+  background: transparent; border: none; /* Убрали серый фон и рамку */
+  margin-top: -43px; /* Сдвигаем контейнер ровно на половину высоты аватара */
   padding: 0 20px 20px; text-align: center;
   position: relative; z-index: 2;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  box-shadow: none; /* Убрали тень */
 }
 .prof-avatar-wrap-centered {
   width: 86px; height: 86px; 
-  margin: -43px auto 12px; /* Аватар вылезает вверх ровно на половину */
-  border-radius: 50%; padding: 4px;
-  background: var(--surface); border: 1px solid var(--border);
+  margin: 0 auto 12px; /* Убрали отрицательный отступ, он тут больше не нужен */
+  border-radius: 50%; padding: 6px;
+  background: var(--bg); /* Заливаем цветом фона самой страницы, чтобы был аккуратный вырез */
   display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2); /* Легкая тень под самим аватаром */
 }
 .prof-avatar {
   width: 100%; height: 100%; border-radius: 50%;
