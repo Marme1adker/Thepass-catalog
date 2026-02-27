@@ -349,8 +349,8 @@ const u        = Auth.user;
           <div class="profile-avatar-edit" id="profileAvatarEdit" title="Изменить аватар">📷</div>
           <input type="file" id="profileAvatarInput" accept="image/*" style="display:none">
         </div>
-        <div class="profile-info">
-          <div class="profile-username">${escapeHtml(u.username || u.login)} ${idBadge}</div>
+          <div class="profile-info">
+          <div class="profile-username">${escapeHtml(u.username || u.login)}</div>
           <div class="profile-login">@${escapeHtml(u.login)}</div>
           <div class="profile-role">${roleLabel}</div>
         </div>
